@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services
+        https://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service id="nav.registry" class="NavBundle\Registry" public="true">
+            <argument type="service" tag="annotations.reader"/>
+            <argument/>
+            <argument/>
+            <argument type="tagged" tag="nav.repository"/>
+        </service>
+        <service id="NavBundle\Registry" alias="nav.registry" public="true" />
+        <service id="NavBundle\RegistryInterface" alias="nav.registry" public="true" />
+    </services>
+</container>

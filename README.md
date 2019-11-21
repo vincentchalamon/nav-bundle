@@ -7,6 +7,16 @@ This Symfony Bundle is used to map objects with a Microsoft Dynamics Nav service
 - php ^7.2
 - soap php extension
 
+## Installation
+
+## Configuration
+
+```yaml
+nav:
+    wsdl: '%env(NAV_WSDL)%'
+    enable_profiler: '%kernel.debug%'
+```
+
 ## Code of conduct
 
 This bundle is ruled by a [code a conduct](/.github/CODE_OF_CONDUCT.md).

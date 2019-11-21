@@ -1,0 +1,45 @@
+{
+    "name": "vincentchalamon/docusign-bundle",
+    "description": "Symfony bundle for Microsoft Dynamics Nav",
+    "homepage": "https://github.com/vincentchalamon/nav-bundle",
+    "license": "MIT",
+    "type": "symfony-bundle",
+    "keywords": ["symfony","symfony-bundle","microsoft dynamic nav", "navision"],
+    "readme": "README.md",
+    "authors": [
+        {
+            "name": "Vincent Chalamon",
+            "email": "vincentchalamon@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "email": "vincentchalamon+support-navision@gmail.com"
+    },
+    "require": {
+        "php": "^7.2",
+        "ext-soap": "*",
+        "doctrine/annotations": "^1.0",
+        "symfony/http-kernel": "^3.4 || ^4.3"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^2.15",
+        "nyholm/symfony-bundle-test": "^1.4",
+        "phpstan/phpstan": "^0.11.19",
+        "phpunit/phpunit": "^7.5.2 || ^8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "NavBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "NavBundle\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable"
+}
