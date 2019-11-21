@@ -14,21 +14,21 @@ declare(strict_types=1);
 namespace NavBundle\ClassMetadata;
 
 /**
- * @author Vincent Chalamon <vincent@les-tilleuls.coop>
+ * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
 interface ClassMetadataInfoInterface
 {
     /**
      * Get the repository class name.
      *
-     * @return string The repository class name.
+     * @return string the repository class name
      */
     public function getRepositoryClass(): string;
 
     /**
      * Get the entity NAV namespace.
      *
-     * @return string The entity NAV namespace.
+     * @return string the entity NAV namespace
      */
     public function getNamespace(): string;
 }

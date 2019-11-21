@@ -1,5 +1,5 @@
 {
-    "name": "vincentchalamon/docusign-bundle",
+    "name": "vincentchalamon/nav-bundle",
     "description": "Symfony bundle for Microsoft Dynamics Nav",
     "homepage": "https://github.com/vincentchalamon/nav-bundle",
     "license": "MIT",
@@ -16,17 +16,25 @@
     "support": {
         "email": "vincentchalamon+support-navision@gmail.com"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/vincentchalamon/ntlm-soap-client"
+        }
+    ],
     "require": {
         "php": "^7.2",
         "ext-soap": "*",
         "doctrine/annotations": "^1.0",
-        "symfony/http-kernel": "^3.4 || ^4.3"
+        "matejsvajger/ntlm-soap-client": "dev-master",
+        "symfony/http-kernel": "^4.4"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.15",
         "nyholm/symfony-bundle-test": "^1.4",
         "phpstan/phpstan": "^0.11.19",
-        "phpunit/phpunit": "^7.5.2 || ^8.0"
+        "phpunit/phpunit": "^8.0",
+        "symfony/dotenv": "^4.4"
     },
     "autoload": {
         "psr-4": {
@@ -35,7 +43,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "NavBundle\\Tests\\": "tests/"
+            "NavBundle\\Tests\\": "tests/",
+            "NavBundle\\E2e\\": "features/"
         }
     },
     "config": {

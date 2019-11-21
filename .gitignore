@@ -7,3 +7,5 @@
 /composer.phar
 /phpunit.xml
 /vendor/
+/features/var
+/features/.env*

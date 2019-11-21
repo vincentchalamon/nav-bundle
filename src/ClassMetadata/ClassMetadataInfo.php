@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace NavBundle\ClassMetadata;
 
 /**
- * @author Vincent Chalamon <vincent@les-tilleuls.coop>
+ * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
 final class ClassMetadataInfo implements ClassMetadataInfoInterface
 {
@@ -28,7 +28,7 @@ final class ClassMetadataInfo implements ClassMetadataInfoInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getRepositoryClass(): string
     {
@@ -36,7 +36,7 @@ final class ClassMetadataInfo implements ClassMetadataInfoInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getNamespace(): string
     {

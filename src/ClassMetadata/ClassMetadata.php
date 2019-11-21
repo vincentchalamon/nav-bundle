@@ -17,12 +17,13 @@ use NavBundle\ClassMetadata\Driver\ClassMetadataDriverInterface;
 use NavBundle\Exception\EntityNotFoundException;
 
 /**
- * @author Vincent Chalamon <vincent@les-tilleuls.coop>
+ * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
 final class ClassMetadata implements ClassMetadataInterface
 {
     private $driver;
     private $path;
+    private $classMetadataInfos;
 
     public function __construct(ClassMetadataDriverInterface $driver, string $path)
     {
@@ -31,7 +32,7 @@ final class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getClassMetadataInfo(string $class): ClassMetadataInfoInterface
     {
@@ -43,11 +44,14 @@ final class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getClassMetadataInfos()
     {
-        // todo Implement cache
-        return $this->driver->getEntities($this->path);
+        if (null === $this->classMetadataInfos) {
+            $this->classMetadataInfos = $this->driver->getEntities($this->path);
+        }
+
+        return $this->classMetadataInfos;
     }
 }

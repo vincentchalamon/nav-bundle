@@ -1,0 +1,9 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  NavBundle\E2e\TestBundle\:
+    resource: '../../*'
+    exclude: '../../{DependencyInjection,TestBundle.php}'

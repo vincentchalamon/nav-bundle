@@ -16,23 +16,23 @@ namespace NavBundle\ClassMetadata;
 use NavBundle\Exception\EntityNotFoundException;
 
 /**
- * @author Vincent Chalamon <vincent@les-tilleuls.coop>
+ * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
 interface ClassMetadataInterface
 {
     /**
      * Get the ClassMetadataInfo for a class.
      *
-     * @return ClassMetadataInfoInterface The ClassMetadataInfo.
-     *
      * @throws EntityNotFoundException
+     *
+     * @return ClassMetadataInfoInterface the ClassMetadataInfo
      */
     public function getClassMetadataInfo(string $class): ClassMetadataInfoInterface;
 
     /**
      * Get all the ClassMetadataInfo.
      *
-     * @return ClassMetadataInfoInterface[] A collection of ClassMetadataInfo.
+     * @return ClassMetadataInfoInterface[] a collection of ClassMetadataInfo
      */
     public function getClassMetadataInfos();
 }

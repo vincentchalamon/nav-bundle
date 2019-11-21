@@ -11,11 +11,13 @@
 
 declare(strict_types=1);
 
-namespace NavBundle\Exception;
+namespace NavBundle\E2e\TestBundle;
+
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-final class RepositoryNotFoundException extends \RuntimeException implements ExceptionInterface
+final class TestBundle extends Bundle
 {
 }

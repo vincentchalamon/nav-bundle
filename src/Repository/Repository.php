@@ -13,43 +13,43 @@ declare(strict_types=1);
 
 namespace NavBundle\Repository;
 
-use NavBundle\Manager\NavManagerInterface;
+use NavBundle\Manager\ManagerInterface;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-class NavRepository implements NavRepositoryInterface
+class Repository implements RepositoryInterface
 {
     protected $manager;
-    protected $namespace;
+    protected $client;
 
-    public function __construct(NavManagerInterface $manager, string $namespace)
+    public function __construct(ManagerInterface $manager, \SoapClient $client)
     {
         $this->manager = $manager;
-        $this->namespace = $namespace;
+        $this->client = $client;
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function find(string $no)
     {
-        return $this->manager->find($this->namespace, $no);
+        return $this->manager->find($this->client, $no);
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function findAll()
     {
-        return $this->manager->findAll($this->namespace);
+        return $this->manager->findAll($this->client);
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function findBy(array $criteria = [], int $size = 0)
     {
-        return $this->manager->findBy($this->namespace, $criteria, $size);
+        return $this->manager->findBy($this->client, $criteria, $size);
     }
 }

@@ -4,13 +4,15 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services
         https://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="nav.registry" class="NavBundle\Registry" public="true">
-            <argument type="service" tag="annotations.reader"/>
-            <argument/>
-            <argument/>
-            <argument type="tagged" tag="nav.repository"/>
+        <service id="nav.class_metadata.driver.annotation" class="NavBundle\ClassMetadata\Driver\AnnotationClassMetadataDriver" public="false">
+            <argument type="service" id="annotations.reader"/>
+            <tag name="nav.class_metadata.driver" alias="annotation"/>
         </service>
-        <service id="NavBundle\Registry" alias="nav.registry" public="true" />
-        <service id="NavBundle\RegistryInterface" alias="nav.registry" public="true" />
+
+        <service id="nav.registry" class="NavBundle\Registry" public="true">
+            <argument/> <!-- managers -->
+        </service>
+        <service id="NavBundle\Registry" alias="nav.registry" public="true"/>
+        <service id="NavBundle\RegistryInterface" alias="nav.registry" public="true"/>
     </services>
 </container>

@@ -13,14 +13,17 @@ declare(strict_types=1);
 
 namespace NavBundle\DependencyInjection;
 
-use NavBundle\Manager\NavManager;
-use NavBundle\Manager\NavManagerInterface;
-use NavBundle\Repository\NavRepositoryInterface;
+use NavBundle\ClassMetadata\ClassMetadata;
+use NavBundle\Manager\Manager;
+use NavBundle\Manager\ManagerInterface;
+use NavBundle\Repository\RepositoryInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Alias;
+use Symfony\Component\DependencyInjection\Argument\TaggedIteratorArgument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
 
 final class NavExtension extends Extension
 {
@@ -33,28 +36,40 @@ final class NavExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $container
-            ->registerForAutoconfiguration(NavRepositoryInterface::class)
+            ->registerForAutoconfiguration(RepositoryInterface::class)
             ->addTag('nav.repository');
-
-        $default = null;
-        foreach ($config as $managerName => $options) {
-            $container->register("nav.manager.$managerName", NavManager::class)
-                ->setPublic(false)
-                ->setArguments([]);
-
-            if (null === $default) {
-                $container->setAlias(NavManager::class, new Alias("nav.manager.$managerName"));
-                $container->setAlias(NavManagerInterface::class, new Alias("nav.manager.$managerName"));
-                $container->setAlias('nav.manager', new Alias("nav.manager.$managerName"));
-            }
-        }
+        $container
+            ->registerForAutoconfiguration(ManagerInterface::class)
+            ->addTag('nav.manager');
 
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
 
+        foreach ($config as $name => $options) {
+            $container->register("nav.class_metadata.$name", ClassMetadata::class)
+                ->setPublic(false)
+                ->setArguments([
+                    '$driver' => new Reference("nav.class_metadata.driver.$options[driver]"),
+                    '$path' => $options['path'],
+                ]);
+
+            $container->register("nav.manager.$name", Manager::class)
+                ->setPublic(true)
+                ->addTag('nav.manager')
+                ->setArguments([
+                    '$classMetadata' => new Reference("nav.class_metadata.$name"),
+                    '$repositories' => new TaggedIteratorArgument('nav.repository'), // todo Inject related repositories
+                    '$wsdl' => $options['wsdl'],
+                    '$soapOptions' => $options['soap_options'],
+                ]);
+            if (!$container->hasAlias(Manager::class)) {
+                $container->setAlias(Manager::class, new Alias("nav.manager.$name"));
+                $container->setAlias(ManagerInterface::class, new Alias("nav.manager.$name"));
+            }
+        }
+
         $container
             ->getDefinition('nav.registry')
-            ->setArgument('$wsdl', $config['wsdl'])
-            ->setArgument('$defaultOptions', $config['options']);
+            ->setArgument('$managers', new TaggedIteratorArgument('nav.manager'));
     }
 }

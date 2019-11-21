@@ -1,24 +1,33 @@
 <?php
 
+/*
+ * This file is part of the NavBundle.
+ *
+ * (c) Vincent Chalamon <vincentchalamon@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
 namespace NavBundle\Annotation;
 
 use NavBundle\Exception\InvalidArgumentException;
-use NavBundle\Repository\NavRepository;
+use NavBundle\Repository\Repository;
 
 /**
  * @Annotation
  * @Target("CLASS")
  *
- * @author Vincent Chalamon <vincent@les-tilleuls.coop>
+ * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-final class NavEntity
+final class Entity
 {
     /**
      * @var string
      */
-    public $repositoryClass = NavRepository::class;
+    public $repositoryClass = Repository::class;
 
     /**
      * @var string

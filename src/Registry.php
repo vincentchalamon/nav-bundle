@@ -14,32 +14,28 @@ declare(strict_types=1);
 namespace NavBundle;
 
 use NavBundle\Exception\ManagerNotFoundException;
-use NavBundle\Manager\NavManagerInterface;
-use NavBundle\Repository\NavRepositoryInterface;
+use NavBundle\Manager\ManagerInterface;
+use NavBundle\Repository\RepositoryInterface;
 
 /**
- * @author Vincent Chalamon <vincent@les-tilleuls.coop>
+ * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
 final class Registry implements RegistryInterface
 {
     /**
-     * @var iterable|NavManagerInterface[]
+     * @var iterable|ManagerInterface[]
      */
     private $managers;
-    private $wsdl;
-    private $defaultOptions;
 
-    public function __construct(iterable $managers, string $wsdl, array $defaultOptions)
+    public function __construct(iterable $managers)
     {
         $this->managers = $managers;
-        $this->wsdl = $wsdl;
-        $this->defaultOptions = $defaultOptions;
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function getManager(string $name = 'default'): NavManagerInterface
+    public function getManager(string $name = 'default'): ManagerInterface
     {
         if (!isset($this->managers[$name])) {
             throw new ManagerNotFoundException("Manager $name not found.");
@@ -49,9 +45,9 @@ final class Registry implements RegistryInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function getManagerForClass(string $class): NavManagerInterface
+    public function getManagerForClass(string $class): ManagerInterface
     {
         foreach ($this->managers as $manager) {
             if ($manager->hasClass($class)) {
@@ -63,9 +59,9 @@ final class Registry implements RegistryInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function getRepository(string $class): NavRepositoryInterface
+    public function getRepository(string $class): RepositoryInterface
     {
         return $this->getManager($class)->getRepository($class);
     }
