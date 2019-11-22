@@ -24,6 +24,7 @@
     ],
     "require": {
         "php": "^7.2",
+        "ext-dom": "*",
         "ext-soap": "*",
         "doctrine/annotations": "^1.0",
         "matejsvajger/ntlm-soap-client": "dev-master",
@@ -35,7 +36,6 @@
         "symfony/stopwatch": "^4.4 || ^5.0"
     },
     "require-dev": {
-        "ext-dom": "*",
         "friendsofphp/php-cs-fixer": "^2.15",
         "nyholm/symfony-bundle-test": "^1.4",
         "phpstan/phpstan": "^0.11.19",

@@ -142,6 +142,7 @@ class Manager implements ManagerInterface, WarmableInterface
      */
     public function findBy(string $className, array $criteria = [], int $size = 0)
     {
+        // todo Transform criteria ['name' => 'foo'] => [['Field' => 'Name', 'Criteria' => 'foo']]
         return $this->serializer->deserialize($this->getClient($className)->ReadMultiple([
             'filter' => $criteria,
             'size' => $size,

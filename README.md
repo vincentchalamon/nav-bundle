@@ -6,53 +6,57 @@ This Symfony Bundle is used to map objects with a Microsoft Dynamics Nav service
 
 - php ^7.2
 - soap php extension
+- dom php extension
 
 ## Installation
+
+```shell
+composer req vincentchalamon/nav-bundle
+```
 
 ## Configuration
 
 ```yaml
 nav:
-    wsdl: '%env(NAV_WSDL)%' # required
-    path: '%kernel.project_dir%/src/Entity' # required
-    driver: annotation # default
-    soap_options:
-        soap_version: 1 # default
-        connection_timeout: 120 # default
-        domain: '%env(NAV_DOMAIN)%'
-        username: '%env(NAV_LOGIN)%' # required
-        password: '%env(NAV_PASSWORD)%' # required
+    wsdl: '%env(NAV_WSDL)%'
+    path: '%kernel.project_dir%/src/Entity'
+    domain: '%env(NAV_DOMAIN)%'
+    username: '%env(NAV_LOGIN)%'
+    password: '%env(NAV_PASSWORD)%'
 ```
 
-It's also possible to split it by managers, as following:
+## Advanced configuration
 
 ```yaml
 nav:
+    enable_profiler: '%kernel.debug%'
     foo:
         wsdl: '%env(NAV_WSDL)%'
         path: '%kernel.project_dir%/src/Entity/Foo'
+        domain: '%env(NAV_DOMAIN)%'
+        username: '%env(NAV_LOGIN)%'
+        password: '%env(NAV_PASSWORD)%'
         driver: annotation
         soap_options:
             soap_version: 1
             connection_timeout: 120
-            domain: '%env(NAV_DOMAIN)%'
-            username: '%env(NAV_LOGIN)%'
-            password: '%env(NAV_PASSWORD)%'
+            exception: '%kernel.debug%'
+            trace: '%kernel.debug%'
     bar:
         wsdl: '%env(ANOTHER_WSDL)%'
         path: '%kernel.project_dir%/src/Entity/Bar'
+        domain: '%env(ANOTHER_DOMAIN)%'
+        username: '%env(ANOTHER_LOGIN)%'
+        password: '%env(ANOTHER_PASSWORD)%'
         driver: annotation
         soap_options:
             soap_version: 1
             connection_timeout: 120
-            domain: '%env(ANOTHER_DOMAIN)%'
-            username: '%env(ANOTHER_LOGIN)%'
-            password: '%env(ANOTHER_PASSWORD)%'
+            exception: '%kernel.debug%'
+            trace: '%kernel.debug%'
 ```
 
 ## Usage
-
-Declare your entities using annotation:
 
 ```php
 namespace App\Entity;
@@ -60,28 +64,71 @@ namespace App\Entity;
 use NavBundle\Annotation as Nav;
 
 /**
- * @Nav\Entity("NAMESPACE")
+ * @Nav\Entity(namespace="Contact")
  */
-class Foo
+final class Contact
 {
     /**
-     * @Nav\Column(name="Bar")
+     * @Nav\Column(name="No")
+     * @Nav\Id
      */
-    public $bar;
+    public $no;
+
+    /**
+     * @Nav\Column(name="E_Mail", nullable=true)
+     */
+    public $email;
+
+    /**
+     * @Nav\Column(name="Date", type="date", nullable=true)
+     */
+    public $date;
 }
 ```
 
-Replace `NAMESPACE` by the SOAP namespace configured on your Microsoft Dynamics NAV server for this entity.
+## Read
 
-Create a repository:
+```php
+/** @var \NavBundle\RegistryInterface $registry */
+$registry = $container->get('nav.registry');
 
-```yaml
-services:
-    app.repository.foo:
-        class: NavBundle\Repository\Repository
-        factory: ['@nav.manager.default', 'getRepository']
-        arguments: ['App\Entity\Foo']
+$manager = $registry->getManagerForClass(Contact::class);
+$repository = $manager->getRepository(Contact::class);
+
+// Find entity by primary key
+$repository->find($no);
+
+// Find collection by a set of criteria
+$repository->findBy(['foo' => 'bar']);
+
+// Find entity by a set of criteria
+$repository->findOneBy(['foo' => 'bar']);
+
+// Find all
+$repository->findAll();
 ```
+
+## Write/delete
+
+```php
+/** @var \NavBundle\RegistryInterface $registry */
+$registry = $container->get('nav.registry');
+
+$manager = $registry->getManagerForClass(Contact::class);
+
+// Create
+$repository->create($object);
+
+// Update
+$repository->update($object);
+
+// Delete
+$repository->delete($object);
+```
+
+## Profiler
+
+![Profiler](doc/profiler.png)
 
 ## Code of conduct
 
