@@ -13,26 +13,29 @@ declare(strict_types=1);
 
 namespace NavBundle\ClassMetadata;
 
-use NavBundle\Exception\EntityNotFoundException;
-
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
 interface ClassMetadataInterface
 {
     /**
-     * Get the ClassMetadataInfo for a class.
+     * Get the repository class name.
      *
-     * @throws EntityNotFoundException
-     *
-     * @return ClassMetadataInfoInterface the ClassMetadataInfo
+     * @return string the repository class name
      */
-    public function getClassMetadataInfo(string $class): ClassMetadataInfoInterface;
+    public function getRepositoryClass(): string;
 
     /**
-     * Get all the ClassMetadataInfo.
+     * Get the entity NAV namespace.
      *
-     * @return ClassMetadataInfoInterface[] a collection of ClassMetadataInfo
+     * @return string the entity NAV namespace
      */
-    public function getClassMetadataInfos();
+    public function getNamespace(): string;
+
+    /**
+     * Get the entity mapping.
+     *
+     * @return array the entity mapping
+     */
+    public function getMapping(): array;
 }

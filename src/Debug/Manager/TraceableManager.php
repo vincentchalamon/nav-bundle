@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace NavBundle\Debug\Manager;
 
-use NavBundle\ClassMetadata\ClassMetadataInterface;
+use NavBundle\ClassMetadata\Driver\ClassMetadataDriverInterface;
 use NavBundle\Manager\Manager;
-use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
+use Symfony\Component\Config\ConfigCacheFactoryInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 use Symfony\Component\Stopwatch\StopwatchEvent;
@@ -29,28 +29,29 @@ final class TraceableManager extends Manager
     private $calls = [];
 
     public function __construct(
-        ClassMetadataInterface $classMetadata,
+        ClassMetadataDriverInterface $driver,
         SerializerInterface $serializer,
-        PropertyAccessorInterface $propertyAccessor,
+        ConfigCacheFactoryInterface $configCacheFactory,
         \Traversable $repositories,
         \Traversable $clients,
         string $wsdl,
         array $options,
         array $soapOptions,
+        string $cacheDir,
         Stopwatch $stopwatch
     ) {
-        parent::__construct($classMetadata, $serializer, $propertyAccessor, $repositories, $clients, $wsdl, $options, $soapOptions);
+        parent::__construct($driver, $serializer, $configCacheFactory, $repositories, $clients, $wsdl, $options, $soapOptions, $cacheDir);
         $this->stopwatch = $stopwatch;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function find(string $class, string $id)
+    public function find(string $className, string $id)
     {
         $this->stopwatch->start('nav.find');
-        $result = parent::find($class, $id);
-        $this->registerCall($this->stopwatch->stop('nav.find'), $this->getClient($class));
+        $result = parent::find($className, $id);
+        $this->registerCall($this->stopwatch->stop('nav.find'), $this->getClient($className));
 
         return $result;
     }
@@ -58,11 +59,11 @@ final class TraceableManager extends Manager
     /**
      * {@inheritdoc}
      */
-    public function findAll(string $class)
+    public function findAll(string $className)
     {
         $this->stopwatch->start('nav.findAll');
-        $results = parent::findAll($class);
-        $this->registerCall($this->stopwatch->stop('nav.findAll'), $this->getClient($class));
+        $results = parent::findAll($className);
+        $this->registerCall($this->stopwatch->stop('nav.findAll'), $this->getClient($className));
 
         return $results;
     }
@@ -70,11 +71,11 @@ final class TraceableManager extends Manager
     /**
      * {@inheritdoc}
      */
-    public function findBy(string $class, array $criteria = [], int $size = 0)
+    public function findBy(string $className, array $criteria = [], int $size = 0)
     {
         $this->stopwatch->start('nav.findBy');
-        $results = parent::findBy($class, $criteria, $size);
-        $this->registerCall($this->stopwatch->stop('nav.findBy'), $this->getClient($class));
+        $results = parent::findBy($className, $criteria, $size);
+        $this->registerCall($this->stopwatch->stop('nav.findBy'), $this->getClient($className));
 
         return $results;
     }

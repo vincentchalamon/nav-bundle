@@ -28,13 +28,13 @@ final class Kernel extends BaseKernel
     {
         $bundles = [
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
+            new Symfony\Bundle\TwigBundle\TwigBundle(),
             new NavBundle\NavBundle(),
             new NavBundle\E2e\TestBundle\TestBundle(),
         ];
 
         if ($this->isDebug()) {
             $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
-            $bundles[] = new Symfony\Bundle\TwigBundle\TwigBundle();
         }
 
         return $bundles;
@@ -57,11 +57,11 @@ final class Kernel extends BaseKernel
 
     protected function configureRoutes(RouteCollectionBuilder $routes): void
     {
+        $routes->import('@TwigBundle/Resources/config/routing/errors.xml', '/_error');
         $routes->import('@TestBundle/Controller', null, 'annotation');
         if ($this->isDebug()) {
             $routes->import('@WebProfilerBundle/Resources/config/routing/wdt.xml', '/_wdt');
             $routes->import('@WebProfilerBundle/Resources/config/routing/profiler.xml', '/_profiler');
-            $routes->import('@TwigBundle/Resources/config/routing/errors.xml', '/_error');
         }
     }
 

@@ -16,56 +16,57 @@ namespace NavBundle\Serializer;
 use NavBundle\Exception\EntityNotFoundException;
 use NavBundle\Manager\ManagerInterface;
 use NavBundle\RegistryInterface;
-use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
-use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\ContextAwareDenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
+use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 
 /**
- * @author Vincent Chalamon <vincent@les-tilleuls.coop>
+ * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-final class ObjectDenormalizer implements DenormalizerInterface
+final class ObjectDenormalizer implements ContextAwareDenormalizerInterface, DenormalizerAwareInterface
 {
-    private $registry;
-    private $propertyAccessor;
+    use DenormalizerAwareTrait;
 
-    public function __construct(RegistryInterface $registry, PropertyAccessorInterface $propertyAccessor)
+    private $registry;
+
+    public function __construct(RegistryInterface $registry)
     {
         $this->registry = $registry;
-        $this->propertyAccessor = $propertyAccessor;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $class, $format = null, array $context = []): object
+    public function denormalize($values, $className, $format = null, array $context = []): object
     {
-        $rc = new \ReflectionClass($class);
-        $object = $rc->newInstance();
-        $classMetadataInfo = $this->registry
-            ->getManagerForClass($class)
-            ->getClassMetadata()
-            ->getClassMetadataInfo($class);
-        if (!isset($data[$classMetadataInfo->getNamespace()])) {
-            return $object;
+        $classMetadata = $this->registry->getManagerForClass($className)->getClassMetadata($className);
+        if (!isset($values[$classMetadata->getNamespace()])) {
+            return (new \ReflectionClass($className))->newInstance();
         }
 
-        foreach ($classMetadataInfo->getMapping() as $property => $options) {
-            $this->propertyAccessor->setValue(
-                $object,
-                $property,
-                $data[$classMetadataInfo->getNamespace()][$options['name']] ?? null
-            );
+        $values = $values[$classMetadata->getNamespace()];
+        $data = [];
+        foreach ($classMetadata->getMapping() as $property => $options) {
+            if (!\array_key_exists($options['name'], $values)) {
+                continue;
+            }
+
+            $data[$property] = $values[$options['name']];
         }
 
-        return $object;
+        /* @see \Symfony\Component\Serializer\Normalizer\ObjectNormalizer */
+        return $this->denormalizer->denormalize($data, $className, $format, $context + [__CLASS__ => true]);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $class, $format = null): bool
+    public function supportsDenormalization($data, $className, $format = null, array $context = []): bool
     {
         try {
-            return ObjectDecoder::FORMAT === $format && $this->registry->getManagerForClass($class) instanceof ManagerInterface;
+            return !isset($context[__CLASS__])
+                && ObjectDecoder::FORMAT === $format
+                && $this->registry->getManagerForClass($className) instanceof ManagerInterface;
         } catch (EntityNotFoundException $exception) {
             return false;
         }

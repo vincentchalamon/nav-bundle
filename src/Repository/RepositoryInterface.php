@@ -43,4 +43,13 @@ interface RepositoryInterface
      * @return array the entities
      */
     public function findBy(array $criteria = [], int $size = 0);
+
+    /**
+     * Finds 1 entity by a set of criteria.
+     *
+     * @param array $criteria the criteria
+     *
+     * @return object|null the entity
+     */
+    public function findOneBy(array $criteria = []);
 }

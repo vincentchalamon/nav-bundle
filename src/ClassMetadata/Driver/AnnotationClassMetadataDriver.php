@@ -17,7 +17,6 @@ use Doctrine\Common\Annotations\Reader;
 use NavBundle\Annotation\Column;
 use NavBundle\Annotation\Entity;
 use NavBundle\Annotation\Id;
-use NavBundle\ClassMetadata\ClassMetadataInfo;
 use NavBundle\Exception\PathNotFoundException;
 
 /**
@@ -26,56 +25,76 @@ use NavBundle\Exception\PathNotFoundException;
 final class AnnotationClassMetadataDriver implements ClassMetadataDriverInterface
 {
     private $reader;
+    private $path;
 
-    public function __construct(Reader $reader)
+    public function __construct(Reader $reader, string $path)
     {
         $this->reader = $reader;
+        $this->path = $path;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getEntities(string $path)
+    public function getEntities()
     {
-        if (!is_dir($path)) {
+        if (!is_dir($this->path)) {
             throw new PathNotFoundException();
         }
 
         $iterator = new \RegexIterator(
             new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS),
+                new \RecursiveDirectoryIterator($this->path, \FilesystemIterator::SKIP_DOTS),
                 \RecursiveIteratorIterator::LEAVES_ONLY
             ),
             '/^.+php$/i',
             \RecursiveRegexIterator::GET_MATCH
         );
+
+        $includedFiles = [];
+        foreach ($iterator as $file) {
+            $sourceFile = $file[0];
+
+            if (!preg_match('(^phar:)i', $sourceFile)) {
+                $sourceFile = realpath($sourceFile);
+            }
+
+            require_once $sourceFile;
+
+            $includedFiles[] = $sourceFile;
+        }
+
         $classes = [];
         $declaredClasses = get_declared_classes();
-        foreach ($iterator as $file) {
-            $sourceFile = realpath($file[0]);
-            require_once $sourceFile;
-            foreach ($declaredClasses as $class) {
-                $rc = new \ReflectionClass($class);
-                if ($sourceFile !== $rc->getFileName()) {
+        foreach ($declaredClasses as $className) {
+            $rc = new \ReflectionClass($className);
+            $sourceFile = $rc->getFileName();
+
+            /** @var Entity $entity */
+            if (!\in_array($sourceFile, $includedFiles, true) || !($entity = $this->reader->getClassAnnotation($rc, Entity::class))) {
+                continue;
+            }
+
+            $mapping = [];
+            foreach ($rc->getProperties() as $property) {
+                /** @var Column $column */
+                if (!($column = $this->reader->getPropertyAnnotation($property, Column::class))) {
                     continue;
                 }
 
-                /** @var Entity $entity */
-                if ($entity = $this->reader->getClassAnnotation($rc, Entity::class)) {
-                    $mapping = [];
-                    foreach ($rc->getProperties() as $property) {
-                        /** @var Column $column */
-                        if ($column = $this->reader->getPropertyAnnotation($property, Column::class)) {
-                            $mapping[$property->getName()] = [
-                                'name' => $column->name,
-                                'identifier' => $this->reader->getPropertyAnnotation($property, Id::class),
-                            ];
-                        }
-                    }
-
-                    $classes[$rc->getName()] = new ClassMetadataInfo($entity->repositoryClass, $entity->namespace, $mapping);
-                }
+                $mapping[$property->getName()] = [
+                    'name' => $column->name,
+                    'type' => $column->type,
+                    'nullable' => $column->nullable,
+                    'identifier' => (bool) $this->reader->getPropertyAnnotation($property, Id::class),
+                ];
             }
+
+            $classes[$rc->getName()] = [
+                'repositoryClass' => $entity->repositoryClass,
+                'namespace' => $entity->namespace,
+                'mapping' => $mapping,
+            ];
         }
 
         return $classes;

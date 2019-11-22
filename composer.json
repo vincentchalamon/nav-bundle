@@ -24,16 +24,18 @@
     ],
     "require": {
         "php": "^7.2",
-        "ext-dom": "*",
         "ext-soap": "*",
         "doctrine/annotations": "^1.0",
         "matejsvajger/ntlm-soap-client": "dev-master",
+        "symfony/config": "^4.4 || ^5.0",
         "symfony/http-kernel": "^4.4 || ^5.0",
         "symfony/property-access": "^4.4 || ^5.0",
+        "symfony/property-info": "^4.4 || ^5.0",
         "symfony/serializer": "^4.4 || ^5.0",
-        "symfony/stopwatch": "^4.4 || ^5.0",
+        "symfony/stopwatch": "^4.4 || ^5.0"
     },
     "require-dev": {
+        "ext-dom": "*",
         "friendsofphp/php-cs-fixer": "^2.15",
         "nyholm/symfony-bundle-test": "^1.4",
         "phpstan/phpstan": "^0.11.19",

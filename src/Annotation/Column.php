@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace NavBundle\Annotation;
 
-use NavBundle\Exception\InvalidArgumentException;
-
 /**
  * @Annotation
  * @Target("PROPERTY")
@@ -28,16 +26,13 @@ final class Column
      */
     public $name;
 
-    public function __construct(array $data)
-    {
-        if ($data['name'] ?? null) {
-            $data['value'] = $data['name'];
-        }
+    /**
+     * @var string
+     */
+    public $type = 'string';
 
-        if (!isset($data['value']) || !$data['value']) {
-            throw new InvalidArgumentException(sprintf('Parameter of annotation "%s" cannot be empty.', \get_class($this)));
-        }
-
-        $this->name = (string) $data['value'];
-    }
+    /**
+     * @var bool
+     */
+    public $nullable = false;
 }

@@ -16,7 +16,7 @@ namespace NavBundle\Serializer;
 use Symfony\Component\Serializer\Encoder\DecoderInterface;
 
 /**
- * @author Vincent Chalamon <vincent@les-tilleuls.coop>
+ * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
 final class ObjectDecoder implements DecoderInterface
 {

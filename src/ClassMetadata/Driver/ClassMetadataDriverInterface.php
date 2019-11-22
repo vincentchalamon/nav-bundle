@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace NavBundle\ClassMetadata\Driver;
 
-use NavBundle\ClassMetadata\ClassMetadataInfoInterface;
-
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
@@ -23,9 +21,7 @@ interface ClassMetadataDriverInterface
     /**
      * Get entities class name and options.
      *
-     * @param string $path the path where the entities configuration is stored
-     *
-     * @return ClassMetadataInfoInterface[] the entities class name and options
+     * @return array the entities class name and options
      */
-    public function getEntities(string $path);
+    public function getEntities();
 }

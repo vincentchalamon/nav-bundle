@@ -4,16 +4,37 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services
         https://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="nav.class_metadata.driver.annotation" class="NavBundle\ClassMetadata\Driver\AnnotationClassMetadataDriver" public="false">
+        <service id="nav.class_metadata.driver.annotation" class="NavBundle\ClassMetadata\Driver\AnnotationClassMetadataDriver" public="false" abstract="true">
             <argument type="service" id="annotations.reader"/>
-            <tag name="nav.class_metadata.driver" alias="annotation"/>
         </service>
 
         <service id="nav.registry" class="NavBundle\Registry" public="true">
-            <argument/> <!-- managers -->
+            <argument/> <!-- managers indexed by name -->
         </service>
         <service id="NavBundle\Registry" alias="nav.registry" public="true"/>
         <service id="NavBundle\RegistryInterface" alias="nav.registry" public="true"/>
+
+        <service id="nav.abstract_manager" class="NavBundle\Manager\Manager" public="false" abstract="true">
+            <argument/> <!-- driver -->
+            <argument type="service" id="serializer"/>
+            <argument type="service" id="config_cache_factory"/>
+            <argument type="tagged" tag="nav.repository"/>
+            <argument type="tagged" tag="nav.client"/>
+            <argument/> <!-- WSDL -->
+            <argument/> <!-- options -->
+            <argument/> <!-- SOAP options -->
+            <argument>%kernel.cache_dir%/nav</argument>
+        </service>
+
+        <service id="nav.cache_warmer.manager" class="NavBundle\CacheWarmer\ManagerCacheWarmer" public="false">
+            <argument type="service" id="service_container"/>
+            <tag name="kernel.cache_warmer"/>
+        </service>
+
+        <service id="nav.property_info.class_metadata_extractor" class="NavBundle\ClassMetadata\ClassMetadataExtractor" public="false">
+            <argument type="service" id="nav.registry"/>
+            <tag name="property_info.type_extractor"/>
+        </service>
 
         <service id="nav.decoder.object" class="NavBundle\Serializer\ObjectDecoder" public="false">
             <tag name="serializer.encoder" priority="-1"/>
@@ -21,7 +42,6 @@
 
         <service id="nav.denormalizer.object" class="NavBundle\Serializer\ObjectDenormalizer" public="false">
             <argument type="service" id="nav.registry"/>
-            <argument type="service" id="property_accessor"/>
             <tag name="serializer.normalizer" priority="-1"/>
         </service>
     </services>

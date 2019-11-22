@@ -15,6 +15,7 @@ namespace NavBundle\Manager;
 
 use matejsvajger\NTLMSoap\Client;
 use NavBundle\ClassMetadata\ClassMetadataInterface;
+use NavBundle\ClassMetadata\Driver\ClassMetadataDriverInterface;
 use NavBundle\Repository\RepositoryInterface;
 
 /**
@@ -23,71 +24,74 @@ use NavBundle\Repository\RepositoryInterface;
 interface ManagerInterface
 {
     /**
-     * Check if manager handle an entity class.
+     * Get an entity ClassMetadata.
      *
-     * @param string $class the entity class
+     * @param string $className the entity class
      *
-     * @return bool TRUE if manager handle the entity class, otherwise FALSE
+     * @return ClassMetadataInterface the entity ClassMetadata
      */
-    public function hasClass(string $class): bool;
+    public function getClassMetadata(string $className): ClassMetadataInterface;
 
     /**
-     * Get the related ClassMetadata.
+     * Get the driver.
      *
-     * @return ClassMetadataInterface the ClassMetadata object
+     * @return ClassMetadataDriverInterface the ClassMetadataDriver object
      */
-    public function getClassMetadata(): ClassMetadataInterface;
+    public function getDriver(): ClassMetadataDriverInterface;
 
     /**
      * Get the Client for a class.
      *
      * @return Client the Client object
      */
-    public function getClient(string $class): Client;
+    public function getClient(string $className): Client;
 
     /**
      * Get the entity repository.
      *
-     * @param string $class the entity class
+     * @param string $className the entity class
      *
      * @return RepositoryInterface the entity repository
      */
-    public function getRepository(string $class): RepositoryInterface;
-
-    /**
-     * Refresh an entity.
-     *
-     * @param object $entity the entity
-     */
-    public function refresh(object &$entity): void;
+    public function getRepository(string $className): RepositoryInterface;
 
     /**
      * Finds an entity by its primary key / identifier.
      *
-     * @param string $class the entity class
-     * @param string $id    the primary key / identifier
+     * @param string $className the entity class
+     * @param string $id        the primary key / identifier
      *
      * @return object|null the entity instance or NULL if the entity cannot be found
      */
-    public function find(string $class, string $id);
+    public function find(string $className, string $id);
 
     /**
      * Finds all entities in the repository.
      *
-     * @param string $class the entity class
+     * @param string $className the entity class
      *
      * @return array the entities
      */
-    public function findAll(string $class);
+    public function findAll(string $className);
 
     /**
      * Finds entities by a set of criteria.
      *
-     * @param string $class    the entity class
-     * @param array  $criteria the criteria
-     * @param int    $size     the size
+     * @param string $className the entity class
+     * @param array  $criteria  the criteria
+     * @param int    $size      the size
      *
      * @return array the entities
      */
-    public function findBy(string $class, array $criteria = [], int $size = 0);
+    public function findBy(string $className, array $criteria = [], int $size = 0);
+
+    /**
+     * Finds 1 entity by a set of criteria.
+     *
+     * @param string $className the entity class
+     * @param array  $criteria  the criteria
+     *
+     * @return object|null the entity
+     */
+    public function findOneBy(string $className, array $criteria = []);
 }

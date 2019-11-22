@@ -5,6 +5,6 @@ parameters:
     inferPrivatePropertyTypeFromConstructor: true
     ignoreErrors:
         - "#Call to function method_exists\\(\\) with 'Symfony\\\\\\\\Component.+' and 'getRootNode' will always evaluate to false\\.#"
-        - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::useAttributeAsKey\(\)\.#'
+        - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::children\(\)\.#'
         - '#Call to an undefined method matejsvajger\\NTLMSoap\\Client::Read\(\)\.#'
         - '#Call to an undefined method matejsvajger\\NTLMSoap\\Client::ReadMultiple\(\)\.#'

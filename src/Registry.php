@@ -13,14 +13,16 @@ declare(strict_types=1);
 
 namespace NavBundle;
 
+use NavBundle\Exception\EntityNotFoundException;
 use NavBundle\Exception\ManagerNotFoundException;
 use NavBundle\Manager\ManagerInterface;
 use NavBundle\Repository\RepositoryInterface;
+use Symfony\Component\HttpKernel\CacheWarmer\WarmableInterface;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-final class Registry implements RegistryInterface
+final class Registry implements RegistryInterface, WarmableInterface
 {
     /**
      * @var iterable|ManagerInterface[]
@@ -50,8 +52,12 @@ final class Registry implements RegistryInterface
     public function getManagerForClass(string $class): ManagerInterface
     {
         foreach ($this->managers as $manager) {
-            if ($manager->hasClass($class)) {
+            try {
+                $manager->getClassMetadata($class);
+
                 return $manager;
+            } catch (EntityNotFoundException $exception) {
+                continue;
             }
         }
 
@@ -64,5 +70,17 @@ final class Registry implements RegistryInterface
     public function getRepository(string $class): RepositoryInterface
     {
         return $this->getManager($class)->getRepository($class);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function warmUp($cacheDir): void
+    {
+        foreach ($this->managers as $manager) {
+            if ($manager instanceof WarmableInterface) {
+                $manager->warmUp($cacheDir);
+            }
+        }
     }
 }

@@ -24,7 +24,7 @@ use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 final class NavDataCollector extends DataCollector
 {
     /**
-     * @var TraceableManager[]
+     * @var iterable|TraceableManager[]
      */
     private $managers;
 

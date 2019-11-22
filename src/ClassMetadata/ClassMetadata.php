@@ -13,46 +13,43 @@ declare(strict_types=1);
 
 namespace NavBundle\ClassMetadata;
 
-use NavBundle\ClassMetadata\Driver\ClassMetadataDriverInterface;
-use NavBundle\Exception\EntityNotFoundException;
-
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
 final class ClassMetadata implements ClassMetadataInterface
 {
-    private $driver;
-    private $path;
-    private $classMetadataInfos;
+    private $repositoryClass;
+    private $namespace;
+    private $mapping;
 
-    public function __construct(ClassMetadataDriverInterface $driver, string $path)
+    public function __construct(string $repositoryClass, string $namespace, array $mapping)
     {
-        $this->driver = $driver;
-        $this->path = $path;
+        $this->repositoryClass = $repositoryClass;
+        $this->namespace = $namespace;
+        $this->mapping = $mapping;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getClassMetadataInfo(string $class): ClassMetadataInfoInterface
+    public function getRepositoryClass(): string
     {
-        if (!isset($this->getClassMetadataInfos()[$class])) {
-            throw new EntityNotFoundException("Entity $class not found.");
-        }
-
-        return $this->getClassMetadataInfos()[$class];
+        return $this->repositoryClass;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getClassMetadataInfos()
+    public function getNamespace(): string
     {
-        // todo Store objects in cache
-        if (null === $this->classMetadataInfos) {
-            $this->classMetadataInfos = $this->driver->getEntities($this->path);
-        }
+        return $this->namespace;
+    }
 
-        return $this->classMetadataInfos;
+    /**
+     * {@inheritdoc}
+     */
+    public function getMapping(): array
+    {
+        return $this->mapping;
     }
 }

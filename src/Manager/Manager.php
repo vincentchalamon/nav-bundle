@@ -15,99 +15,101 @@ namespace NavBundle\Manager;
 
 use matejsvajger\NTLMSoap\Client;
 use matejsvajger\NTLMSoap\Common\NTLMConfig;
+use NavBundle\ClassMetadata\ClassMetadata;
 use NavBundle\ClassMetadata\ClassMetadataInterface;
+use NavBundle\ClassMetadata\Driver\ClassMetadataDriverInterface;
 use NavBundle\Exception\EntityNotFoundException;
-use NavBundle\Exception\EntityNotManagedException;
 use NavBundle\Repository\RepositoryInterface;
 use NavBundle\Serializer\ObjectDecoder;
-use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
+use Symfony\Component\Config\ConfigCacheFactoryInterface;
+use Symfony\Component\Config\ConfigCacheInterface;
+use Symfony\Component\HttpKernel\CacheWarmer\WarmableInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-class Manager implements ManagerInterface
+class Manager implements ManagerInterface, WarmableInterface
 {
-    private $classMetadata;
+    private $driver;
     private $serializer;
-    private $propertyAccessor;
+    private $configCacheFactory;
     private $repositories;
     private $clients;
     private $wsdl;
     private $options;
     private $soapOptions;
+    private $cacheDir;
     private $cachedObjects = [];
+    private $configCache;
+    private $classMetadatas;
 
     public function __construct(
-        ClassMetadataInterface $classMetadata,
+        ClassMetadataDriverInterface $driver,
         SerializerInterface $serializer,
-        PropertyAccessorInterface $propertyAccessor,
+        ConfigCacheFactoryInterface $configCacheFactory,
         \Traversable $repositories,
         \Traversable $clients,
         string $wsdl,
         array $options,
-        array $soapOptions
+        array $soapOptions,
+        string $cacheDir
     ) {
-        $this->classMetadata = $classMetadata;
+        $this->driver = $driver;
         $this->serializer = $serializer;
-        $this->propertyAccessor = $propertyAccessor;
+        $this->configCacheFactory = $configCacheFactory;
         $this->repositories = iterator_to_array($repositories);
         $this->clients = iterator_to_array($clients);
         $this->wsdl = $wsdl;
         $this->options = $options;
         $this->soapOptions = $soapOptions;
+        $this->cacheDir = $cacheDir;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function hasClass(string $class): bool
+    public function getClassMetadata(string $className): ClassMetadataInterface
     {
-        try {
-            $this->classMetadata->getClassMetadataInfo($class);
-
-            return true;
-        } catch (EntityNotFoundException $exception) {
-            return false;
+        if (!isset($this->getClassMetadatas()[$className])) {
+            throw new EntityNotFoundException("Entity $className not found.");
         }
+
+        return $this->getClassMetadatas()[$className];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getClassMetadata(): ClassMetadataInterface
+    public function getDriver(): ClassMetadataDriverInterface
     {
-        return $this->classMetadata;
+        return $this->driver;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getClient(string $class): Client
+    public function getClient(string $className): Client
     {
-        if (!isset($this->clients[$class])) {
-            $this->clients[$class] = new Client(
-                $this->wsdl.$this->classMetadata->getClassMetadataInfo($class)->getNamespace(),
+        if (!isset($this->clients[$className])) {
+            $this->clients[$className] = new Client(
+                $this->wsdl.$this->getClassMetadata($className)->getNamespace(),
                 new NTLMConfig($this->options),
                 $this->soapOptions
             );
         }
 
-        return $this->clients[$class];
+        return $this->clients[$className];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getRepository(string $class): RepositoryInterface
+    public function getRepository(string $className): RepositoryInterface
     {
-        if (!$this->hasClass($class)) {
-            throw new EntityNotFoundException();
-        }
-
-        $repositoryClass = $this->classMetadata->getClassMetadataInfo($class)->getRepositoryClass();
+        $repositoryClass = $this->getClassMetadata($className)->getRepositoryClass();
         if (!isset($this->repositories[$repositoryClass])) {
-            $this->repositories[$repositoryClass] = new $repositoryClass($this, $class);
+            $this->repositories[$repositoryClass] = new $repositoryClass($this, $className);
         }
 
         return $this->repositories[$repositoryClass];
@@ -116,50 +118,91 @@ class Manager implements ManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function refresh(object &$entity): void
+    public function find(string $className, string $id)
     {
-        $class = \get_class($entity);
-        $classMetadataInfo = $this->classMetadata->getClassMetadataInfo($class);
-        $id = $this->propertyAccessor->getValue($entity, $classMetadataInfo->getIdentifier());
-        if (!$id || !isset($this->cachedObjects[$class][$id])) {
-            throw new EntityNotManagedException();
-        }
-
-        unset($this->cachedObjects[$class][$id]);
-        $entity = $this->find($class, $id);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function find(string $class, string $id)
-    {
-        if (!isset($this->cachedObjects[$class][$id])) {
-            $this->cachedObjects[$class][$id] = $this->serializer->deserialize($this->getClient($class)->Read([
+        if (!isset($this->cachedObjects[$className][$id])) {
+            $this->cachedObjects[$className][$id] = $this->serializer->deserialize($this->getClient($className)->Read([
                 'No' => $id,
-            ]), $class, ObjectDecoder::FORMAT);
+            ]), $className, ObjectDecoder::FORMAT);
         }
 
-        return $this->cachedObjects[$class][$id];
+        return $this->cachedObjects[$className][$id];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function findAll(string $class)
+    public function findAll(string $className)
     {
-        return $this->findBy($class);
+        return $this->findBy($className);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function findBy(string $class, array $criteria = [], int $size = 0)
+    public function findBy(string $className, array $criteria = [], int $size = 0)
     {
-        // todo Store deserialized objects in cache
-        return $this->serializer->deserialize($this->getClient($class)->ReadMultiple([
+        return $this->serializer->deserialize($this->getClient($className)->ReadMultiple([
             'filter' => $criteria,
             'size' => $size,
-        ]), $class.'[]', ObjectDecoder::FORMAT);
+        ]), $className.'[]', ObjectDecoder::FORMAT);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findOneBy(string $className, array $criteria = [])
+    {
+        return $this->findBy($className, $criteria, 1)[0] ?? null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function warmUp($cacheDir): void
+    {
+        $this->getConfigCache();
+    }
+
+    /**
+     * @return ClassMetadataInterface[]
+     */
+    private function getClassMetadatas(): iterable
+    {
+        if (null !== $this->classMetadatas) {
+            return $this->classMetadatas;
+        }
+
+        $mappings = require_once $this->getConfigCache()->getPath();
+        foreach ($mappings as $className => $mapping) {
+            $this->classMetadatas[$className] = new ClassMetadata(
+                $mapping['repositoryClass'],
+                $mapping['namespace'],
+                $mapping['mapping']
+            );
+        }
+
+        return $this->classMetadatas;
+    }
+
+    private function getConfigCache(): ConfigCacheInterface
+    {
+        if (null !== $this->configCache) {
+            return $this->configCache;
+        }
+
+        $this->configCache = $this->configCacheFactory->cache($this->cacheDir.'/classMetadata.php', function (ConfigCacheInterface $cache): void {
+            $cache->write(sprintf(<<<'PHP'
+<?php
+
+// This file has been auto-generated by the NavBundle for internal use.
+// Returns the ClassMetadata infos.
+
+return %s;
+PHP
+                , var_export($this->driver->getEntities(), true)));
+        });
+
+        return $this->configCache;
     }
 }

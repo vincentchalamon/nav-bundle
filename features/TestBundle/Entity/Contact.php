@@ -16,7 +16,7 @@ namespace NavBundle\E2e\TestBundle\Entity;
 use NavBundle\Annotation as Nav;
 
 /**
- * @Nav\Entity("INTWS_002_CONT")
+ * @Nav\Entity(namespace="INTWS_002_CONT")
  */
 final class Contact
 {
@@ -24,6 +24,7 @@ final class Contact
      * @var string
      *
      * @Nav\Column(name="No")
+     * @Nav\Id
      */
     public $no;
 

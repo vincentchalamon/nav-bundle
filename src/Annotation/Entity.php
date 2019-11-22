@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace NavBundle\Annotation;
 
-use NavBundle\Exception\InvalidArgumentException;
 use NavBundle\Repository\Repository;
 
 /**
@@ -33,17 +32,4 @@ final class Entity
      * @var string
      */
     public $namespace;
-
-    public function __construct(array $data)
-    {
-        if ($data['namespace'] ?? null) {
-            $data['value'] = $data['namespace'];
-        }
-
-        if (!isset($data['value']) || !$data['value']) {
-            throw new InvalidArgumentException(sprintf('Parameter of annotation "%s" cannot be empty.', \get_class($this)));
-        }
-
-        $this->namespace = (string) $data['value'];
-    }
 }
