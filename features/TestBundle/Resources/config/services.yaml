@@ -7,3 +7,7 @@ services:
   NavBundle\E2e\TestBundle\:
     resource: '../../*'
     exclude: '../../{DependencyInjection,TestBundle.php}'
+
+  NavBundle\E2e\TestBundle\Controller\:
+    resource: '../../Controller/*'
+    tags: ['controller.service_arguments']

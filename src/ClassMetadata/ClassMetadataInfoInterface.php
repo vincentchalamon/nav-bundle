@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace NavBundle\ClassMetadata;
 
+use NavBundle\Exception\MissingIdentifierException;
+
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
@@ -31,4 +33,20 @@ interface ClassMetadataInfoInterface
      * @return string the entity NAV namespace
      */
     public function getNamespace(): string;
+
+    /**
+     * Get the entity mapping.
+     *
+     * @return array the entity mapping
+     */
+    public function getMapping(): array;
+
+    /**
+     * Get the entity identifier property name.
+     *
+     * @throws MissingIdentifierException
+     *
+     * @return string the entity identifier property name
+     */
+    public function getIdentifier(): string;
 }

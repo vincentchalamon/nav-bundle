@@ -48,6 +48,7 @@ final class ClassMetadata implements ClassMetadataInterface
      */
     public function getClassMetadataInfos()
     {
+        // todo Store objects in cache
         if (null === $this->classMetadataInfos) {
             $this->classMetadataInfos = $this->driver->getEntities($this->path);
         }

@@ -32,6 +32,11 @@ final class Kernel extends BaseKernel
             new NavBundle\E2e\TestBundle\TestBundle(),
         ];
 
+        if ($this->isDebug()) {
+            $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
+            $bundles[] = new Symfony\Bundle\TwigBundle\TwigBundle();
+        }
+
         return $bundles;
     }
 
@@ -52,27 +57,46 @@ final class Kernel extends BaseKernel
 
     protected function configureRoutes(RouteCollectionBuilder $routes): void
     {
+        $routes->import('@TestBundle/Controller', null, 'annotation');
+        if ($this->isDebug()) {
+            $routes->import('@WebProfilerBundle/Resources/config/routing/wdt.xml', '/_wdt');
+            $routes->import('@WebProfilerBundle/Resources/config/routing/profiler.xml', '/_profiler');
+            $routes->import('@TwigBundle/Resources/config/routing/errors.xml', '/_error');
+        }
     }
 
     protected function configureContainer(ContainerBuilder $c, LoaderInterface $loader): void
     {
         $c->loadFromExtension('framework', [
             'secret' => 'NavBundle',
-            'secrets' => false,
             'test' => true,
         ]);
 
+        $c->loadFromExtension('twig', [
+            'paths' => ['%kernel.project_dir%/TestBundle/Resources/views'],
+        ]);
+
         $c->loadFromExtension('nav', [
+            'enable_profiler' => '%kernel.debug%',
             'wsdl' => $_SERVER['NAV_WSDL'],
             'path' => '%kernel.project_dir%/TestBundle/Entity',
+            'domain' => 'CORUM',
+            'username' => $_SERVER['NAV_LOGIN'],
+            'password' => $_SERVER['NAV_PASSWORD'],
             'soap_options' => [
                 'cache_wsdl' => false,
-                'trace' => true,
-                'exception' => true,
-                'domain' => 'CORUM',
-                'username' => $_SERVER['NAV_LOGIN'],
-                'password' => $_SERVER['NAV_PASSWORD'],
+                'exception' => '%kernel.debug%',
             ],
         ]);
+
+        if ($this->isDebug()) {
+            $c->loadFromExtension('framework', [
+                'profiler' => ['only_exceptions' => false],
+            ]);
+
+            $c->loadFromExtension('web_profiler', [
+                'toolbar' => '%kernel.debug%',
+            ]);
+        }
     }
 }

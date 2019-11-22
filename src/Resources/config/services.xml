@@ -14,5 +14,15 @@
         </service>
         <service id="NavBundle\Registry" alias="nav.registry" public="true"/>
         <service id="NavBundle\RegistryInterface" alias="nav.registry" public="true"/>
+
+        <service id="nav.decoder.object" class="NavBundle\Serializer\ObjectDecoder" public="false">
+            <tag name="serializer.encoder" priority="-1"/>
+        </service>
+
+        <service id="nav.denormalizer.object" class="NavBundle\Serializer\ObjectDenormalizer" public="false">
+            <argument type="service" id="nav.registry"/>
+            <argument type="service" id="property_accessor"/>
+            <tag name="serializer.normalizer" priority="-1"/>
+        </service>
     </services>
 </container>

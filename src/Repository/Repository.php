@@ -21,12 +21,12 @@ use NavBundle\Manager\ManagerInterface;
 class Repository implements RepositoryInterface
 {
     protected $manager;
-    protected $client;
+    protected $class;
 
-    public function __construct(ManagerInterface $manager, \SoapClient $client)
+    public function __construct(ManagerInterface $manager, string $class)
     {
         $this->manager = $manager;
-        $this->client = $client;
+        $this->class = $class;
     }
 
     /**
@@ -34,7 +34,7 @@ class Repository implements RepositoryInterface
      */
     public function find(string $no)
     {
-        return $this->manager->find($this->client, $no);
+        return $this->manager->find($this->class, $no);
     }
 
     /**
@@ -42,7 +42,7 @@ class Repository implements RepositoryInterface
      */
     public function findAll()
     {
-        return $this->manager->findAll($this->client);
+        return $this->manager->findAll($this->class);
     }
 
     /**
@@ -50,6 +50,6 @@ class Repository implements RepositoryInterface
      */
     public function findBy(array $criteria = [], int $size = 0)
     {
-        return $this->manager->findBy($this->client, $criteria, $size);
+        return $this->manager->findBy($this->class, $criteria, $size);
     }
 }

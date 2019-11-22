@@ -30,6 +30,10 @@ final class Column
 
     public function __construct(array $data)
     {
+        if ($data['name'] ?? null) {
+            $data['value'] = $data['name'];
+        }
+
         if (!isset($data['value']) || !$data['value']) {
             throw new InvalidArgumentException(sprintf('Parameter of annotation "%s" cannot be empty.', \get_class($this)));
         }

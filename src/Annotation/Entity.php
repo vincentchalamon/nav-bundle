@@ -36,6 +36,10 @@ final class Entity
 
     public function __construct(array $data)
     {
+        if ($data['namespace'] ?? null) {
+            $data['value'] = $data['namespace'];
+        }
+
         if (!isset($data['value']) || !$data['value']) {
             throw new InvalidArgumentException(sprintf('Parameter of annotation "%s" cannot be empty.', \get_class($this)));
         }

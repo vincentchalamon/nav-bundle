@@ -37,14 +37,14 @@ final class Contact
     /**
      * @var string
      *
-     * @Nav\Column(name="Email")
+     * @Nav\Column(name="E_Mail")
      */
     public $email;
 
     /**
      * @var string
      *
-     * @Nav\Column(name="Phone")
+     * @Nav\Column(name="Mobile_Phone_No")
      */
     public $phone;
 

@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace NavBundle\ClassMetadata;
 
+use NavBundle\Exception\MissingIdentifierException;
+
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
@@ -20,11 +22,13 @@ final class ClassMetadataInfo implements ClassMetadataInfoInterface
 {
     private $repositoryClass;
     private $namespace;
+    private $mapping;
 
-    public function __construct(string $repositoryClass, string $namespace)
+    public function __construct(string $repositoryClass, string $namespace, array $mapping)
     {
         $this->repositoryClass = $repositoryClass;
         $this->namespace = $namespace;
+        $this->mapping = $mapping;
     }
 
     /**
@@ -41,5 +45,27 @@ final class ClassMetadataInfo implements ClassMetadataInfoInterface
     public function getNamespace(): string
     {
         return $this->namespace;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMapping(): array
+    {
+        return $this->mapping;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifier(): string
+    {
+        foreach ($this->mapping as $name => $mapping) {
+            if (true === $mapping['identifier']) {
+                return $name;
+            }
+        }
+
+        throw new MissingIdentifierException();
     }
 }

@@ -14,11 +14,11 @@ declare(strict_types=1);
 namespace NavBundle\ClassMetadata\Driver;
 
 use Doctrine\Common\Annotations\Reader;
+use NavBundle\Annotation\Column;
 use NavBundle\Annotation\Entity;
+use NavBundle\Annotation\Id;
 use NavBundle\ClassMetadata\ClassMetadataInfo;
-use NavBundle\E2e\TestBundle\Entity\Contact;
 use NavBundle\Exception\PathNotFoundException;
-use NavBundle\Repository\Repository;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
@@ -41,11 +41,6 @@ final class AnnotationClassMetadataDriver implements ClassMetadataDriverInterfac
             throw new PathNotFoundException();
         }
 
-        // todo Implement cache using kernel.cache_warmer tag
-        return [
-            Contact::class => new ClassMetadataInfo(Repository::class, 'INTWS_002_CONT'),
-        ];
-
         $iterator = new \RegexIterator(
             new \RecursiveIteratorIterator(
                 new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS),
@@ -65,9 +60,20 @@ final class AnnotationClassMetadataDriver implements ClassMetadataDriverInterfac
                     continue;
                 }
 
-                /** @var Entity $annotation */
-                if ($annotation = $this->reader->getClassAnnotation($rc, Entity::class)) {
-                    $classes[$rc->getName()] = new ClassMetadataInfo($annotation->repositoryClass, $annotation->namespace);
+                /** @var Entity $entity */
+                if ($entity = $this->reader->getClassAnnotation($rc, Entity::class)) {
+                    $mapping = [];
+                    foreach ($rc->getProperties() as $property) {
+                        /** @var Column $column */
+                        if ($column = $this->reader->getPropertyAnnotation($property, Column::class)) {
+                            $mapping[$property->getName()] = [
+                                'name' => $column->name,
+                                'identifier' => $this->reader->getPropertyAnnotation($property, Id::class),
+                            ];
+                        }
+                    }
+
+                    $classes[$rc->getName()] = new ClassMetadataInfo($entity->repositoryClass, $entity->namespace, $mapping);
                 }
             }
         }
