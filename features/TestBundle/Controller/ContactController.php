@@ -25,15 +25,15 @@ use Twig\Environment;
 final class ContactController
 {
     /**
-     * @Route("/contact/{no}", name="contact", methods={"GET"})
+     * @Route("/contact/{id}", name="contact", methods={"GET"}, requirements={"id"=".*"})
      */
-    public function __invoke(Registry $registry, Environment $twig, string $no): Response
+    public function __invoke(Registry $registry, Environment $twig, string $id): Response
     {
         return new Response($twig->render('contact.html.twig', [
             'contact' => $registry
                 ->getManagerForClass(Contact::class)
                 ->getRepository(Contact::class)
-                ->find($no),
+                ->find($id),
         ]));
     }
 }

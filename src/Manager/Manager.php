@@ -13,11 +13,18 @@ declare(strict_types=1);
 
 namespace NavBundle\Manager;
 
+use jamesiarmes\PhpNtlm\SoapClient;
 use matejsvajger\NTLMSoap\Client;
-use matejsvajger\NTLMSoap\Common\NTLMConfig;
 use NavBundle\ClassMetadata\ClassMetadata;
 use NavBundle\ClassMetadata\ClassMetadataInterface;
 use NavBundle\ClassMetadata\Driver\ClassMetadataDriverInterface;
+use NavBundle\Event\PostCreateEvent;
+use NavBundle\Event\PostDeleteEvent;
+use NavBundle\Event\PostLoadEvent;
+use NavBundle\Event\PostUpdateEvent;
+use NavBundle\Event\PreCreateEvent;
+use NavBundle\Event\PreDeleteEvent;
+use NavBundle\Event\PreUpdateEvent;
 use NavBundle\Exception\EntityNotFoundException;
 use NavBundle\Repository\RepositoryInterface;
 use NavBundle\Serializer\ObjectDecoder;
@@ -25,6 +32,7 @@ use Symfony\Component\Config\ConfigCacheFactoryInterface;
 use Symfony\Component\Config\ConfigCacheInterface;
 use Symfony\Component\HttpKernel\CacheWarmer\WarmableInterface;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
@@ -34,13 +42,18 @@ class Manager implements ManagerInterface, WarmableInterface
     private $driver;
     private $serializer;
     private $configCacheFactory;
+    private $dispatcher;
+    /**
+     * @var iterable|RepositoryInterface[]
+     */
     private $repositories;
+    /**
+     * @var iterable|\SoapClient[]
+     */
     private $clients;
     private $wsdl;
-    private $options;
     private $soapOptions;
     private $cacheDir;
-    private $cachedObjects = [];
     private $configCache;
     private $classMetadatas;
 
@@ -48,20 +61,18 @@ class Manager implements ManagerInterface, WarmableInterface
         ClassMetadataDriverInterface $driver,
         SerializerInterface $serializer,
         ConfigCacheFactoryInterface $configCacheFactory,
-        \Traversable $repositories,
-        \Traversable $clients,
+        EventDispatcherInterface $dispatcher,
+        \IteratorAggregate $repositories,
         string $wsdl,
-        array $options,
         array $soapOptions,
         string $cacheDir
     ) {
         $this->driver = $driver;
         $this->serializer = $serializer;
         $this->configCacheFactory = $configCacheFactory;
-        $this->repositories = iterator_to_array($repositories);
-        $this->clients = iterator_to_array($clients);
+        $this->dispatcher = $dispatcher;
+        $this->repositories = iterator_to_array($repositories->getIterator());
         $this->wsdl = $wsdl;
-        $this->options = $options;
         $this->soapOptions = $soapOptions;
         $this->cacheDir = $cacheDir;
     }
@@ -89,12 +100,11 @@ class Manager implements ManagerInterface, WarmableInterface
     /**
      * {@inheritdoc}
      */
-    public function getClient(string $className): Client
+    public function getClient(string $className): \SoapClient
     {
         if (!isset($this->clients[$className])) {
-            $this->clients[$className] = new Client(
+            $this->clients[$className] = new SoapClient(
                 $this->wsdl.$this->getClassMetadata($className)->getNamespace(),
-                new NTLMConfig($this->options),
                 $this->soapOptions
             );
         }
@@ -118,21 +128,23 @@ class Manager implements ManagerInterface, WarmableInterface
     /**
      * {@inheritdoc}
      */
-    public function find(string $className, string $id)
+    public function find(string $className, string $id): ?object
     {
-        if (!isset($this->cachedObjects[$className][$id])) {
-            $this->cachedObjects[$className][$id] = $this->serializer->deserialize($this->getClient($className)->Read([
-                'No' => $id,
-            ]), $className, ObjectDecoder::FORMAT);
-        }
+        // todo Add logs
+        // todo Get `No` by Id annotation
+        $response = $this->getClient($className)->Read([
+            'No' => $id,
+        ]);
+        $entity = $this->serializer->deserialize($response, $className, ObjectDecoder::FORMAT);
+        $this->dispatcher->dispatch(new PostLoadEvent($this, $entity));
 
-        return $this->cachedObjects[$className][$id];
+        return $entity;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function findAll(string $className)
+    public function findAll(string $className): \Generator
     {
         return $this->findBy($className);
     }
@@ -140,21 +152,75 @@ class Manager implements ManagerInterface, WarmableInterface
     /**
      * {@inheritdoc}
      */
-    public function findBy(string $className, array $criteria = [], int $size = 0)
+    public function findBy(string $className, array $criteria = [], int $size = 0): \Generator
     {
+        // todo Add logs
         // todo Transform criteria ['name' => 'foo'] => [['Field' => 'Name', 'Criteria' => 'foo']]
-        return $this->serializer->deserialize($this->getClient($className)->ReadMultiple([
+        $entities = $this->serializer->deserialize($this->getClient($className)->ReadMultiple([
             'filter' => $criteria,
             'size' => $size,
         ]), $className.'[]', ObjectDecoder::FORMAT);
+
+        foreach ($entities as $entity) {
+            yield $entity;
+            $this->dispatcher->dispatch(new PostLoadEvent($this, $entity));
+        }
     }
 
     /**
      * {@inheritdoc}
      */
-    public function findOneBy(string $className, array $criteria = [])
+    public function findOneBy(string $className, array $criteria = []): ?object
     {
-        return $this->findBy($className, $criteria, 1)[0] ?? null;
+        return $this->findBy($className, $criteria, 1)->current();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function create(object $entity): bool
+    {
+        // todo Add logs
+        $this->dispatcher->dispatch(new PreCreateEvent($this, $entity));
+        // todo Serialize data to NAV
+        $this->getClient(\get_class($entity))->Create($this->serializer->serialize($entity, '???'));
+        // todo Deserialize response
+        // todo Set primary key on entity
+        $this->dispatcher->dispatch(new PostCreateEvent($this, $entity));
+
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function update(object $entity): bool
+    {
+        // todo Add logs
+        $this->dispatcher->dispatch(new PreUpdateEvent($this, $entity));
+        // todo Serialize data to NAV
+        $this->getClient(\get_class($entity))->Update($this->serializer->serialize($entity, '???'));
+        // todo Deserialize response
+        $this->dispatcher->dispatch(new PostUpdateEvent($this, $entity));
+
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function delete(object $entity): bool
+    {
+        // todo Add logs
+        $this->dispatcher->dispatch(new PreDeleteEvent($this, $entity));
+        // todo Get Key from entity
+        $this->getClient(\get_class($entity))->Delete([
+            'Key' => $entity->getKey(),
+        ]);
+        // todo Deserialize response
+        $this->dispatcher->dispatch(new PostDeleteEvent($this, $entity));
+
+        return false;
     }
 
     /**

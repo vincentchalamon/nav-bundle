@@ -13,11 +13,11 @@ declare(strict_types=1);
 
 namespace NavBundle\DependencyInjection;
 
-use matejsvajger\NTLMSoap\Model\BaseClient;
 use NavBundle\Debug\Manager\TraceableManager;
 use NavBundle\Manager\Manager;
 use NavBundle\Manager\ManagerInterface;
 use NavBundle\Repository\RepositoryInterface;
+use NavBundle\Type\TypeInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\Argument\TaggedIteratorArgument;
@@ -44,8 +44,8 @@ final class NavExtension extends Extension
             ->registerForAutoconfiguration(ManagerInterface::class)
             ->addTag('nav.manager');
         $container
-            ->registerForAutoconfiguration(BaseClient::class)
-            ->addTag('nav.client');
+            ->registerForAutoconfiguration(TypeInterface::class)
+            ->addTag('nav.type');
 
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
@@ -62,21 +62,22 @@ final class NavExtension extends Extension
                 ->setArgument('$path', $options['path'])
                 ->setPublic(false);
 
-            if ($config['enable_profiler']) {
-                $options['soap_options']['trace'] = true;
-            }
             $container
                 ->setDefinition("nav.manager.$name", new ChildDefinition('nav.abstract_manager'))
                 ->setPublic(true)
                 ->addTag('nav.manager', ['name' => $name])
                 ->setArgument('$driver', new Reference("nav.class_metadata_driver.$name"))
                 ->setArgument('$wsdl', $options['wsdl'])
-                ->setArgument('$options', [
-                    'username' => $options['username'],
+                ->setArgument('$soapOptions', [
+                    'user' => $options['username'],
                     'password' => $options['password'],
-                    'domain' => $options['domain'],
-                ])
-                ->setArgument('$soapOptions', $options['soap_options']);
+                ] + $options['soap_options'] + [
+                    'cache_wsdl' => WSDL_CACHE_NONE,
+                    'exception' => true,
+                    'soap_version' => SOAP_1_2,
+                    'connection_timeout' => 120,
+                    'curlopts' => [CURLOPT_SSL_VERIFYPEER => false],
+                ]);
             if (!$container->hasAlias('nav.manager')) {
                 $container->setAlias('nav.manager', new Alias("nav.manager.$name"));
                 $container->setAlias(Manager::class, new Alias("nav.manager.$name"));
@@ -87,7 +88,7 @@ final class NavExtension extends Extension
                 $container
                     ->getDefinition("nav.manager.$name")
                     ->setClass(TraceableManager::class)
-                    ->setArgument('$stopwatch', new Reference('debug.stopwatch'));
+                    ->addMethodCall('setStopwatch', [new Reference('debug.stopwatch')]);
             }
         }
 

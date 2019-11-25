@@ -18,11 +18,10 @@
             <argument/> <!-- driver -->
             <argument type="service" id="serializer"/>
             <argument type="service" id="config_cache_factory"/>
+            <argument type="service" id="event_dispatcher"/>
             <argument type="tagged" tag="nav.repository"/>
-            <argument type="tagged" tag="nav.client"/>
             <argument/> <!-- WSDL -->
-            <argument/> <!-- options -->
-            <argument/> <!-- SOAP options -->
+            <argument/> <!-- authNtlm -->
             <argument>%kernel.cache_dir%/nav</argument>
         </service>
 
@@ -31,8 +30,37 @@
             <tag name="kernel.cache_warmer"/>
         </service>
 
+        <service id="nav.type_factory" class="NavBundle\Type\TypeFactory" public="false">
+            <argument type="tagged" tag="nav.type"/>
+        </service>
+
+        <service id="nav.type.array" class="NavBundle\Type\ArrayType" public="false">
+            <tag name="nav.type"/>
+        </service>
+
+        <service id="nav.type.bool" class="NavBundle\Type\BoolType" public="false">
+            <tag name="nav.type"/>
+        </service>
+
+        <service id="nav.type.date" class="NavBundle\Type\DateType" public="false">
+            <tag name="nav.type"/>
+        </service>
+
+        <service id="nav.type.float" class="NavBundle\Type\FloatType" public="false">
+            <tag name="nav.type"/>
+        </service>
+
+        <service id="nav.type.int" class="NavBundle\Type\IntType" public="false">
+            <tag name="nav.type"/>
+        </service>
+
+        <service id="nav.type.string" class="NavBundle\Type\StringType" public="false">
+            <tag name="nav.type"/>
+        </service>
+
         <service id="nav.property_info.class_metadata_extractor" class="NavBundle\ClassMetadata\ClassMetadataExtractor" public="false">
             <argument type="service" id="nav.registry"/>
+            <argument type="service" id="nav.type_factory"/>
             <tag name="property_info.type_extractor"/>
         </service>
 

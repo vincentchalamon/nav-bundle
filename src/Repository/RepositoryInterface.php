@@ -19,6 +19,13 @@ namespace NavBundle\Repository;
 interface RepositoryInterface
 {
     /**
+     * Get the repository entity class name.
+     *
+     * @return string the entity class name
+     */
+    public function getClass();
+
+    /**
      * Finds an entity by its primary key / identifier.
      *
      * @param string $no the primary key / identifier

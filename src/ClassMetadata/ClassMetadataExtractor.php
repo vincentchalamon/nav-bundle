@@ -15,6 +15,7 @@ namespace NavBundle\ClassMetadata;
 
 use NavBundle\Exception\ExceptionInterface;
 use NavBundle\RegistryInterface;
+use NavBundle\Type\TypeFactory;
 use Symfony\Component\PropertyInfo\PropertyTypeExtractorInterface;
 use Symfony\Component\PropertyInfo\Type;
 
@@ -24,10 +25,12 @@ use Symfony\Component\PropertyInfo\Type;
 final class ClassMetadataExtractor implements PropertyTypeExtractorInterface
 {
     private $registry;
+    private $typeFactory;
 
-    public function __construct(RegistryInterface $registry)
+    public function __construct(RegistryInterface $registry, TypeFactory $type)
     {
         $this->registry = $registry;
+        $this->typeFactory = $type;
     }
 
     /**
@@ -37,13 +40,9 @@ final class ClassMetadataExtractor implements PropertyTypeExtractorInterface
     {
         try {
             $mapping = $this->registry->getManagerForClass($className)->getClassMetadata($className)->getMapping()[$property];
-            $class = null;
-            if (\in_array(strtolower($mapping['type']), ['date', 'datetime'], true)) {
-                $mapping['type'] = Type::BUILTIN_TYPE_OBJECT;
-                $class = \DateTime::class;
-            }
+            $type = $this->typeFactory->getType($mapping['type']);
 
-            return [new Type($mapping['type'], $mapping['nullable'], $class)];
+            return [new Type($type->getBuiltInType(), $mapping['nullable'], $type->getClass())];
         } catch (ExceptionInterface $exception) {
             return null;
         }

@@ -32,6 +32,14 @@ class Repository implements RepositoryInterface
     /**
      * {@inheritdoc}
      */
+    public function getClass(): string
+    {
+        return $this->className;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function find(string $no)
     {
         return $this->manager->find($this->className, $no);

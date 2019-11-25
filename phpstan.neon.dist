@@ -8,3 +8,6 @@ parameters:
         - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::children\(\)\.#'
         - '#Call to an undefined method matejsvajger\\NTLMSoap\\Client::Read\(\)\.#'
         - '#Call to an undefined method matejsvajger\\NTLMSoap\\Client::ReadMultiple\(\)\.#'
+        - '#Call to an undefined method matejsvajger\\NTLMSoap\\Client::Create\(\)\.#'
+        - '#Call to an undefined method matejsvajger\\NTLMSoap\\Client::Update\(\)\.#'
+        - '#Call to an undefined method matejsvajger\\NTLMSoap\\Client::Delete\(\)\.#'

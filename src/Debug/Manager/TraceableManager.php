@@ -13,10 +13,7 @@ declare(strict_types=1);
 
 namespace NavBundle\Debug\Manager;
 
-use NavBundle\ClassMetadata\Driver\ClassMetadataDriverInterface;
 use NavBundle\Manager\Manager;
-use Symfony\Component\Config\ConfigCacheFactoryInterface;
-use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 use Symfony\Component\Stopwatch\StopwatchEvent;
 
@@ -25,29 +22,21 @@ use Symfony\Component\Stopwatch\StopwatchEvent;
  */
 final class TraceableManager extends Manager
 {
+    /**
+     * @var Stopwatch
+     */
     private $stopwatch;
     private $calls = [];
 
-    public function __construct(
-        ClassMetadataDriverInterface $driver,
-        SerializerInterface $serializer,
-        ConfigCacheFactoryInterface $configCacheFactory,
-        \Traversable $repositories,
-        \Traversable $clients,
-        string $wsdl,
-        array $options,
-        array $soapOptions,
-        string $cacheDir,
-        Stopwatch $stopwatch
-    ) {
-        parent::__construct($driver, $serializer, $configCacheFactory, $repositories, $clients, $wsdl, $options, $soapOptions, $cacheDir);
+    public function setStopwatch(Stopwatch $stopwatch): void
+    {
         $this->stopwatch = $stopwatch;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function find(string $className, string $id)
+    public function find(string $className, string $id): ?object
     {
         $this->stopwatch->start('nav.find');
         $result = parent::find($className, $id);
@@ -59,25 +48,33 @@ final class TraceableManager extends Manager
     /**
      * {@inheritdoc}
      */
-    public function findAll(string $className)
+    public function findAll(string $className): \Generator
     {
         $this->stopwatch->start('nav.findAll');
-        $results = parent::findAll($className);
+        yield parent::findAll($className);
         $this->registerCall($this->stopwatch->stop('nav.findAll'), $this->getClient($className));
-
-        return $results;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function findBy(string $className, array $criteria = [], int $size = 0)
+    public function findBy(string $className, array $criteria = [], int $size = 0): \Generator
     {
         $this->stopwatch->start('nav.findBy');
-        $results = parent::findBy($className, $criteria, $size);
+        yield parent::findBy($className, $criteria, $size);
         $this->registerCall($this->stopwatch->stop('nav.findBy'), $this->getClient($className));
+    }
 
-        return $results;
+    /**
+     * {@inheritdoc}
+     */
+    public function findOneBy(string $className, array $criteria = []): ?object
+    {
+        $this->stopwatch->start('nav.findOneBy');
+        $result = parent::findOneBy($className, $criteria);
+        $this->registerCall($this->stopwatch->stop('nav.findOneBy'), $this->getClient($className));
+
+        return $result;
     }
 
     public function getDuration(): float

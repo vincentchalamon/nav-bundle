@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace NavBundle\Manager;
 
-use matejsvajger\NTLMSoap\Client;
 use NavBundle\ClassMetadata\ClassMetadataInterface;
 use NavBundle\ClassMetadata\Driver\ClassMetadataDriverInterface;
 use NavBundle\Repository\RepositoryInterface;
@@ -30,21 +29,21 @@ interface ManagerInterface
      *
      * @return ClassMetadataInterface the entity ClassMetadata
      */
-    public function getClassMetadata(string $className): ClassMetadataInterface;
+    public function getClassMetadata(string $className);
 
     /**
      * Get the driver.
      *
      * @return ClassMetadataDriverInterface the ClassMetadataDriver object
      */
-    public function getDriver(): ClassMetadataDriverInterface;
+    public function getDriver();
 
     /**
-     * Get the Client for a class.
+     * Get the client for a class.
      *
-     * @return Client the Client object
+     * @return \SoapClient the client object
      */
-    public function getClient(string $className): Client;
+    public function getClient(string $className);
 
     /**
      * Get the entity repository.
@@ -53,7 +52,7 @@ interface ManagerInterface
      *
      * @return RepositoryInterface the entity repository
      */
-    public function getRepository(string $className): RepositoryInterface;
+    public function getRepository(string $className);
 
     /**
      * Finds an entity by its primary key / identifier.
@@ -70,7 +69,7 @@ interface ManagerInterface
      *
      * @param string $className the entity class
      *
-     * @return array the entities
+     * @return iterable the entities
      */
     public function findAll(string $className);
 
@@ -81,7 +80,7 @@ interface ManagerInterface
      * @param array  $criteria  the criteria
      * @param int    $size      the size
      *
-     * @return array the entities
+     * @return iterable the entities
      */
     public function findBy(string $className, array $criteria = [], int $size = 0);
 
@@ -94,4 +93,31 @@ interface ManagerInterface
      * @return object|null the entity
      */
     public function findOneBy(string $className, array $criteria = []);
+
+    /**
+     * Creates an entity.
+     *
+     * @param object $entity the entity to create
+     *
+     * @return bool TRUE if the creation is successful, FALSE otherwise
+     */
+    public function create(object $entity);
+
+    /**
+     * Updates an entity.
+     *
+     * @param object $entity the entity to update
+     *
+     * @return bool TRUE if the update is successful, FALSE otherwise
+     */
+    public function update(object $entity);
+
+    /**
+     * Deletes an entity.
+     *
+     * @param object $entity the entity to delete
+     *
+     * @return bool TRUE if the deletion is successful, FALSE otherwise
+     */
+    public function delete(object $entity);
 }

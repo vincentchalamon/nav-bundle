@@ -23,8 +23,15 @@ final class Contact
     /**
      * @var string
      *
-     * @Nav\Column(name="No")
+     * @Nav\Column(name="Key")
      * @Nav\Id
+     */
+    public $id;
+
+    /**
+     * @var string
+     *
+     * @Nav\Column(name="No")
      */
     public $no;
 
