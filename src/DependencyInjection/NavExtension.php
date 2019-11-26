@@ -71,12 +71,12 @@ final class NavExtension extends Extension
                 ->setArgument('$soapOptions', [
                     'user' => $options['username'],
                     'password' => $options['password'],
+                    'cache_dir' => '%kernel.cache_dir%/nav',
                 ] + $options['soap_options'] + [
                     'cache_wsdl' => WSDL_CACHE_NONE,
                     'exception' => true,
-                    'soap_version' => SOAP_1_2,
+                    'soap_version' => SOAP_1_1,
                     'connection_timeout' => 120,
-                    'curlopts' => [CURLOPT_SSL_VERIFYPEER => false],
                 ]);
             if (!$container->hasAlias('nav.manager')) {
                 $container->setAlias('nav.manager', new Alias("nav.manager.$name"));

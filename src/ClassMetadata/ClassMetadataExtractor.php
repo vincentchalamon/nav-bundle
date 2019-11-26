@@ -36,7 +36,7 @@ final class ClassMetadataExtractor implements PropertyTypeExtractorInterface
     /**
      * {@inheritdoc}
      */
-    public function getTypes($className, $property, array $context = [])
+    public function getTypes($className, $property, array $context = []): ?array
     {
         try {
             $mapping = $this->registry->getManagerForClass($className)->getClassMetadata($className)->getMapping()[$property];

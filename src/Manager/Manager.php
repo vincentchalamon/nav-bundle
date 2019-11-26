@@ -13,11 +13,10 @@ declare(strict_types=1);
 
 namespace NavBundle\Manager;
 
-use jamesiarmes\PhpNtlm\SoapClient;
-use matejsvajger\NTLMSoap\Client;
 use NavBundle\ClassMetadata\ClassMetadata;
 use NavBundle\ClassMetadata\ClassMetadataInterface;
 use NavBundle\ClassMetadata\Driver\ClassMetadataDriverInterface;
+use NavBundle\Client\SoapClient;
 use NavBundle\Event\PostCreateEvent;
 use NavBundle\Event\PostDeleteEvent;
 use NavBundle\Event\PostLoadEvent;
