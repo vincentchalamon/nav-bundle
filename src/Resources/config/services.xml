@@ -20,6 +20,7 @@
             <argument type="service" id="config_cache_factory"/>
             <argument type="service" id="event_dispatcher"/>
             <argument type="tagged" tag="nav.repository"/>
+            <argument type="service" id="logger" on-invalid="null"/>
             <argument/> <!-- WSDL -->
             <argument/> <!-- authNtlm -->
             <argument>%kernel.cache_dir%/nav</argument>

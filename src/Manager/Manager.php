@@ -27,6 +27,8 @@ use NavBundle\Event\PreUpdateEvent;
 use NavBundle\Exception\EntityNotFoundException;
 use NavBundle\Repository\RepositoryInterface;
 use NavBundle\Serializer\ObjectDecoder;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\Config\ConfigCacheFactoryInterface;
 use Symfony\Component\Config\ConfigCacheInterface;
 use Symfony\Component\HttpKernel\CacheWarmer\WarmableInterface;
@@ -43,11 +45,12 @@ class Manager implements ManagerInterface, WarmableInterface
     private $configCacheFactory;
     private $dispatcher;
     /**
-     * @var iterable|RepositoryInterface[]
+     * @var RepositoryInterface[]
      */
     private $repositories;
+    private $logger;
     /**
-     * @var iterable|\SoapClient[]
+     * @var \SoapClient[]
      */
     private $clients;
     private $wsdl;
@@ -62,6 +65,7 @@ class Manager implements ManagerInterface, WarmableInterface
         ConfigCacheFactoryInterface $configCacheFactory,
         EventDispatcherInterface $dispatcher,
         \IteratorAggregate $repositories,
+        ?LoggerInterface $logger,
         string $wsdl,
         array $soapOptions,
         string $cacheDir
@@ -71,6 +75,7 @@ class Manager implements ManagerInterface, WarmableInterface
         $this->configCacheFactory = $configCacheFactory;
         $this->dispatcher = $dispatcher;
         $this->repositories = iterator_to_array($repositories->getIterator());
+        $this->logger = $logger ?: new NullLogger();
         $this->wsdl = $wsdl;
         $this->soapOptions = $soapOptions;
         $this->cacheDir = $cacheDir;
@@ -129,8 +134,11 @@ class Manager implements ManagerInterface, WarmableInterface
      */
     public function find(string $className, string $id): ?object
     {
-        // todo Add logs
         // todo Get `No` by Id annotation
+        $this->logger->debug('Find object.', [
+            'className' => $className,
+            'id' => $id,
+        ]);
         $response = $this->getClient($className)->Read([
             'No' => $id,
         ]);
@@ -153,8 +161,12 @@ class Manager implements ManagerInterface, WarmableInterface
      */
     public function findBy(string $className, array $criteria = [], int $size = 0): \Generator
     {
-        // todo Add logs
         // todo Transform criteria ['name' => 'foo'] => [['Field' => 'Name', 'Criteria' => 'foo']]
+        $this->logger->debug('Find objects.', [
+            'className' => $className,
+            'criteria' => $criteria,
+            'size' => $size,
+        ]);
         $entities = $this->serializer->deserialize($this->getClient($className)->ReadMultiple([
             'filter' => $criteria,
             'size' => $size,
@@ -179,9 +191,11 @@ class Manager implements ManagerInterface, WarmableInterface
      */
     public function create(object $entity): bool
     {
-        // todo Add logs
         $this->dispatcher->dispatch(new PreCreateEvent($this, $entity));
         // todo Serialize data to NAV
+        $this->logger->debug('Create object.', [
+            'object' => $entity,
+        ]);
         $this->getClient(\get_class($entity))->Create($this->serializer->serialize($entity, '???'));
         // todo Deserialize response
         // todo Set primary key on entity
@@ -195,9 +209,11 @@ class Manager implements ManagerInterface, WarmableInterface
      */
     public function update(object $entity): bool
     {
-        // todo Add logs
         $this->dispatcher->dispatch(new PreUpdateEvent($this, $entity));
         // todo Serialize data to NAV
+        $this->logger->debug('Update object.', [
+            'object' => $entity,
+        ]);
         $this->getClient(\get_class($entity))->Update($this->serializer->serialize($entity, '???'));
         // todo Deserialize response
         $this->dispatcher->dispatch(new PostUpdateEvent($this, $entity));
@@ -210,9 +226,11 @@ class Manager implements ManagerInterface, WarmableInterface
      */
     public function delete(object $entity): bool
     {
-        // todo Add logs
         $this->dispatcher->dispatch(new PreDeleteEvent($this, $entity));
         // todo Get Key from entity
+        $this->logger->debug('Delete object.', [
+            'object' => $entity,
+        ]);
         $this->getClient(\get_class($entity))->Delete([
             'Key' => $entity->getKey(),
         ]);

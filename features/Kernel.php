@@ -77,7 +77,7 @@ final class Kernel extends BaseKernel
         ]);
 
         $c->loadFromExtension('nav', [
-            'enable_profiler' => false,//'%kernel.debug%',
+            'enable_profiler' => '%kernel.debug%',
             'wsdl' => $_SERVER['NAV_WSDL'],
             'path' => '%kernel.project_dir%/TestBundle/Entity',
             'username' => $_SERVER['NAV_LOGIN'],
