@@ -20,6 +20,12 @@ use jamesiarmes\PhpNtlm\SoapClient as NtlmSoapClient;
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  *
  * todo Waiting for https://github.com/jamesiarmes/php-ntlm/pull/11
+ *
+ * @method mixed Read(array $criteria)
+ * @method mixed ReadMultiple(array $criteria)
+ * @method mixed Create(array $criteria)
+ * @method mixed Update(array $criteria)
+ * @method mixed Delete(array $criteria)
  */
 class SoapClient extends NtlmSoapClient
 {
@@ -41,6 +47,18 @@ class SoapClient extends NtlmSoapClient
         $wsdl = $this->__fetchWSDL($wsdl);
 
         parent::__construct($wsdl, $options);
+    }
+
+    /**
+     * Check if client has function allowed.
+     *
+     * @return bool TRUE if the function is allowed, otherwise FALSE
+     */
+    public function __hasFunction(string $function): bool
+    {
+        return in_array($function, array_map(function (string $fct) use ($function) {
+            return \preg_replace('/^[^ ]+ (.*)\(.*\)$/', '$1', $fct);
+        }, $this->__getFunctions()), true);
     }
 
     /**

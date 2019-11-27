@@ -80,10 +80,10 @@ final class ObjectNormalizer implements ContextAwareDenormalizerInterface, Denor
         $classMetadata = $this->registry->getManagerForClass($className)->getClassMetadata($className);
         $data = [];
         foreach ($classMetadata->getMapping() as $property => $options) {
-            $data[$options['name']] = $data[$property];
+            $data[$options['name']] = $object->{$property};
         }
 
-        return $data;
+        return [$classMetadata->getNamespace() => $data];
     }
 
     /**

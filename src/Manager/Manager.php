@@ -25,6 +25,7 @@ use NavBundle\Event\PreDeleteEvent;
 use NavBundle\Event\PreUpdateEvent;
 use NavBundle\Exception\ClassMetadataNotFoundException;
 use NavBundle\Exception\KeyNotFoundException;
+use NavBundle\Exception\MethodNotAllowedException;
 use NavBundle\Exception\NoNotFoundException;
 use NavBundle\Repository\RepositoryInterface;
 use NavBundle\Serializer\ReadMultipleResultDecoder;
@@ -62,7 +63,7 @@ class Manager implements ManagerInterface, WarmableInterface
      */
     private $customRepositories = [];
     /**
-     * @var \SoapClient[]
+     * @var SoapClient[]
      */
     private $clients;
     private $configCache;
@@ -78,7 +79,8 @@ class Manager implements ManagerInterface, WarmableInterface
         string $wsdl,
         array $soapOptions,
         string $cacheDir
-    ) {
+    )
+    {
         $this->driver = $driver;
         $this->serializer = $serializer;
         $this->configCacheFactory = $configCacheFactory;
@@ -113,11 +115,11 @@ class Manager implements ManagerInterface, WarmableInterface
     /**
      * {@inheritdoc}
      */
-    public function getClient(string $className): \SoapClient
+    public function getClient(string $className): SoapClient
     {
         if (!isset($this->clients[$className])) {
             $this->clients[$className] = new SoapClient(
-                $this->wsdl.$this->getClassMetadata($className)->getNamespace(),
+                $this->wsdl . $this->getClassMetadata($className)->getNamespace(),
                 $this->soapOptions
             );
         }
@@ -156,13 +158,16 @@ class Manager implements ManagerInterface, WarmableInterface
             'criteria' => $criteria,
             'size' => $size,
         ]);
-        $data = $this->getClient($className)->ReadMultiple([
-            'filter' => $criteria,
-            'setSize' => $size,
-        ]);
-        $entities = $this->serializer->deserialize($data, $className, ReadMultipleResultDecoder::FORMAT, [
-            'namespace' => $classMetadata->getNamespace(),
-        ]);
+        $entities = $this->serializer->deserialize(
+            $this->getClient($className)->ReadMultiple([
+                'filter' => $criteria,
+                'setSize' => $size,
+            ]),
+            $className,
+            ReadMultipleResultDecoder::FORMAT, [
+                'namespace' => $classMetadata->getNamespace(),
+            ]
+        );
         if (!$entities) {
             return yield from [];
         }
@@ -186,10 +191,13 @@ class Manager implements ManagerInterface, WarmableInterface
             'className' => $className,
             'criteria' => $criteria,
         ]);
-        $data = $this->getClient($className)->Read($criteria);
-        $entity = $this->serializer->deserialize($data, $className, ReadResultDecoder::FORMAT, [
-            'namespace' => $classMetadata->getNamespace(),
-        ]);
+        $entity = $this->serializer->deserialize(
+            $this->getClient($className)->Read($criteria),
+            $className,
+            ReadResultDecoder::FORMAT, [
+                'namespace' => $classMetadata->getNamespace(),
+            ]
+        );
         if (!$entity) {
             return null;
         }
@@ -218,67 +226,82 @@ class Manager implements ManagerInterface, WarmableInterface
     /**
      * {@inheritdoc}
      */
-    public function create(object $entity): bool
+    public function create(object $entity): void
     {
+        $className = get_class($entity);
+        if (!$this->getClient($className)->__hasFunction('Create')) {
+            throw new MethodNotAllowedException('Method "Create" is not allowed on this namespace.');
+        }
+
         $this->dispatcher->dispatch(new PreCreateEvent($this, $entity));
 
-        $className = get_class($entity);
         $data = $this->serializer->normalize($entity);
         $this->logger->debug("Create $className object.", ['data' => $data]);
 
-        $this->getClient(\get_class($entity))->Create($data);
-        // todo Deserialize response
-        // todo Set primary key on entity
+        $this->serializer->deserialize(
+            $this->getClient(\get_class($entity))->Create($data),
+            $className,
+            ReadResultDecoder::FORMAT, [
+                'namespace' => $this->getClassMetadata($className)->getNamespace(),
+                'object_to_populate' => $entity,
+            ]
+        );
 
         $this->dispatcher->dispatch(new PostCreateEvent($this, $entity));
-
-        return false;
     }
+    // todo Implement CreateMultiple
 
     /**
      * {@inheritdoc}
      */
-    public function update(object $entity): bool
+    public function update(object $entity): void
     {
+        $className = get_class($entity);
+        if (!$this->getClient($className)->__hasFunction('Update')) {
+            throw new MethodNotAllowedException('Method "Update" is not allowed on this namespace.');
+        }
+
         $this->dispatcher->dispatch(new PreUpdateEvent($this, $entity));
 
-        $className = get_class($entity);
         $data = $this->serializer->normalize($entity);
-        $this->logger->debug("Update $className object.", ['data' => $entity]);
+        $this->logger->debug("Update $className object.", ['data' => $data]);
 
-        $this->getClient(\get_class($entity))->Update($data);
-        // todo Deserialize response
+        $this->serializer->deserialize(
+            $this->getClient(\get_class($entity))->Update($data),
+            $className,
+            ReadResultDecoder::FORMAT, [
+                'namespace' => $this->getClassMetadata($className)->getNamespace(),
+                'object_to_populate' => $entity,
+            ]
+        );
 
         $this->dispatcher->dispatch(new PostUpdateEvent($this, $entity));
-
-        return false;
     }
+    // todo Implement UpdateMultiple
 
     /**
      * {@inheritdoc}
      *
      * @throws KeyNotFoundException
      */
-    public function delete(object $entity): bool
+    public function delete(object $entity): void
     {
+        $className = get_class($entity);
+        if (!$this->getClient($className)->__hasFunction('Delete')) {
+            throw new MethodNotAllowedException('Method "Delete" is not allowed on this namespace.');
+        }
+
         $this->dispatcher->dispatch(new PreDeleteEvent($this, $entity));
 
-        // todo Get Key from entity
-        $className = get_class($entity);
+        $classMetadata = $this->getClassMetadata($className);
+        $data = [$classMetadata->getMapping()[$classMetadata->getKey()]['name'] => $entity->key];
         $this->logger->debug("Delete $className object.", [
-            'object' => $entity,
+            'data' => $data,
         ]);
 
-        // todo Transform ['Key' => $key] (with 'Key' from Key annotation)
-        // todo Add transformed data to logs
-        $this->getClient(\get_class($entity))->Delete([
-            'Key' => $entity->getKey(),
-        ]);
-        // todo Deserialize response
+        $this->getClient(\get_class($entity))->Delete($data);
 
         $this->dispatcher->dispatch(new PostDeleteEvent($this, $entity));
-
-        return false;
     }
 
     /**
@@ -330,7 +353,7 @@ class Manager implements ManagerInterface, WarmableInterface
             return $this->configCache;
         }
 
-        $this->configCache = $this->configCacheFactory->cache($this->cacheDir.'/classMetadata.php', function (ConfigCacheInterface $cache): void {
+        $this->configCache = $this->configCacheFactory->cache($this->cacheDir . '/classMetadata.php', function (ConfigCacheInterface $cache): void {
             $cache->write(sprintf(<<<'PHP'
 <?php
 

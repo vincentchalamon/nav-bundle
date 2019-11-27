@@ -99,7 +99,7 @@ interface ManagerInterface
      *
      * @param object $entity the entity to create
      *
-     * @return bool TRUE if the creation is successful, FALSE otherwise
+     * @return void
      */
     public function create(object $entity);
 
@@ -108,7 +108,7 @@ interface ManagerInterface
      *
      * @param object $entity the entity to update
      *
-     * @return bool TRUE if the update is successful, FALSE otherwise
+     * @return void
      */
     public function update(object $entity);
 
@@ -117,7 +117,7 @@ interface ManagerInterface
      *
      * @param object $entity the entity to delete
      *
-     * @return bool TRUE if the deletion is successful, FALSE otherwise
+     * @return void
      */
     public function delete(object $entity);
 }

@@ -29,6 +29,7 @@ final class Kernel extends BaseKernel
         $bundles = [
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new Symfony\Bundle\TwigBundle\TwigBundle(),
+            new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new NavBundle\NavBundle(),
             new NavBundle\E2e\TestBundle\TestBundle(),
         ];
@@ -74,6 +75,10 @@ final class Kernel extends BaseKernel
 
         $c->loadFromExtension('twig', [
             'paths' => ['%kernel.project_dir%/TestBundle/Resources/views'],
+        ]);
+
+        $c->loadFromExtension('sensio_framework_extra', [
+            'request' => ['converters' => true, 'auto_convert' => true],
         ]);
 
         $c->loadFromExtension('nav', [

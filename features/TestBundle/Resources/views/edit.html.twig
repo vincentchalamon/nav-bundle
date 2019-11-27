@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ contact.name }}{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        form{text-align:left;max-width:50%;margin-left:20px;}
+        label{display:block;}
+        input{margin:10px 0;display:inline-block;}
+    </style>
+{% endblock %}
+
+{% block content %}
+    <form action="{{ path('edit', {'no': contact.no}) }}" method="post">
+        <input type="hidden" name="_method" value="PUT"/>
+        <label>Key: <input type="text" name="contact[key]" disabled value="{{ contact.key }}"/></label>
+        <label>No: <input type="text" name="contact[no]" disabled value="{{ contact.no }}"/></label>
+        <label>Name: <input type="text" name="contact[name]" value="{{ contact.name }}"/></label>
+        <label>Email: <input type="text" name="contact[email]" value="{{ contact.email }}"/></label>
+        <label>Phone: <input type="text" name="contact[phone]" value="{{ contact.phone }}"/></label>
+        <label>Type: <input type="text" name="contact[type]" disabled value="{{ contact.type }}"/></label>
+        <button type="submit">Update</button>
+    </form>
+
+    <form action="{{ path('delete', {'no': contact.no}) }}" method="post">
+        <input type="hidden" name="_method" value="DELETE"/>
+        <button type="submit">Delete</button>
+    </form>
+{% endblock %}
+
+{% block footer %}
+    <p><a href="{{ path('list') }}">&#8592; Back to the list</a></p>
+{% endblock %}

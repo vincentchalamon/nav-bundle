@@ -82,5 +82,10 @@
             <argument type="service" id="nav.registry"/>
             <tag name="serializer.normalizer" priority="-1"/>
         </service>
+
+        <service id="nav.param_converter" class="NavBundle\Request\ParamConverter" public="false">
+            <argument type="service" id="nav.registry"/>
+            <tag name="request.param_converter" priority="-1"/>
+        </service>
     </services>
 </container>
