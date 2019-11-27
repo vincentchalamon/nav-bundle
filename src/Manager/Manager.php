@@ -16,7 +16,6 @@ namespace NavBundle\Manager;
 use NavBundle\ClassMetadata\ClassMetadata;
 use NavBundle\ClassMetadata\ClassMetadataInterface;
 use NavBundle\ClassMetadata\Driver\ClassMetadataDriverInterface;
-use NavBundle\Client\SoapClient;
 use NavBundle\Event\PostCreateEvent;
 use NavBundle\Event\PostDeleteEvent;
 use NavBundle\Event\PostLoadEvent;
@@ -24,14 +23,20 @@ use NavBundle\Event\PostUpdateEvent;
 use NavBundle\Event\PreCreateEvent;
 use NavBundle\Event\PreDeleteEvent;
 use NavBundle\Event\PreUpdateEvent;
-use NavBundle\Exception\EntityNotFoundException;
+use NavBundle\Exception\ClassMetadataNotFoundException;
+use NavBundle\Exception\KeyNotFoundException;
+use NavBundle\Exception\NoNotFoundException;
 use NavBundle\Repository\RepositoryInterface;
-use NavBundle\Serializer\ObjectDecoder;
+use NavBundle\Serializer\ReadMultipleResultDecoder;
+use NavBundle\Serializer\ReadResultDecoder;
+use NavBundle\SoapClient;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Config\ConfigCacheFactoryInterface;
 use Symfony\Component\Config\ConfigCacheInterface;
 use Symfony\Component\HttpKernel\CacheWarmer\WarmableInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -41,21 +46,25 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 class Manager implements ManagerInterface, WarmableInterface
 {
     private $driver;
+    /**
+     * @var SerializerInterface|NormalizerInterface
+     */
     private $serializer;
     private $configCacheFactory;
     private $dispatcher;
+    private $repositories;
+    private $logger;
+    private $wsdl;
+    private $soapOptions;
+    private $cacheDir;
     /**
      * @var RepositoryInterface[]
      */
-    private $repositories;
-    private $logger;
+    private $customRepositories = [];
     /**
      * @var \SoapClient[]
      */
     private $clients;
-    private $wsdl;
-    private $soapOptions;
-    private $cacheDir;
     private $configCache;
     private $classMetadatas;
 
@@ -64,7 +73,7 @@ class Manager implements ManagerInterface, WarmableInterface
         SerializerInterface $serializer,
         ConfigCacheFactoryInterface $configCacheFactory,
         EventDispatcherInterface $dispatcher,
-        \IteratorAggregate $repositories,
+        ContainerInterface $repositories,
         ?LoggerInterface $logger,
         string $wsdl,
         array $soapOptions,
@@ -74,7 +83,7 @@ class Manager implements ManagerInterface, WarmableInterface
         $this->serializer = $serializer;
         $this->configCacheFactory = $configCacheFactory;
         $this->dispatcher = $dispatcher;
-        $this->repositories = iterator_to_array($repositories->getIterator());
+        $this->repositories = $repositories;
         $this->logger = $logger ?: new NullLogger();
         $this->wsdl = $wsdl;
         $this->soapOptions = $soapOptions;
@@ -87,7 +96,7 @@ class Manager implements ManagerInterface, WarmableInterface
     public function getClassMetadata(string $className): ClassMetadataInterface
     {
         if (!isset($this->getClassMetadatas()[$className])) {
-            throw new EntityNotFoundException("Entity $className not found.");
+            throw new ClassMetadataNotFoundException("Entity $className not found.");
         }
 
         return $this->getClassMetadatas()[$className];
@@ -122,38 +131,17 @@ class Manager implements ManagerInterface, WarmableInterface
     public function getRepository(string $className): RepositoryInterface
     {
         $repositoryClass = $this->getClassMetadata($className)->getRepositoryClass();
-        if (!isset($this->repositories[$repositoryClass])) {
+        if ($this->repositories->has($repositoryClass)) {
+            // Repository is a service
+            return $this->repositories->get($repositoryClass);
+        }
+
+        // Repository is not a service
+        if (!isset($this->customRepositories[$repositoryClass])) {
             $this->repositories[$repositoryClass] = new $repositoryClass($this, $className);
         }
 
-        return $this->repositories[$repositoryClass];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function find(string $className, string $id): ?object
-    {
-        // todo Get `No` by Id annotation
-        $this->logger->debug('Find object.', [
-            'className' => $className,
-            'id' => $id,
-        ]);
-        $response = $this->getClient($className)->Read([
-            'No' => $id,
-        ]);
-        $entity = $this->serializer->deserialize($response, $className, ObjectDecoder::FORMAT);
-        $this->dispatcher->dispatch(new PostLoadEvent($this, $entity));
-
-        return $entity;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function findAll(string $className): \Generator
-    {
-        return $this->findBy($className);
+        return $this->customRepositories[$repositoryClass];
     }
 
     /**
@@ -161,21 +149,54 @@ class Manager implements ManagerInterface, WarmableInterface
      */
     public function findBy(string $className, array $criteria = [], int $size = 0): \Generator
     {
-        // todo Transform criteria ['name' => 'foo'] => [['Field' => 'Name', 'Criteria' => 'foo']]
-        $this->logger->debug('Find objects.', [
+        $classMetadata = $this->getClassMetadata($className);
+        $criteria = $this->getCriteria($classMetadata, $criteria);
+        $this->logger->debug("Find $className objects.", [
             'className' => $className,
             'criteria' => $criteria,
             'size' => $size,
         ]);
-        $entities = $this->serializer->deserialize($this->getClient($className)->ReadMultiple([
+        $data = $this->getClient($className)->ReadMultiple([
             'filter' => $criteria,
-            'size' => $size,
-        ]), $className.'[]', ObjectDecoder::FORMAT);
+            'setSize' => $size,
+        ]);
+        $entities = $this->serializer->deserialize($data, $className, ReadMultipleResultDecoder::FORMAT, [
+            'namespace' => $classMetadata->getNamespace(),
+        ]);
+        if (!$entities) {
+            return yield from [];
+        }
 
         foreach ($entities as $entity) {
-            yield $entity;
             $this->dispatcher->dispatch(new PostLoadEvent($this, $entity));
+            yield $entity;
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @throws NoNotFoundException
+     */
+    public function find(string $className, string $no): ?object
+    {
+        $classMetadata = $this->getClassMetadata($className);
+        $criteria = [$classMetadata->getMapping()[$classMetadata->getNo()]['name'] => $no];
+        $this->logger->debug("Find $className object #$no.", [
+            'className' => $className,
+            'criteria' => $criteria,
+        ]);
+        $data = $this->getClient($className)->Read($criteria);
+        $entity = $this->serializer->deserialize($data, $className, ReadResultDecoder::FORMAT, [
+            'namespace' => $classMetadata->getNamespace(),
+        ]);
+        if (!$entity) {
+            return null;
+        }
+
+        $this->dispatcher->dispatch(new PostLoadEvent($this, $entity));
+
+        return $entity;
     }
 
     /**
@@ -189,16 +210,26 @@ class Manager implements ManagerInterface, WarmableInterface
     /**
      * {@inheritdoc}
      */
+    public function findAll(string $className): \Generator
+    {
+        return $this->findBy($className);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function create(object $entity): bool
     {
         $this->dispatcher->dispatch(new PreCreateEvent($this, $entity));
-        // todo Serialize data to NAV
-        $this->logger->debug('Create object.', [
-            'object' => $entity,
-        ]);
-        $this->getClient(\get_class($entity))->Create($this->serializer->serialize($entity, '???'));
+
+        $className = get_class($entity);
+        $data = $this->serializer->normalize($entity);
+        $this->logger->debug("Create $className object.", ['data' => $data]);
+
+        $this->getClient(\get_class($entity))->Create($data);
         // todo Deserialize response
         // todo Set primary key on entity
+
         $this->dispatcher->dispatch(new PostCreateEvent($this, $entity));
 
         return false;
@@ -210,12 +241,14 @@ class Manager implements ManagerInterface, WarmableInterface
     public function update(object $entity): bool
     {
         $this->dispatcher->dispatch(new PreUpdateEvent($this, $entity));
-        // todo Serialize data to NAV
-        $this->logger->debug('Update object.', [
-            'object' => $entity,
-        ]);
-        $this->getClient(\get_class($entity))->Update($this->serializer->serialize($entity, '???'));
+
+        $className = get_class($entity);
+        $data = $this->serializer->normalize($entity);
+        $this->logger->debug("Update $className object.", ['data' => $entity]);
+
+        $this->getClient(\get_class($entity))->Update($data);
         // todo Deserialize response
+
         $this->dispatcher->dispatch(new PostUpdateEvent($this, $entity));
 
         return false;
@@ -223,18 +256,26 @@ class Manager implements ManagerInterface, WarmableInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @throws KeyNotFoundException
      */
     public function delete(object $entity): bool
     {
         $this->dispatcher->dispatch(new PreDeleteEvent($this, $entity));
+
         // todo Get Key from entity
-        $this->logger->debug('Delete object.', [
+        $className = get_class($entity);
+        $this->logger->debug("Delete $className object.", [
             'object' => $entity,
         ]);
+
+        // todo Transform ['Key' => $key] (with 'Key' from Key annotation)
+        // todo Add transformed data to logs
         $this->getClient(\get_class($entity))->Delete([
             'Key' => $entity->getKey(),
         ]);
         // todo Deserialize response
+
         $this->dispatcher->dispatch(new PostDeleteEvent($this, $entity));
 
         return false;
@@ -246,6 +287,20 @@ class Manager implements ManagerInterface, WarmableInterface
     public function warmUp($cacheDir): void
     {
         $this->getConfigCache();
+    }
+
+    private function getCriteria(ClassMetadataInterface $classMetadata, array $filters): array
+    {
+        $mapping = $classMetadata->getMapping();
+        $criteria = [];
+        foreach ($filters as $key => $value) {
+            $criteria[] = [
+                'Field' => $mapping[$key]['name'],
+                'Criteria' => $value,
+            ];
+        }
+
+        return $criteria;
     }
 
     /**

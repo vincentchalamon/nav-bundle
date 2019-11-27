@@ -16,7 +16,7 @@ namespace NavBundle\ClassMetadata\Driver;
 use Doctrine\Common\Annotations\Reader;
 use NavBundle\Annotation\Column;
 use NavBundle\Annotation\Entity;
-use NavBundle\Annotation\Id;
+use NavBundle\Annotation\No;
 use NavBundle\Annotation\Key;
 use NavBundle\Exception\PathNotFoundException;
 
@@ -87,7 +87,7 @@ final class AnnotationClassMetadataDriver implements ClassMetadataDriverInterfac
                     'name' => $column->name,
                     'type' => $column->type,
                     'nullable' => $column->nullable,
-                    'identifier' => (bool) $this->reader->getPropertyAnnotation($property, Id::class),
+                    'no' => (bool) $this->reader->getPropertyAnnotation($property, No::class),
                     'key' => (bool) $this->reader->getPropertyAnnotation($property, Key::class),
                 ];
             }

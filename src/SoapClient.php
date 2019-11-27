@@ -11,12 +11,13 @@
 
 declare(strict_types=1);
 
-namespace NavBundle\Client;
+namespace NavBundle;
 
 use jamesiarmes\PhpNtlm\SoapClient as NtlmSoapClient;
 
 /**
  * @author Peter Philipp <info@das-peter.ch>
+ * @author Vincent Chalamon <vincentchalamon@gmail.com>
  *
  * todo Waiting for https://github.com/jamesiarmes/php-ntlm/pull/11
  */

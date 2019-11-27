@@ -22,18 +22,19 @@ use Twig\Environment;
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-final class ContactController
+final class ShowController
 {
     /**
-     * @Route("/contact/{id}", name="contact", methods={"GET"}, requirements={"id"=".*"})
+     * @Route("/contacts/{no}", name="show", methods={"GET"}, requirements={"no"=".*"})
      */
-    public function __invoke(Registry $registry, Environment $twig, string $id): Response
+    public function __invoke(Registry $registry, Environment $twig, string $no): Response
     {
-        return new Response($twig->render('contact.html.twig', [
+        return new Response($twig->render('show.html.twig', [
             'contact' => $registry
                 ->getManagerForClass(Contact::class)
-                ->getRepository(Contact::class)
-                ->find($id),
+//                ->getRepository(Contact::class)
+                ->find(Contact::class, $no),
+//                ->findOneBy(Contact::class, ['email' => 'n.grigorova@groupe-hli.com']),
         ]));
     }
 }

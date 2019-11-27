@@ -13,6 +13,9 @@ declare(strict_types=1);
 
 namespace NavBundle\ClassMetadata;
 
+use NavBundle\Exception\KeyNotFoundException;
+use NavBundle\Exception\NoNotFoundException;
+
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
@@ -38,4 +41,22 @@ interface ClassMetadataInterface
      * @return array the entity mapping
      */
     public function getMapping(): array;
+
+    /**
+     * Get the entity 'No' property name.
+     *
+     * @return string the property name
+     *
+     * @throws NoNotFoundException
+     */
+    public function getNo(): string;
+
+    /**
+     * Get the entity 'Key' property name.
+     *
+     * @return string the property name
+     *
+     * @throws KeyNotFoundException
+     */
+    public function getKey(): string;
 }

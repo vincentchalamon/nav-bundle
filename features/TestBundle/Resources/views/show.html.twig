@@ -5,3 +5,7 @@
 {% block content %}
     <pre>{{ dump(contact) }}</pre>
 {% endblock %}
+
+{% block footer %}
+    <p><a href="{{ path('list') }}">&#8592; Back to the list</a></p>
+{% endblock %}

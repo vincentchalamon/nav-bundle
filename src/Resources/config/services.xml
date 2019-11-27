@@ -19,7 +19,7 @@
             <argument type="service" id="serializer"/>
             <argument type="service" id="config_cache_factory"/>
             <argument type="service" id="event_dispatcher"/>
-            <argument type="tagged" tag="nav.repository"/>
+            <argument type="tagged_locator" tag="nav.repository"/>
             <argument type="service" id="logger" on-invalid="null"/>
             <argument/> <!-- WSDL -->
             <argument/> <!-- authNtlm -->
@@ -65,11 +65,20 @@
             <tag name="property_info.type_extractor"/>
         </service>
 
-        <service id="nav.decoder.object" class="NavBundle\Serializer\ObjectDecoder" public="false">
+        <service id="nav.decoder.read_multiple_result" class="NavBundle\Serializer\ReadMultipleResultDecoder" public="false">
             <tag name="serializer.encoder" priority="-1"/>
         </service>
 
-        <service id="nav.denormalizer.object" class="NavBundle\Serializer\ObjectDenormalizer" public="false">
+        <service id="nav.decoder.read_result" class="NavBundle\Serializer\ReadResultDecoder" public="false">
+            <tag name="serializer.encoder" priority="-1"/>
+        </service>
+
+        <service id="nav.normalizer.object" class="NavBundle\Serializer\ObjectNormalizer" public="false">
+            <argument type="service" id="nav.registry"/>
+            <tag name="serializer.normalizer" priority="-2"/>
+        </service>
+
+        <service id="nav.normalizer.collection" class="NavBundle\Serializer\CollectionNormalizer" public="false">
             <argument type="service" id="nav.registry"/>
             <tag name="serializer.normalizer" priority="-1"/>
         </service>

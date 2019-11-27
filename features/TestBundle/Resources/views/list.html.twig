@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Welcome to the TestBundle{% endblock %}
+
+{% block content %}
+    <ul>
+        {% for contact in contacts %}
+            <li>
+                <a href="{{ path('show', {'no': contact.no}) }}">#{{ contact.no }}. {{ contact.name }} ({{ contact.email }})</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

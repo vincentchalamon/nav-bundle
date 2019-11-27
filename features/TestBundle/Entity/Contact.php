@@ -14,9 +14,10 @@ declare(strict_types=1);
 namespace NavBundle\E2e\TestBundle\Entity;
 
 use NavBundle\Annotation as Nav;
+use NavBundle\E2e\TestBundle\Repository\ContactRepository;
 
 /**
- * @Nav\Entity(namespace="INTWS_002_CONT")
+ * @Nav\Entity(namespace="INTWS_002_CONT", repositoryClass=ContactRepository::class)
  */
 final class Contact
 {
@@ -24,14 +25,15 @@ final class Contact
      * @var string
      *
      * @Nav\Column(name="Key")
-     * @Nav\Id
+     * @Nav\Key
      */
-    public $id;
+    public $key;
 
     /**
      * @var string
      *
      * @Nav\Column(name="No")
+     * @Nav\No
      */
     public $no;
 

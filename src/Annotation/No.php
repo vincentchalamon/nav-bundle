@@ -11,11 +11,14 @@
 
 declare(strict_types=1);
 
-namespace NavBundle\Exception;
+namespace NavBundle\Annotation;
 
 /**
+ * @Annotation
+ * @Target("PROPERTY")
+ *
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-final class InvalidArgumentException extends \InvalidArgumentException implements ExceptionInterface
+final class No
 {
 }

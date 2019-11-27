@@ -13,6 +13,9 @@ declare(strict_types=1);
 
 namespace NavBundle\ClassMetadata;
 
+use NavBundle\Exception\KeyNotFoundException;
+use NavBundle\Exception\NoNotFoundException;
+
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
@@ -51,5 +54,33 @@ final class ClassMetadata implements ClassMetadataInterface
     public function getMapping(): array
     {
         return $this->mapping;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getNo(): string
+    {
+        foreach ($this->getMapping() as $property => $mapping) {
+            if (true === $mapping['no']) {
+                return $property;
+            }
+        }
+
+        throw new NoNotFoundException();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getKey(): string
+    {
+        foreach ($this->getMapping() as $property => $mapping) {
+            if (true === $mapping['key']) {
+                return $property;
+            }
+        }
+
+        throw new KeyNotFoundException();
     }
 }

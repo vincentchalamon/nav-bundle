@@ -58,11 +58,11 @@ interface ManagerInterface
      * Finds an entity by its primary key / identifier.
      *
      * @param string $className the entity class
-     * @param string $id        the primary key / identifier
+     * @param string $no        the primary key / identifier
      *
      * @return object|null the entity instance or NULL if the entity cannot be found
      */
-    public function find(string $className, string $id);
+    public function find(string $className, string $no);
 
     /**
      * Finds all entities in the repository.

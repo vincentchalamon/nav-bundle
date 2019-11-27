@@ -16,6 +16,6 @@ namespace NavBundle\Exception;
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-final class RepositoryNotFoundException extends \RuntimeException implements ExceptionInterface
+final class KeyNotFoundException extends \LogicException implements ExceptionInterface
 {
 }

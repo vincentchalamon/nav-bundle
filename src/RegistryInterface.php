@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace NavBundle;
 
 use NavBundle\Exception\ManagerNotFoundException;
-use NavBundle\Exception\RepositoryNotFoundException;
 use NavBundle\Manager\ManagerInterface;
 use NavBundle\Repository\RepositoryInterface;
 
@@ -49,8 +48,6 @@ interface RegistryInterface
      * Get the repository related to the entity class.
      *
      * @param string $class the entity class
-     *
-     * @throws RepositoryNotFoundException
      *
      * @return RepositoryInterface the repository related to this entity class
      */

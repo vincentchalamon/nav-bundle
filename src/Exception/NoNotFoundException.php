@@ -16,6 +16,6 @@ namespace NavBundle\Exception;
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-final class EntityNotManagedException extends \LogicException implements ExceptionInterface
+final class NoNotFoundException extends \LogicException implements ExceptionInterface
 {
 }

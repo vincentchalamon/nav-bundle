@@ -11,14 +11,11 @@
 
 declare(strict_types=1);
 
-namespace NavBundle\Annotation;
+namespace NavBundle\Exception;
 
 /**
- * @Annotation
- * @Target("PROPERTY")
- *
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-final class Id
+final class ClassMetadataNotFoundException extends \LogicException implements ExceptionInterface
 {
 }

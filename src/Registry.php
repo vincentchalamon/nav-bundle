@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace NavBundle;
 
-use NavBundle\Exception\EntityNotFoundException;
+use NavBundle\Exception\ClassMetadataNotFoundException;
 use NavBundle\Exception\ManagerNotFoundException;
 use NavBundle\Manager\ManagerInterface;
 use NavBundle\Repository\RepositoryInterface;
@@ -56,7 +56,7 @@ final class Registry implements RegistryInterface, WarmableInterface
                 $manager->getClassMetadata($class);
 
                 return $manager;
-            } catch (EntityNotFoundException $exception) {
+            } catch (ClassMetadataNotFoundException $exception) {
                 continue;
             }
         }

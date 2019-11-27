@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace NavBundle\Serializer;
 
-use NavBundle\Exception\EntityNotFoundException;
+use NavBundle\Exception\ClassMetadataNotFoundException;
 use NavBundle\Manager\ManagerInterface;
 use NavBundle\RegistryInterface;
 use Symfony\Component\Serializer\Normalizer\ContextAwareDenormalizerInterface;
@@ -23,7 +23,7 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-final class ObjectDenormalizer implements ContextAwareDenormalizerInterface, DenormalizerAwareInterface
+final class CollectionNormalizer implements ContextAwareDenormalizerInterface, DenormalizerAwareInterface
 {
     use DenormalizerAwareTrait;
 
@@ -37,25 +37,11 @@ final class ObjectDenormalizer implements ContextAwareDenormalizerInterface, Den
     /**
      * {@inheritdoc}
      */
-    public function denormalize($values, $className, $format = null, array $context = []): object
+    public function denormalize($values, $className, $format = null, array $context = []): \Generator
     {
-        $classMetadata = $this->registry->getManagerForClass($className)->getClassMetadata($className);
-        if (!isset($values[$classMetadata->getNamespace()])) {
-            return (new \ReflectionClass($className))->newInstance();
+        foreach ($values as $value) {
+            yield $this->denormalizer->denormalize($value, $className, $format, $context + [__CLASS__ => true]);
         }
-
-        $values = $values[$classMetadata->getNamespace()];
-        $data = [];
-        foreach ($classMetadata->getMapping() as $property => $options) {
-            if (!\array_key_exists($options['name'], $values)) {
-                continue;
-            }
-
-            $data[$property] = $values[$options['name']];
-        }
-
-        /* @see \Symfony\Component\Serializer\Normalizer\ObjectNormalizer */
-        return $this->denormalizer->denormalize($data, $className, $format, $context + [__CLASS__ => true]);
     }
 
     /**
@@ -64,10 +50,11 @@ final class ObjectDenormalizer implements ContextAwareDenormalizerInterface, Den
     public function supportsDenormalization($data, $className, $format = null, array $context = []): bool
     {
         try {
-            return !isset($context[__CLASS__])
-                && ObjectDecoder::FORMAT === $format
+            return ReadMultipleResultDecoder::FORMAT === $format
+                && !empty($data)
+                && !isset($context[__CLASS__])
                 && $this->registry->getManagerForClass($className) instanceof ManagerInterface;
-        } catch (EntityNotFoundException $exception) {
+        } catch (ClassMetadataNotFoundException $exception) {
             return false;
         }
     }

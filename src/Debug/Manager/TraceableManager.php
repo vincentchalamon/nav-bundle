@@ -36,10 +36,10 @@ final class TraceableManager extends Manager
     /**
      * {@inheritdoc}
      */
-    public function find(string $className, string $id): ?object
+    public function find(string $className, string $no): ?object
     {
         $this->stopwatch->start('nav.find');
-        $result = parent::find($className, $id);
+        $result = parent::find($className, $no);
         $this->registerCall($this->stopwatch->stop('nav.find'), $this->getClient($className));
 
         return $result;
@@ -51,7 +51,7 @@ final class TraceableManager extends Manager
     public function findAll(string $className): \Generator
     {
         $this->stopwatch->start('nav.findAll');
-        yield parent::findAll($className);
+        yield from parent::findAll($className);
         $this->registerCall($this->stopwatch->stop('nav.findAll'), $this->getClient($className));
     }
 
@@ -61,7 +61,7 @@ final class TraceableManager extends Manager
     public function findBy(string $className, array $criteria = [], int $size = 0): \Generator
     {
         $this->stopwatch->start('nav.findBy');
-        yield parent::findBy($className, $criteria, $size);
+        yield from parent::findBy($className, $criteria, $size);
         $this->registerCall($this->stopwatch->stop('nav.findBy'), $this->getClient($className));
     }
 
@@ -109,9 +109,13 @@ final class TraceableManager extends Manager
 
     private function registerCall(StopwatchEvent $event, \SoapClient $client): void
     {
+        if (!$request = $client->__getLastRequest()) {
+            return;
+        }
+
         $this->calls[] = [
             'event' => $event,
-            'request' => $this->format($client->__getLastRequest()),
+            'request' => $this->format($request),
             'response' => $this->format($client->__getLastResponse()),
         ];
     }
