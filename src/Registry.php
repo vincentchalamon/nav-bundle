@@ -24,11 +24,11 @@ use Symfony\Component\HttpKernel\CacheWarmer\WarmableInterface;
  */
 final class Registry implements RegistryInterface, WarmableInterface
 {
-    /**
-     * @var iterable|ManagerInterface[]
-     */
     private $managers;
 
+    /**
+     * @param iterable|ManagerInterface[]
+     */
     public function __construct(iterable $managers)
     {
         $this->managers = $managers;

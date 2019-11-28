@@ -83,9 +83,31 @@
             <tag name="serializer.normalizer" priority="-1"/>
         </service>
 
-        <service id="nav.param_converter" class="NavBundle\Request\ParamConverter" public="false">
+        <service id="nav.param_converter" class="NavBundle\Bridge\FrameworkExtraBundle\Request\ParamConverter" public="false">
             <argument type="service" id="nav.registry"/>
             <tag name="request.param_converter" priority="-1"/>
+        </service>
+
+        <service id="nav.api_platform.data_persister" class="NavBundle\Bridge\ApiPlatform\DataPersister\DataPersister" public="false">
+            <tag name="api_platform.data_persister" priority="-1"/>
+        </service>
+
+        <service id="nav.api_platform.data_provider.item" class="NavBundle\Bridge\ApiPlatform\DataProvider\ItemDataProvider" public="false">
+            <argument type="service" id="nav.registry"/>
+            <argument type="tagged" tag="nav.api_platform.item_extension"/>
+            <tag name="api_platform.item_data_provider" priority="-1"/>
+        </service>
+
+        <service id="nav.api_platform.data_provider.collection" class="NavBundle\Bridge\ApiPlatform\DataProvider\CollectionDataProvider" public="false">
+            <argument type="service" id="nav.registry"/>
+            <argument type="tagged" tag="nav.api_platform.collection_extension"/>
+            <tag name="api_platform.collection_data_provider" priority="-1"/>
+        </service>
+
+        <service id="nav.api_platform.extension.filter" class="NavBundle\Bridge\ApiPlatform\DataProvider\Extension\FilterExtension" public="false">
+            <argument type="service" id="api_platform.metadata.resource.metadata_factory"/>
+            <argument type="tagged_locator" tag="nav.api_platform.filter"/>
+            <tag name="api_platform.collection_data_provider" priority="-1"/>
         </service>
     </services>
 </container>

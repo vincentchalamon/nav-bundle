@@ -32,7 +32,7 @@ final class ReadMultipleResultDecoder implements ContextAwareDecoderInterface
         }
 
         $results = $object->ReadMultiple_Result->{$context['namespace']};
-        if (!is_array($results)) {
+        if (!\is_array($results)) {
             $results = [$results];
         }
 

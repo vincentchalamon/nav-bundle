@@ -20,11 +20,11 @@ use NavBundle\Exception\TypeNotFoundException;
  */
 final class TypeFactory
 {
-    /**
-     * @var iterable|TypeInterface[]
-     */
     private $types;
 
+    /**
+     * @param iterable|TypeInterface[]
+     */
     public function __construct(iterable $types)
     {
         $this->types = $types;

@@ -56,8 +56,8 @@ class SoapClient extends NtlmSoapClient
      */
     public function __hasFunction(string $function): bool
     {
-        return in_array($function, array_map(function (string $fct) use ($function) {
-            return \preg_replace('/^[^ ]+ (.*)\(.*\)$/', '$1', $fct);
+        return \in_array($function, array_map(static function (string $fct) {
+            return preg_replace('/^[^ ]+ (.*)\(.*\)$/', '$1', $fct);
         }, $this->__getFunctions()), true);
     }
 

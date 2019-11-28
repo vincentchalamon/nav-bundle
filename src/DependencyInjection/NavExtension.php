@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace NavBundle\DependencyInjection;
 
+use NavBundle\Bridge\ApiPlatform\DataProvider\CollectionExtensionInterface;
+use NavBundle\Bridge\ApiPlatform\DataProvider\ItemExtensionInterface;
 use NavBundle\Debug\Manager\TraceableManager;
 use NavBundle\Manager\Manager;
 use NavBundle\Manager\ManagerInterface;
@@ -46,6 +48,12 @@ final class NavExtension extends Extension
         $container
             ->registerForAutoconfiguration(TypeInterface::class)
             ->addTag('nav.type');
+        $container
+            ->registerForAutoconfiguration(ItemExtensionInterface::class)
+            ->addTag('nav.item_extension');
+        $container
+            ->registerForAutoconfiguration(CollectionExtensionInterface::class)
+            ->addTag('nav.collection_extension');
 
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');

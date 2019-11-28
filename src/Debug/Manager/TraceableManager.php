@@ -48,7 +48,7 @@ final class TraceableManager extends Manager
     /**
      * {@inheritdoc}
      */
-    public function findAll(string $className): \Generator
+    public function findAll(string $className): iterable
     {
         $this->stopwatch->start('nav.findAll');
         yield from parent::findAll($className);
@@ -58,7 +58,7 @@ final class TraceableManager extends Manager
     /**
      * {@inheritdoc}
      */
-    public function findBy(string $className, array $criteria = [], int $size = 0): \Generator
+    public function findBy(string $className, array $criteria = [], int $size = 0): iterable
     {
         $this->stopwatch->start('nav.findBy');
         yield from parent::findBy($className, $criteria, $size);

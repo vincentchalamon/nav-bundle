@@ -47,9 +47,6 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 class Manager implements ManagerInterface, WarmableInterface
 {
     private $driver;
-    /**
-     * @var SerializerInterface|NormalizerInterface
-     */
     private $serializer;
     private $configCacheFactory;
     private $dispatcher;
@@ -69,6 +66,9 @@ class Manager implements ManagerInterface, WarmableInterface
     private $configCache;
     private $classMetadatas;
 
+    /**
+     * @param SerializerInterface|NormalizerInterface
+     */
     public function __construct(
         ClassMetadataDriverInterface $driver,
         SerializerInterface $serializer,
@@ -79,8 +79,7 @@ class Manager implements ManagerInterface, WarmableInterface
         string $wsdl,
         array $soapOptions,
         string $cacheDir
-    )
-    {
+    ) {
         $this->driver = $driver;
         $this->serializer = $serializer;
         $this->configCacheFactory = $configCacheFactory;
@@ -119,7 +118,7 @@ class Manager implements ManagerInterface, WarmableInterface
     {
         if (!isset($this->clients[$className])) {
             $this->clients[$className] = new SoapClient(
-                $this->wsdl . $this->getClassMetadata($className)->getNamespace(),
+                $this->wsdl.$this->getClassMetadata($className)->getNamespace(),
                 $this->soapOptions
             );
         }
@@ -149,7 +148,7 @@ class Manager implements ManagerInterface, WarmableInterface
     /**
      * {@inheritdoc}
      */
-    public function findBy(string $className, array $criteria = [], int $size = 0): \Generator
+    public function findBy(string $className, array $criteria = [], int $size = 0): iterable
     {
         $classMetadata = $this->getClassMetadata($className);
         $criteria = $this->getCriteria($classMetadata, $criteria);
@@ -218,7 +217,7 @@ class Manager implements ManagerInterface, WarmableInterface
     /**
      * {@inheritdoc}
      */
-    public function findAll(string $className): \Generator
+    public function findAll(string $className): iterable
     {
         return $this->findBy($className);
     }
@@ -228,7 +227,7 @@ class Manager implements ManagerInterface, WarmableInterface
      */
     public function create(object $entity): void
     {
-        $className = get_class($entity);
+        $className = \get_class($entity);
         if (!$this->getClient($className)->__hasFunction('Create')) {
             throw new MethodNotAllowedException('Method "Create" is not allowed on this namespace.');
         }
@@ -249,6 +248,7 @@ class Manager implements ManagerInterface, WarmableInterface
 
         $this->dispatcher->dispatch(new PostCreateEvent($this, $entity));
     }
+
     // todo Implement CreateMultiple
 
     /**
@@ -256,7 +256,7 @@ class Manager implements ManagerInterface, WarmableInterface
      */
     public function update(object $entity): void
     {
-        $className = get_class($entity);
+        $className = \get_class($entity);
         if (!$this->getClient($className)->__hasFunction('Update')) {
             throw new MethodNotAllowedException('Method "Update" is not allowed on this namespace.');
         }
@@ -277,6 +277,7 @@ class Manager implements ManagerInterface, WarmableInterface
 
         $this->dispatcher->dispatch(new PostUpdateEvent($this, $entity));
     }
+
     // todo Implement UpdateMultiple
 
     /**
@@ -286,7 +287,7 @@ class Manager implements ManagerInterface, WarmableInterface
      */
     public function delete(object $entity): void
     {
-        $className = get_class($entity);
+        $className = \get_class($entity);
         if (!$this->getClient($className)->__hasFunction('Delete')) {
             throw new MethodNotAllowedException('Method "Delete" is not allowed on this namespace.');
         }
@@ -353,7 +354,7 @@ class Manager implements ManagerInterface, WarmableInterface
             return $this->configCache;
         }
 
-        $this->configCache = $this->configCacheFactory->cache($this->cacheDir . '/classMetadata.php', function (ConfigCacheInterface $cache): void {
+        $this->configCache = $this->configCacheFactory->cache($this->cacheDir.'/classMetadata.php', function (ConfigCacheInterface $cache): void {
             $cache->write(sprintf(<<<'PHP'
 <?php
 

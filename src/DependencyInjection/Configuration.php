@@ -20,15 +20,9 @@ final class Configuration implements ConfigurationInterface
 {
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        if (method_exists(TreeBuilder::class, 'getRootNode')) {
-            $treeBuilder = new TreeBuilder('nav');
-            $rootNode = $treeBuilder->getRootNode();
-        } else {
-            $treeBuilder = new TreeBuilder();
-            $rootNode = $treeBuilder->root('nav');
-        }
-
-        $rootNode
+        $treeBuilder = new TreeBuilder('nav');
+        $treeBuilder
+            ->getRootNode()
             ->beforeNormalization()
                 ->ifTrue(static function ($v) { return \is_string($v['wsdl'] ?? null); })
                 ->then(static function ($v) {

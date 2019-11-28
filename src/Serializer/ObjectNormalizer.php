@@ -76,7 +76,7 @@ final class ObjectNormalizer implements ContextAwareDenormalizerInterface, Denor
      */
     public function normalize($object, $format = null, array $context = []): array
     {
-        $className = get_class($object);
+        $className = \get_class($object);
         $classMetadata = $this->registry->getManagerForClass($className)->getClassMetadata($className);
         $data = [];
         foreach ($classMetadata->getMapping() as $property => $options) {
@@ -92,7 +92,7 @@ final class ObjectNormalizer implements ContextAwareDenormalizerInterface, Denor
     public function supportsNormalization($data, $format = null): bool
     {
         try {
-            return $this->registry->getManagerForClass(get_class($data)) instanceof ManagerInterface;
+            return $this->registry->getManagerForClass(\get_class($data)) instanceof ManagerInterface;
         } catch (ClassMetadataNotFoundException $exception) {
             return false;
         }

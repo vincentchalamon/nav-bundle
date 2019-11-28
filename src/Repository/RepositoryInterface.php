@@ -37,7 +37,7 @@ interface RepositoryInterface
     /**
      * Finds all entities in the repository.
      *
-     * @return array the entities
+     * @return iterable the entities
      */
     public function findAll();
 
@@ -47,7 +47,7 @@ interface RepositoryInterface
      * @param array $criteria the criteria
      * @param int   $size     the size
      *
-     * @return array the entities
+     * @return iterable the entities
      */
     public function findBy(array $criteria = [], int $size = 0);
 

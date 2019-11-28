@@ -45,18 +45,18 @@ interface ClassMetadataInterface
     /**
      * Get the entity 'No' property name.
      *
-     * @return string the property name
-     *
      * @throws NoNotFoundException
+     *
+     * @return string the property name
      */
     public function getNo(): string;
 
     /**
      * Get the entity 'Key' property name.
      *
-     * @return string the property name
-     *
      * @throws KeyNotFoundException
+     *
+     * @return string the property name
      */
     public function getKey(): string;
 }

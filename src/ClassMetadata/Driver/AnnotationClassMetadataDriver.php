@@ -16,8 +16,8 @@ namespace NavBundle\ClassMetadata\Driver;
 use Doctrine\Common\Annotations\Reader;
 use NavBundle\Annotation\Column;
 use NavBundle\Annotation\Entity;
-use NavBundle\Annotation\No;
 use NavBundle\Annotation\Key;
+use NavBundle\Annotation\No;
 use NavBundle\Exception\PathNotFoundException;
 
 /**

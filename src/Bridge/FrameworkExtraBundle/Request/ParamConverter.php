@@ -1,8 +1,17 @@
 <?php
 
+/*
+ * This file is part of the NavBundle.
+ *
+ * (c) Vincent Chalamon <vincentchalamon@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
-namespace NavBundle\Request;
+namespace NavBundle\Bridge\FrameworkExtraBundle\Request;
 
 use NavBundle\Exception\ManagerNotFoundException;
 use NavBundle\Manager\ManagerInterface;
@@ -13,7 +22,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
- * @author Vincent Chalamon <vincent@les-tilleuls.coop>
+ * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
 final class ParamConverter implements ParamConverterInterface
 {
@@ -25,7 +34,7 @@ final class ParamConverter implements ParamConverterInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      *
      * @throws NotFoundHttpException
      */
@@ -47,7 +56,7 @@ final class ParamConverter implements ParamConverterInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function supports(SensioParamConverter $configuration): bool
     {

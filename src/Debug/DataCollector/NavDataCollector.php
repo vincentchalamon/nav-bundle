@@ -23,11 +23,11 @@ use Symfony\Component\HttpKernel\DataCollector\DataCollector;
  */
 final class NavDataCollector extends DataCollector
 {
-    /**
-     * @var iterable|TraceableManager[]
-     */
     private $managers;
 
+    /**
+     * @param iterable|TraceableManager[]
+     */
     public function __construct(iterable $managers)
     {
         $this->managers = $managers;

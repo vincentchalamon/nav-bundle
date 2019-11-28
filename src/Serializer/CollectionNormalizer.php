@@ -37,7 +37,7 @@ final class CollectionNormalizer implements ContextAwareDenormalizerInterface, D
     /**
      * {@inheritdoc}
      */
-    public function denormalize($values, $className, $format = null, array $context = []): \Generator
+    public function denormalize($values, $className, $format = null, array $context = []): iterable
     {
         foreach ($values as $value) {
             yield $this->denormalizer->denormalize($value, $className, $format, $context + [__CLASS__ => true]);
