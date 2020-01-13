@@ -51,17 +51,17 @@
         </div>
     {% else %}
         <div class="sf-tabs">
-            {% for name, manager in collector.managers %}
+            {% for name, connection in collector.connections %}
                 <div class="tab">
-                    <h3 class="tab-title">{{ name }}<span class="badge">{{ manager.count }}</span></h3>
+                    <h3 class="tab-title">{{ name }}<span class="badge">{{ connection.count }}</span></h3>
                     <div class="tab-content">
                         <div class="metrics">
                             <div class="metric">
-                                <span class="value">{{ '%.0f'|format(manager.duration) }} <span class="unit">ms</span></span>
+                                <span class="value">{{ '%.0f'|format(connection.duration) }} <span class="unit">ms</span></span>
                                 <span class="label">Total execution time</span>
                             </div>
                             <div class="metric">
-                                <span class="value">{{ '%.2f'|format(manager.memory / 1024 / 1024) }} <span class="unit">MB</span></span>
+                                <span class="value">{{ '%.2f'|format(connection.memory / 1024 / 1024) }} <span class="unit">MB</span></span>
                                 <span class="label">Peak memory usage</span>
                             </div>
                         </div>
@@ -75,7 +75,7 @@
                                 <th>Request</th>
                             </tr>
                             </thead>
-                            {% for i, call in manager.calls %}
+                            {% for i, call in connection.calls %}
                                 <tr>
                                     <td class="font-normal text-small text-muted nowrap">{{ i + 1 }}</td>
                                     <td class="nowrap">{{ '%.0f'|format(call.event.duration) }} ms</td>

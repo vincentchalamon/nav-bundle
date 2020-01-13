@@ -4,110 +4,83 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services
         https://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="nav.class_metadata.driver.annotation" class="NavBundle\ClassMetadata\Driver\AnnotationClassMetadataDriver" public="false" abstract="true">
-            <argument type="service" id="annotations.reader"/>
-        </service>
-
         <service id="nav.registry" class="NavBundle\Registry" public="true">
-            <argument/> <!-- managers indexed by name -->
+            <argument type="service" id="service_container"/>
+            <argument/> <!-- managers -->
+            <argument/> <!-- default manager name -->
+            <tag name="kernel.cache_warmer"/>
         </service>
         <service id="NavBundle\Registry" alias="nav.registry" public="true"/>
         <service id="NavBundle\RegistryInterface" alias="nav.registry" public="true"/>
 
-        <service id="nav.abstract_manager" class="NavBundle\Manager\Manager" public="false" abstract="true">
-            <argument/> <!-- driver -->
-            <argument type="service" id="serializer"/>
-            <argument type="service" id="config_cache_factory"/>
-            <argument type="service" id="event_dispatcher"/>
-            <argument type="tagged_locator" tag="nav.repository"/>
-            <argument type="service" id="logger" on-invalid="null"/>
+        <service id="nav.class_metadata.driver.annotation" class="NavBundle\ClassMetadata\Driver\AnnotationDriver" abstract="true">
+            <argument type="service" id="annotations.reader"/>
+        </service>
+
+        <service id="nav.connection_resolver.abstract" class="NavBundle\Connection\ConnectionResolver" abstract="true">
             <argument/> <!-- WSDL -->
-            <argument/> <!-- authNtlm -->
-            <argument>%kernel.cache_dir%/nav</argument>
+            <argument/> <!-- options -->
+            <argument type="tagged_iterator" tag="nav.connection"/>
         </service>
 
-        <service id="nav.cache_warmer.manager" class="NavBundle\CacheWarmer\ManagerCacheWarmer" public="false">
-            <argument type="service" id="service_container"/>
-            <tag name="kernel.cache_warmer"/>
+        <service id="nav.entity_listener_resolver" class="NavBundle\EntityListener\EntityListenerResolver" public="false">
+            <argument type="tagged_iterator" tag="nav.entity_listener"/>
         </service>
 
-        <service id="nav.type_factory" class="NavBundle\Type\TypeFactory" public="false">
-            <argument type="tagged" tag="nav.type"/>
+        <service id="nav.entity_manager.abstract" class="NavBundle\EntityManager\EntityManager" abstract="true">
+            <argument type="service" id="logger" on-invalid="null"/>
+            <argument type="service" id="nav.event_manager"/>
+            <argument type="service" id="serializer"/>
+            <argument/> <!-- connection resolver -->
+            <argument/> <!-- mappingDriver -->
+            <argument/> <!-- namingStrategy -->
+            <argument/> <!-- hydrator -->
+            <argument/> <!-- entityNamespaces -->
+            <call method="setEntityRepositoryFactory">
+                <argument type="service" id="nav.entity_repository_factory"/>
+            </call>
         </service>
 
-        <service id="nav.type.array" class="NavBundle\Type\ArrayType" public="false">
-            <tag name="nav.type"/>
+        <service id="nav.entity_repository_factory" class="NavBundle\EntityRepository\EntityRepositoryFactory" public="false">
+            <argument type="tagged_iterator" tag="nav.entity_repository"/>
         </service>
 
-        <service id="nav.type.bool" class="NavBundle\Type\BoolType" public="false">
-            <tag name="nav.type"/>
+        <service id="nav.event_manager" class="NavBundle\Event\EventManager" public="false">
+            <argument type="service" id="nav.entity_listener_resolver"/>
+            <argument type="tagged_iterator" tag="nav.event_subscriber"/>
         </service>
 
-        <service id="nav.type.date" class="NavBundle\Type\DateType" public="false">
-            <tag name="nav.type"/>
+        <service id="nav.hydrator.serializer" class="NavBundle\Hydrator\SerializerHydrator" public="false">
+            <argument type="service" id="serializer"/>
         </service>
 
-        <service id="nav.type.float" class="NavBundle\Type\FloatType" public="false">
-            <tag name="nav.type"/>
-        </service>
+        <service id="nav.naming_strategy.default" class="NavBundle\NamingStrategy\DefaultNamingStrategy" public="false"/>
 
-        <service id="nav.type.int" class="NavBundle\Type\IntType" public="false">
-            <tag name="nav.type"/>
-        </service>
-
-        <service id="nav.type.string" class="NavBundle\Type\StringType" public="false">
-            <tag name="nav.type"/>
-        </service>
-
-        <service id="nav.property_info.class_metadata_extractor" class="NavBundle\ClassMetadata\ClassMetadataExtractor" public="false">
-            <argument type="service" id="nav.registry"/>
-            <argument type="service" id="nav.type_factory"/>
-            <tag name="property_info.type_extractor"/>
-        </service>
-
-        <service id="nav.decoder.read_multiple_result" class="NavBundle\Serializer\ReadMultipleResultDecoder" public="false">
+        <service id="nav.serializer.decoder" class="NavBundle\Serializer\NavDecoder" public="false">
             <tag name="serializer.encoder" priority="-1"/>
         </service>
 
-        <service id="nav.decoder.read_result" class="NavBundle\Serializer\ReadResultDecoder" public="false">
-            <tag name="serializer.encoder" priority="-1"/>
+        <service id="nav.serializer.collection_denormalizer" class="NavBundle\Serializer\CollectionDenormalizer" public="false">
+            <tag name="serializer.normalizer" priority="-1"/>
         </service>
 
-        <service id="nav.normalizer.object" class="NavBundle\Serializer\ObjectNormalizer" public="false">
+        <service id="nav.serializer.object_denormalizer" class="NavBundle\Serializer\ObjectDenormalizer" public="false">
+            <tag name="serializer.normalizer" priority="-1"/>
+        </service>
+
+        <service id="nav.serializer.entity_denormalizer" class="NavBundle\Serializer\EntityDenormalizer" public="false">
             <argument type="service" id="nav.registry"/>
             <tag name="serializer.normalizer" priority="-2"/>
         </service>
 
-        <service id="nav.normalizer.collection" class="NavBundle\Serializer\CollectionNormalizer" public="false">
+        <service id="nav.serializer.entity_normalizer" class="NavBundle\Serializer\EntityNormalizer" public="false">
             <argument type="service" id="nav.registry"/>
             <tag name="serializer.normalizer" priority="-1"/>
         </service>
 
         <service id="nav.param_converter" class="NavBundle\Bridge\FrameworkExtraBundle\Request\ParamConverter" public="false">
             <argument type="service" id="nav.registry"/>
-            <tag name="request.param_converter" priority="-1"/>
-        </service>
-
-        <service id="nav.api_platform.data_persister" class="NavBundle\Bridge\ApiPlatform\DataPersister\DataPersister" public="false">
-            <tag name="api_platform.data_persister" priority="-1"/>
-        </service>
-
-        <service id="nav.api_platform.data_provider.item" class="NavBundle\Bridge\ApiPlatform\DataProvider\ItemDataProvider" public="false">
-            <argument type="service" id="nav.registry"/>
-            <argument type="tagged" tag="nav.api_platform.item_extension"/>
-            <tag name="api_platform.item_data_provider" priority="-1"/>
-        </service>
-
-        <service id="nav.api_platform.data_provider.collection" class="NavBundle\Bridge\ApiPlatform\DataProvider\CollectionDataProvider" public="false">
-            <argument type="service" id="nav.registry"/>
-            <argument type="tagged" tag="nav.api_platform.collection_extension"/>
-            <tag name="api_platform.collection_data_provider" priority="-1"/>
-        </service>
-
-        <service id="nav.api_platform.extension.filter" class="NavBundle\Bridge\ApiPlatform\DataProvider\Extension\FilterExtension" public="false">
-            <argument type="service" id="api_platform.metadata.resource.metadata_factory"/>
-            <argument type="tagged_locator" tag="nav.api_platform.filter"/>
-            <tag name="api_platform.collection_data_provider" priority="-1"/>
+            <tag name="request.param_converter" converter="nav"/>
         </service>
     </services>
 </container>

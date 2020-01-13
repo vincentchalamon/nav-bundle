@@ -13,9 +13,12 @@ declare(strict_types=1);
 
 namespace NavBundle\Event;
 
+use Doctrine\Persistence\Event\PreUpdateEventArgs;
+
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-final class PreUpdateEvent extends EntityEvent
+final class PreUpdateEvent extends PreUpdateEventArgs implements EventInterface
 {
+    public const EVENT_NAME = 'preUpdate';
 }

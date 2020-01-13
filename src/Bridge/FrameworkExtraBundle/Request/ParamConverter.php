@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace NavBundle\Bridge\FrameworkExtraBundle\Request;
 
-use NavBundle\Exception\ManagerNotFoundException;
-use NavBundle\Manager\ManagerInterface;
 use NavBundle\RegistryInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter as SensioParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
@@ -41,10 +39,11 @@ final class ParamConverter implements ParamConverterInterface
     public function apply(Request $request, SensioParamConverter $configuration): bool
     {
         $className = $configuration->getClass();
-        $manager = $this->registry->getManagerForClass($className);
-        $entity = $manager->getRepository($className)->findOneBy(array_intersect_key(
+        $entityManager = $this->registry->getManagerForClass($className);
+        $classMetadata = $entityManager->getClassMetadata($className);
+        $entity = $entityManager->getRepository($className)->findOneBy(array_intersect_key(
             $request->attributes->all(),
-            $manager->getClassMetadata($className)->getMapping()
+            array_flip($classMetadata->getFieldNames())
         ));
         if (!$entity) {
             throw new NotFoundHttpException();
@@ -60,10 +59,8 @@ final class ParamConverter implements ParamConverterInterface
      */
     public function supports(SensioParamConverter $configuration): bool
     {
-        try {
-            return $this->registry->getManagerForClass($configuration->getClass()) instanceof ManagerInterface;
-        } catch (ManagerNotFoundException $exception) {
-            return false;
-        }
+        $class = $configuration->getClass();
+
+        return null !== $class && class_exists($class) && null !== $this->registry->getManagerForClass($class);
     }
 }

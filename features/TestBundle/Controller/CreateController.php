@@ -14,13 +14,12 @@ declare(strict_types=1);
 namespace NavBundle\E2e\TestBundle\Controller;
 
 use NavBundle\E2e\TestBundle\Entity\Contact;
-use NavBundle\Registry;
+use NavBundle\RegistryInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
-use Twig\Environment;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
@@ -28,9 +27,10 @@ use Twig\Environment;
 final class CreateController
 {
     /**
-     * @Route("/contacts/create", name="create", methods={"GET", "POST"})
+     * @Route("/contacts/create", name="contact_create", methods={"GET", "POST"})
+     * @Template("@Test/create.html.twig")
      */
-    public function __invoke(Registry $registry, Environment $twig, RouterInterface $router, Request $request): Response
+    public function __invoke(RegistryInterface $registry, RouterInterface $router, Request $request)
     {
         if ($request->isMethod('POST')) {
             $contact = new Contact();
@@ -38,11 +38,13 @@ final class CreateController
             foreach ($request->request->get('contact') as $key => $value) {
                 $contact->{$key} = empty($value) ? null : $value;
             }
-            $registry->getManagerForClass(Contact::class)->create($contact);
+            $em = $registry->getManagerForClass(Contact::class);
+            $em->persist($contact);
+            $em->flush($contact);
 
-            return new RedirectResponse($router->generate('edit', ['no' => $contact->no]));
+            return new RedirectResponse($router->generate('contact_edit', ['no' => $contact->no]));
         }
 
-        return new Response($twig->render('create.html.twig'));
+        return [];
     }
 }

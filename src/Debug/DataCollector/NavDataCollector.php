@@ -13,7 +13,8 @@ declare(strict_types=1);
 
 namespace NavBundle\Debug\DataCollector;
 
-use NavBundle\Debug\Manager\TraceableManager;
+use NavBundle\Debug\Connection\TraceableConnection;
+use NavBundle\RegistryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
@@ -23,36 +24,36 @@ use Symfony\Component\HttpKernel\DataCollector\DataCollector;
  */
 final class NavDataCollector extends DataCollector
 {
-    private $managers;
+    private $registry;
 
-    /**
-     * @param iterable|TraceableManager[]
-     */
-    public function __construct(iterable $managers)
+    public function __construct(RegistryInterface $registry)
     {
-        $this->managers = $managers;
+        $this->registry = $registry;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function collect(Request $request, Response $response, \Exception $exception = null): void
     {
         $this->data = [
             'count' => 0,
             'duration' => 0.,
             'memory' => 0.,
-            'managers' => [],
+            'connections' => [],
         ];
 
-        foreach ($this->managers as $name => $manager) {
-            $this->data['managers'][$name] = [
-                'calls' => $manager->getCalls(),
-                'duration' => $manager->getDuration(),
-                'memory' => $manager->getMemory(),
-                'count' => $manager->count(),
+        foreach ($this->registry->getConnections() as $name => $connection) {
+            $this->data['connections'][$name] = [
+                'calls' => $connection->getCalls(),
+                'duration' => $connection->getDuration(),
+                'memory' => $connection->getMemory(),
+                'count' => $connection->count(),
             ];
 
-            $this->data['duration'] += $this->data['managers'][$name]['duration'];
-            $this->data['memory'] += $this->data['managers'][$name]['memory'];
-            $this->data['count'] += $this->data['managers'][$name]['count'];
+            $this->data['duration'] += $this->data['connections'][$name]['duration'];
+            $this->data['memory'] += $this->data['connections'][$name]['memory'];
+            $this->data['count'] += $this->data['connections'][$name]['count'];
         }
     }
 
@@ -82,10 +83,10 @@ final class NavDataCollector extends DataCollector
     }
 
     /**
-     * @return TraceableManager[]
+     * @return TraceableConnection[]
      */
-    public function getManagers(): array
+    public function getConnections(): array
     {
-        return $this->data['managers'];
+        return $this->data['connections'];
     }
 }

@@ -13,7 +13,8 @@ declare(strict_types=1);
 
 namespace NavBundle\Annotation;
 
-use NavBundle\Repository\Repository;
+use NavBundle\Connection\Connection;
+use NavBundle\EntityRepository\EntityRepository;
 
 /**
  * @Annotation
@@ -26,7 +27,12 @@ final class Entity
     /**
      * @var string
      */
-    public $repositoryClass = Repository::class;
+    public $repositoryClass = EntityRepository::class;
+
+    /**
+     * @var string
+     */
+    public $connection = Connection::class;
 
     /**
      * @var string

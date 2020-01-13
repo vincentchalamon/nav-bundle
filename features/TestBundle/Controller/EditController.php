@@ -14,14 +14,13 @@ declare(strict_types=1);
 namespace NavBundle\E2e\TestBundle\Controller;
 
 use NavBundle\E2e\TestBundle\Entity\Contact;
-use NavBundle\Registry;
+use NavBundle\RegistryInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
-use Twig\Environment;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
@@ -29,22 +28,25 @@ use Twig\Environment;
 final class EditController
 {
     /**
-     * @Route("/contacts/{no}", name="edit", methods={"GET", "PUT"}, requirements={"no"=".*"})
+     * @Route("/contacts/{no}", name="contact_edit", methods={"GET", "PUT"}, requirements={"no"=".*"})
      * @ParamConverter("contact", class=Contact::class)
+     * @Template("@Test/edit.html.twig")
      */
-    public function __invoke(Registry $registry, Environment $twig, RouterInterface $router, Request $request, Contact $contact): Response
+    public function __invoke(RegistryInterface $registry, RouterInterface $router, Request $request, Contact $contact)
     {
         if ($request->isMethod('PUT')) {
             foreach ($request->request->get('contact') as $key => $value) {
                 $contact->{$key} = empty($value) ? null : $value;
             }
-            $registry->getManagerForClass(Contact::class)->update($contact);
+            $em = $registry->getManagerForClass(Contact::class);
+            $em->persist($contact);
+            $em->flush($contact);
 
-            return new RedirectResponse($router->generate('edit', ['no' => $contact->no]));
+            return new RedirectResponse($router->generate('contact_edit', ['no' => $contact->no]));
         }
 
-        return new Response($twig->render('edit.html.twig', [
+        return [
             'contact' => $contact,
-        ]));
+        ];
     }
 }

@@ -13,9 +13,12 @@ declare(strict_types=1);
 
 namespace NavBundle\Event;
 
+use Doctrine\Persistence\Event\LifecycleEventArgs;
+
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-final class PostUpdateEvent extends EntityEvent
+final class PostUpdateEvent extends LifecycleEventArgs implements EventInterface
 {
+    public const EVENT_NAME = 'postUpdate';
 }

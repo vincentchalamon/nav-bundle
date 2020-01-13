@@ -5,7 +5,7 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
         <service id="nav.data_collector" class="NavBundle\Debug\DataCollector\NavDataCollector" public="false">
-            <argument/> <!-- managers indexed by name -->
+            <argument type="service" id="nav.registry"/>
             <tag name="data_collector" template="@Nav/Collector/nav.html.twig" id="nav"/>
         </service>
     </services>

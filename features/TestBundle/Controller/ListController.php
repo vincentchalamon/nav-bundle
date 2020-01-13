@@ -14,10 +14,9 @@ declare(strict_types=1);
 namespace NavBundle\E2e\TestBundle\Controller;
 
 use NavBundle\E2e\TestBundle\Entity\Contact;
-use NavBundle\Registry;
-use Symfony\Component\HttpFoundation\Response;
+use NavBundle\RegistryInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Routing\Annotation\Route;
-use Twig\Environment;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
@@ -25,15 +24,16 @@ use Twig\Environment;
 final class ListController
 {
     /**
-     * @Route("/contacts", name="list", methods={"GET"})
+     * @Route("/contacts", name="contact_list", methods={"GET"})
+     * @Template("@Test/list.html.twig")
      */
-    public function __invoke(Registry $registry, Environment $twig): Response
+    public function __invoke(RegistryInterface $registry)
     {
-        return new Response($twig->render('list.html.twig', [
+        return [
             'contacts' => $registry
                 ->getManagerForClass(Contact::class)
                 ->getRepository(Contact::class)
-                ->findBy([], 10),
-        ]));
+                ->findBy([], null, 10),
+        ];
     }
 }

@@ -13,43 +13,47 @@ declare(strict_types=1);
 
 namespace NavBundle;
 
-use NavBundle\Exception\ManagerNotFoundException;
-use NavBundle\Manager\ManagerInterface;
-use NavBundle\Repository\RepositoryInterface;
+use Doctrine\Persistence\ManagerRegistry;
+use NavBundle\Connection\ConnectionInterface;
+use NavBundle\EntityManager\EntityManagerInterface;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-interface RegistryInterface
+interface RegistryInterface extends ManagerRegistry
 {
     /**
-     * Get a manager by its name.
+     * {@inheritdoc}
      *
-     * @param string $name the manager name
-     *
-     * @throws ManagerNotFoundException
-     *
-     * @return ManagerInterface the manager
+     * @return ConnectionInterface
      */
-    public function getManager(string $name = 'default'): ManagerInterface;
+    public function getConnection($name = null);
 
     /**
-     * Get the manager related to the entity class.
+     * {@inheritdoc}
      *
-     * @param string $class the entity class
-     *
-     * @throws ManagerNotFoundException
-     *
-     * @return ManagerInterface the manager related to this entity class
+     * @return ConnectionInterface[]
      */
-    public function getManagerForClass(string $class): ManagerInterface;
+    public function getConnections();
 
     /**
-     * Get the repository related to the entity class.
+     * {@inheritdoc}
      *
-     * @param string $class the entity class
-     *
-     * @return RepositoryInterface the repository related to this entity class
+     * @return EntityManagerInterface
      */
-    public function getRepository(string $class): RepositoryInterface;
+    public function getManager($name = null);
+
+    /**
+     * {@inheritdoc}
+     *
+     * @return EntityManagerInterface[]
+     */
+    public function getManagers();
+
+    /**
+     * {@inheritdoc}
+     *
+     * @return EntityManagerInterface
+     */
+    public function getManagerForClass($class);
 }

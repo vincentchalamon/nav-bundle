@@ -14,10 +14,9 @@ declare(strict_types=1);
 namespace NavBundle\E2e\TestBundle\Controller;
 
 use NavBundle\E2e\TestBundle\Entity\Contact;
-use NavBundle\Registry;
+use NavBundle\RegistryInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -27,13 +26,15 @@ use Symfony\Component\Routing\RouterInterface;
 final class DeleteController
 {
     /**
-     * @Route("/contacts/{no}", name="delete", methods={"DELETE"}, requirements={"no"=".*"})
+     * @Route("/contacts/{no}", name="contact_delete", methods={"DELETE"}, requirements={"no"=".*"})
      * @ParamConverter("contact", class=Contact::class)
      */
-    public function __invoke(Registry $registry, RouterInterface $router, Contact $contact): Response
+    public function __invoke(RegistryInterface $registry, RouterInterface $router, Contact $contact)
     {
-        $registry->getManagerForClass(Contact::class)->delete($contact);
+        $em = $registry->getManagerForClass(Contact::class);
+        $em->remove($contact);
+        $em->flush($contact);
 
-        return new RedirectResponse($router->generate('list'));
+        return new RedirectResponse($router->generate('contact_list'));
     }
 }

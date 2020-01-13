@@ -14,36 +14,40 @@ declare(strict_types=1);
 namespace NavBundle\E2e\TestBundle\Repository;
 
 use NavBundle\E2e\TestBundle\Entity\Contact;
-use NavBundle\Manager\ManagerInterface;
-use NavBundle\Repository\Repository;
+use NavBundle\EntityRepository\ServiceEntityRepository;
+use NavBundle\RegistryInterface;
 
 /**
- * @author Vincent Chalamon <vincent@les-tilleuls.coop>
+ * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-final class ContactRepository extends Repository
+final class ContactRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerInterface $manager)
+    public function __construct(RegistryInterface $registry)
     {
-        parent::__construct($manager, Contact::class);
+        parent::__construct($registry, Contact::class);
     }
 
-    public function findBy(array $criteria = [], int $size = 0)
+    /**
+     * {@inheritDoc}
+     */
+    public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): iterable
     {
-        return parent::findBy($criteria + ['type' => 'Person'], $size);
+        return parent::findBy($criteria + ['type' => 'Person'], $orderBy, $limit, $offset);
     }
 
-//    public function find(string $no)
-//    {
-//        return $this->findOneBy(['no' => $no, 'type' => 'Person']);
-//    }
-
-    public function findAll()
+    /**
+     * {@inheritDoc}
+     */
+    public function findAll(): iterable
     {
         return $this->findBy(['type' => 'Person']);
     }
 
-    public function findOneBy(array $criteria = [])
+    /**
+     * {@inheritDoc}
+     */
+    public function findOneBy(array $criteria, array $orderBy = null): ?object
     {
-        return parent::findOneBy($criteria + ['type' => 'Person']);
+        return parent::findOneBy($criteria + ['type' => 'Person'], $orderBy);
     }
 }

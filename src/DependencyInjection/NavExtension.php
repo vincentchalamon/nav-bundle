@@ -13,18 +13,17 @@ declare(strict_types=1);
 
 namespace NavBundle\DependencyInjection;
 
-use NavBundle\Bridge\ApiPlatform\DataProvider\CollectionExtensionInterface;
-use NavBundle\Bridge\ApiPlatform\DataProvider\ItemExtensionInterface;
-use NavBundle\Debug\Manager\TraceableManager;
-use NavBundle\Manager\Manager;
-use NavBundle\Manager\ManagerInterface;
-use NavBundle\Repository\RepositoryInterface;
-use NavBundle\Type\TypeInterface;
+use NavBundle\Debug\Connection\TraceableConnectionResolver;
+use NavBundle\EntityManager\EntityManager;
+use NavBundle\EntityManager\EntityManagerInterface;
+use NavBundle\EntityRepository\ServiceEntityRepositoryInterface;
+use NavBundle\Event\EventSubscriberInterface;
+use NavBundle\Exception\DriverNotFoundException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Alias;
-use Symfony\Component\DependencyInjection\Argument\TaggedIteratorArgument;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
@@ -40,68 +39,79 @@ final class NavExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $container
-            ->registerForAutoconfiguration(RepositoryInterface::class)
-            ->addTag('nav.repository');
+            ->registerForAutoconfiguration(ServiceEntityRepositoryInterface::class)
+            ->addTag('nav.entity_repository');
         $container
-            ->registerForAutoconfiguration(ManagerInterface::class)
-            ->addTag('nav.manager');
-        $container
-            ->registerForAutoconfiguration(TypeInterface::class)
-            ->addTag('nav.type');
-        $container
-            ->registerForAutoconfiguration(ItemExtensionInterface::class)
-            ->addTag('nav.item_extension');
-        $container
-            ->registerForAutoconfiguration(CollectionExtensionInterface::class)
-            ->addTag('nav.collection_extension');
+            ->registerForAutoconfiguration(EventSubscriberInterface::class)
+            ->addTag('nav.event_subscriber');
 
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
+
         if ($config['enable_profiler']) {
             $loader->load('debug.xml');
-            $container
-                ->getDefinition('nav.data_collector')
-                ->setArgument('$managers', new TaggedIteratorArgument('nav.manager', 'name'));
         }
 
+        $managers = [];
         foreach ($config['managers'] as $name => $options) {
-            $container
-                ->setDefinition("nav.class_metadata_driver.$name", new ChildDefinition("nav.class_metadata.driver.$options[driver]"))
-                ->setArgument('$path', $options['path'])
-                ->setPublic(false);
+            if (!$container->hasDefinition($options['driver'])) {
+                throw new DriverNotFoundException();
+            }
 
+            // Configure connection resolver
             $container
-                ->setDefinition("nav.manager.$name", new ChildDefinition('nav.abstract_manager'))
-                ->setPublic(true)
-                ->addTag('nav.manager', ['name' => $name])
-                ->setArgument('$driver', new Reference("nav.class_metadata_driver.$name"))
+                ->setDefinition("nav.connection_resolver.$name", new ChildDefinition('nav.connection_resolver.abstract'))
+                ->setPublic(false)
                 ->setArgument('$wsdl', $options['wsdl'])
-                ->setArgument('$soapOptions', [
-                    'user' => $options['username'],
-                    'password' => $options['password'],
-                    'cache_dir' => '%kernel.cache_dir%/nav',
-                ] + $options['soap_options'] + [
-                    'cache_wsdl' => WSDL_CACHE_NONE,
-                    'exception' => true,
-                    'soap_version' => SOAP_1_1,
-                    'connection_timeout' => 120,
-                ]);
-            if (!$container->hasAlias('nav.manager')) {
-                $container->setAlias('nav.manager', new Alias("nav.manager.$name"));
-                $container->setAlias(Manager::class, new Alias("nav.manager.$name"));
-                $container->setAlias(ManagerInterface::class, new Alias("nav.manager.$name"));
+                ->setArgument('$options', [
+                        'user' => $options['connection']['username'],
+                        'password' => $options['connection']['password'],
+                        'cache_dir' => '%kernel.cache_dir%/nav',
+                    ] + $options['soap_options']
+                );
+
+            // Configure driver
+            $container
+                ->setDefinition("nav.entity_manager.$name.driver", new ChildDefinition($options['driver']))
+                ->setPublic(false)
+                ->setArgument('$paths', array_values(array_map(function (array $path) {
+                    return $path['path'];
+                }, $options['paths'])));
+
+            // Configure entity manager
+            $container
+                ->setDefinition("nav.entity_manager.$name", new ChildDefinition('nav.entity_manager.abstract'))
+                ->setPublic(true)
+                ->setArgument('$connectionResolver', new Reference("nav.connection_resolver.$name"))
+                ->setArgument('$mappingDriver', new Reference("nav.entity_manager.$name.driver"))
+                ->setArgument('$namingStrategy', new Reference($options['naming_strategy']))
+                ->setArgument('$hydrator', new Reference($options['default_hydrator']))
+                ->setArgument('$entityNamespaces', array_map(function (array $path) {
+                    return $path['namespace'];
+                }, $options['paths']));
+            $managers[$name] = "nav.entity_manager.$name";
+
+            if (!$container->hasAlias('nav.entity_manager')) {
+                $container->setAlias('nav.entity_manager', new Alias("nav.entity_manager.$name"));
+                $container->setAlias(EntityManager::class, new Alias("nav.entity_manager.$name"));
+                $container->setAlias(EntityManagerInterface::class, new Alias("nav.entity_manager.$name"));
+
+                $container
+                    ->getDefinition('nav.registry')
+                    ->setArgument('$defaultManagerName', $name);
             }
 
             if ($config['enable_profiler']) {
                 $container
-                    ->getDefinition("nav.manager.$name")
-                    ->setClass(TraceableManager::class)
-                    ->addMethodCall('setStopwatch', [new Reference('debug.stopwatch')]);
+                    ->setDefinition("nav.connection_resolver.$name.traceable", new Definition(TraceableConnectionResolver::class))
+                    ->setDecoratedService("nav.connection_resolver.$name")
+                    ->setArgument('$decorated', new Reference("nav.connection_resolver.$name.traceable.inner"))
+                    ->setArgument('$stopwatch', new Reference('debug.stopwatch'));
             }
         }
 
         $container
             ->getDefinition('nav.registry')
-            ->setArgument('$managers', new TaggedIteratorArgument('nav.manager', 'name'));
+            ->setArgument('$managers', $managers);
     }
 }

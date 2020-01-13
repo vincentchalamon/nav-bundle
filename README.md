@@ -1,6 +1,6 @@
-# Nav Bundle
+# NavBundle
 
-This Symfony Bundle is used to map objects with a Microsoft Dynamics Nav service.
+This Symfony Bundle is used to map objects with a Microsoft Dynamics NAV service.
 
 ## Requirements
 
@@ -18,11 +18,11 @@ composer req vincentchalamon/nav-bundle
 
 ```yaml
 nav:
-    wsdl: '%env(NAV_WSDL)%'
-    path: '%kernel.project_dir%/src/Entity'
-    domain: '%env(NAV_DOMAIN)%'
-    username: '%env(NAV_LOGIN)%'
-    password: '%env(NAV_PASSWORD)%'
+    url: '%env(resolve:NAV_URL)%' # i.e.: https://user:pass@www.example.com/NAV_WS/
+    paths:
+        App:
+            path: '%kernel.project_dir%/src/Entity'
+            namespace: 'App/Entity'
 ```
 
 ## Advanced configuration
@@ -32,11 +32,16 @@ nav:
     enable_profiler: '%kernel.debug%'
     foo:
         wsdl: '%env(NAV_WSDL)%'
-        path: '%kernel.project_dir%/src/Entity/Foo'
-        domain: '%env(NAV_DOMAIN)%'
-        username: '%env(NAV_LOGIN)%'
-        password: '%env(NAV_PASSWORD)%'
-        driver: annotation
+        connection:
+            username: '%env(NAV_USERNAME)%'
+            password: '%env(NAV_PASSWORD)%'
+        paths:
+            Foo:
+                path: '%kernel.project_dir%/src/Entity/Foo'
+                namespace: 'App/Entity/Foo'
+        driver: nav.class_metadata.driver.annotation
+        naming_strategy: nav.naming_strategy.default
+        default_hydrator: nav.hydrator.serializer
         soap_options:
             soap_version: 1
             connection_timeout: 120
@@ -44,11 +49,16 @@ nav:
             trace: '%kernel.debug%'
     bar:
         wsdl: '%env(ANOTHER_WSDL)%'
-        path: '%kernel.project_dir%/src/Entity/Bar'
-        domain: '%env(ANOTHER_DOMAIN)%'
-        username: '%env(ANOTHER_LOGIN)%'
-        password: '%env(ANOTHER_PASSWORD)%'
-        driver: annotation
+        paths:
+            Bar:
+                path: '%kernel.project_dir%/src/Entity/Bar'
+                namespace: 'App/Entity/Bar'
+        connection:
+            username: '%env(ANOTHER_USERNAME)%'
+            password: '%env(ANOTHER_PASSWORD)%'
+        driver: app.class_metadata.custom
+        naming_strategy: app.naming_strategy.custom
+        default_hydrator: app.hydrator.customer
         soap_options:
             soap_version: 1
             connection_timeout: 120
@@ -69,18 +79,24 @@ use NavBundle\Annotation as Nav;
 final class Contact
 {
     /**
-     * @Nav\Column(name="No")
-     * @Nav\Id
+     * @Nav\Column
+     * @Nav\Key
+     */
+    public $key;
+
+    /**
+     * @Nav\Column
+     * @Nav\No
      */
     public $no;
 
     /**
-     * @Nav\Column(name="E_Mail", nullable=true)
+     * @Nav\Column(name="Custom_Email", nullable=true)
      */
     public $email;
 
     /**
-     * @Nav\Column(name="Date", type="date", nullable=true)
+     * @Nav\Column(type="date", nullable=true)
      */
     public $date;
 }
@@ -116,14 +132,17 @@ $registry = $container->get('nav.registry');
 
 $manager = $registry->getManagerForClass(Contact::class);
 
-// Create
-$repository->create($object);
-
-// Update
-$repository->update($object);
+// Create/Update
+$manager->persist($object);
 
 // Delete
-$repository->delete($object);
+$manager->remove($object);
+
+// Flush
+$manager->flush();
+
+// It's also possible to flush an object or an array of objects
+$manager->flush($object);
 ```
 
 ## Profiler

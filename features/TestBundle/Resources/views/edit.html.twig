@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block content %}
-    <form action="{{ path('edit', {'no': contact.no}) }}" method="post">
+    <form action="{{ path('contact_edit', {'no': contact.no}) }}" method="post">
         <input type="hidden" name="_method" value="PUT"/>
         <label>Key: <input type="text" name="contact[key]" disabled value="{{ contact.key }}"/></label>
         <label>No: <input type="text" name="contact[no]" disabled value="{{ contact.no }}"/></label>
@@ -22,12 +22,12 @@
         <button type="submit">Update</button>
     </form>
 
-    <form action="{{ path('delete', {'no': contact.no}) }}" method="post">
+    <form action="{{ path('contact_delete', {'no': contact.no}) }}" method="post">
         <input type="hidden" name="_method" value="DELETE"/>
         <button type="submit">Delete</button>
     </form>
 {% endblock %}
 
 {% block footer %}
-    <p><a href="{{ path('list') }}">&#8592; Back to the list</a></p>
+    <p><a href="{{ path('contact_list') }}">&#8592; Back to the list</a></p>
 {% endblock %}

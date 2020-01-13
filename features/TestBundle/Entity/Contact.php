@@ -19,23 +19,23 @@ use NavBundle\E2e\TestBundle\Repository\ContactRepository;
 /**
  * @Nav\Entity(namespace="INTWS_002_CONT", repositoryClass=ContactRepository::class)
  */
-final class Contact
+class Contact
 {
     /**
      * @var string
      *
-     * @Nav\Column(name="Key")
-     * @Nav\Key
+     * @Nav\Column
+     * @Nav\Id
      */
-    public $key;
+    public $no;
 
     /**
      * @var string
      *
-     * @Nav\Column(name="No")
-     * @Nav\No
+     * @Nav\Column
+     * @Nav\Key
      */
-    public $no;
+    public $key;
 
     /**
      * @var string

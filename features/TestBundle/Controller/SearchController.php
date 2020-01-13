@@ -14,11 +14,10 @@ declare(strict_types=1);
 namespace NavBundle\E2e\TestBundle\Controller;
 
 use NavBundle\E2e\TestBundle\Entity\Contact;
-use NavBundle\Registry;
+use NavBundle\RegistryInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Twig\Environment;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
@@ -26,15 +25,16 @@ use Twig\Environment;
 final class SearchController
 {
     /**
-     * @Route("/search", name="search", methods={"GET"})
+     * @Route("/search", name="contact_search", methods={"GET"})
+     * @Template("@Test/list.html.twig")
      */
-    public function __invoke(Registry $registry, Environment $twig, Request $request): Response
+    public function __invoke(RegistryInterface $registry, Request $request)
     {
-        return new Response($twig->render('list.html.twig', [
+        return [
             'contacts' => $registry
                 ->getManagerForClass(Contact::class)
                 ->getRepository(Contact::class)
-                ->findBy($request->query->all(), 10),
-        ]));
+                ->findBy($request->query->all(), null, 10),
+        ];
     }
 }

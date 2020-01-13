@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block content %}
-    <form action="{{ path('create') }}" method="post">
+    <form action="{{ path('contact_create') }}" method="post">
         <label>Name: <input type="text" name="contact[name]" value="{{ contact.name }}"/></label>
         <label>Email: <input type="text" name="contact[email]" value="{{ contact.email }}"/></label>
         <label>Phone: <input type="text" name="contact[phone]" value="{{ contact.phone }}"/></label>
@@ -20,5 +20,5 @@
 {% endblock %}
 
 {% block footer %}
-    <p><a href="{{ path('list') }}">&#8592; Back to the list</a></p>
+    <p><a href="{{ path('contact_list') }}">&#8592; Back to the list</a></p>
 {% endblock %}
