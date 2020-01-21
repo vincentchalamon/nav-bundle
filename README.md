@@ -1,14 +1,17 @@
 # NavBundle
 
-![](https://github.com/vincentchalamon/nav-bundle/workflows/CI/badge.svg)
+[![GitHub CI](https://github.com/vincentchalamon/nav-bundle/workflows/CI/badge.svg)](https://github.com/vincentchalamon/nav-bundle/actions?query=workflow%3ACI)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/vincentchalamon/nav-bundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/vincentchalamon/nav-bundle/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/vincentchalamon/nav-bundle/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/vincentchalamon/nav-bundle/?branch=master)
 
 This Symfony Bundle is used to map objects with a Microsoft Dynamics NAV service.
 
 ## Requirements
 
 - php ^7.2
-- soap php extension
+- curl php extension
 - dom php extension
+- soap php extension
 
 ## Installation
 
