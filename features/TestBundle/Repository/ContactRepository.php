@@ -28,7 +28,7 @@ final class ContactRepository extends ServiceEntityRepository
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): iterable
     {
@@ -36,7 +36,7 @@ final class ContactRepository extends ServiceEntityRepository
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function findAll(): iterable
     {
@@ -44,7 +44,7 @@ final class ContactRepository extends ServiceEntityRepository
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function findOneBy(array $criteria, array $orderBy = null): ?object
     {

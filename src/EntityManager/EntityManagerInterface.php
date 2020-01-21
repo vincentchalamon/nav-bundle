@@ -13,11 +13,11 @@ declare(strict_types=1);
 
 namespace NavBundle\EntityManager;
 
-use Doctrine\Common\EventManager as EventManagerInterface;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\ObjectManager;
 use NavBundle\ClassMetadata\ClassMetadata;
 use NavBundle\Connection\ConnectionInterface;
+use NavBundle\Event\EventManagerInterface;
 use NavBundle\Hydrator\HydratorInterface;
 use NavBundle\NamingStrategy\NamingStrategyInterface;
 use NavBundle\RequestBuilder\RequestBuilderInterface;

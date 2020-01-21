@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace NavBundle\EntityManager;
 
-use Doctrine\Common\EventManager as EventManagerInterface;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver as MappingDriverInterface;
 use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Persistence\ObjectRepository;
@@ -22,6 +21,7 @@ use NavBundle\ClassMetadata\ClassMetadataFactory;
 use NavBundle\Connection\ConnectionInterface;
 use NavBundle\Connection\ConnectionResolverInterface;
 use NavBundle\EntityRepository\EntityRepositoryFactoryInterface;
+use NavBundle\Event\EventManagerInterface;
 use NavBundle\Exception\InvalidEntityNameException;
 use NavBundle\Exception\InvalidObjectException;
 use NavBundle\Exception\UnknownEntityNamespaceException;

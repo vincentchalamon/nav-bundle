@@ -1,5 +1,7 @@
 # NavBundle
 
+![](https://github.com/vincentchalamon/nav-bundle/workflows/CI/badge.svg)
+
 This Symfony Bundle is used to map objects with a Microsoft Dynamics NAV service.
 
 ## Requirements

@@ -41,6 +41,7 @@ final class PaginationExtension implements CollectionExtensionInterface
             throw new InvalidArgumentException('The "$resourceClass" parameter must not be null');
         }
 
+        // TODO: Handle hydra:PartialCollectionView type (cf. PartialCollectionViewNormalizer).
         // TODO: Should be configurable.
         $builder->setFirstResult($this->requestStack->getCurrentRequest()->query->get('bookmarkKey'));
         // TODO: Should be configurable.
