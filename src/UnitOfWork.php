@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace NavBundle;
 
+use NavBundle\ClassMetadata\ClassMetadata;
 use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\EntityPersister\EntityPersister;
 use NavBundle\EntityPersister\EntityPersisterInterface;
@@ -276,6 +277,7 @@ final class UnitOfWork
     public function addToIdentityMap($object): void
     {
         $className = ClassUtils::getRealClass($object);
+        /** @var ClassMetadata $classMetadata */
         $classMetadata = $this->em->getClassMetadata($className);
 
         $this->identityMap[$className][$classMetadata->getIdentifierValue($object)] = $object;
@@ -306,6 +308,7 @@ final class UnitOfWork
     {
         $oid = spl_object_hash($object);
         $className = ClassUtils::getRealClass($object);
+        /** @var ClassMetadata $classMetadata */
         $classMetadata = $this->em->getClassMetadata($className);
 
         $actualData = [];

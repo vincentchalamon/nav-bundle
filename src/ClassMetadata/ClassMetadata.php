@@ -85,7 +85,7 @@ final class ClassMetadata implements ClassMetadataInterface
     public $reflFields = [];
 
     /**
-     * @var object[]
+     * @var string[]
      */
     private $entityListeners = [];
 
@@ -257,8 +257,10 @@ final class ClassMetadata implements ClassMetadataInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @return array
      */
-    public function getIdentifierValues($object): void
+    public function getIdentifierValues($object)
     {
         throw new InvalidMethodCallException('Method getIdentifierValues() must not be called from ClassMetadata. You should invoke getIdentifierValue($object).');
     }

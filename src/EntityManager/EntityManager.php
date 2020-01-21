@@ -18,10 +18,12 @@ use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Persistence\ObjectRepository;
 use Doctrine\Persistence\Proxy;
 use NavBundle\ClassMetadata\ClassMetadataFactory;
+use NavBundle\ClassMetadata\ClassMetadataInterface;
 use NavBundle\Connection\ConnectionInterface;
 use NavBundle\Connection\ConnectionResolverInterface;
 use NavBundle\EntityRepository\EntityRepositoryFactoryInterface;
 use NavBundle\Event\EventManagerInterface;
+use NavBundle\Exception\DeprecatedException;
 use NavBundle\Exception\InvalidEntityNameException;
 use NavBundle\Exception\InvalidObjectException;
 use NavBundle\Exception\UnknownEntityNamespaceException;
@@ -54,6 +56,7 @@ class EntityManager implements EntityManagerInterface
      * @var EntityRepositoryFactoryInterface
      */
     protected $entityRepositoryFactory;
+
     /**
      * @var ClassMetadataFactory
      */
@@ -77,7 +80,7 @@ class EntityManager implements EntityManagerInterface
         $this->hydrator = $hydrator;
         $this->entityNamespaces = $entityNamespaces;
 
-        $this->unitOfWork = new UnitOfWork($this, $normalizer, $this->logger);
+        $this->unitOfWork = new UnitOfWork($this, $normalizer);
 
         $this->classMetadataFactory = new ClassMetadataFactory();
         $this->classMetadataFactory->setEntityManager($this);
@@ -154,10 +157,15 @@ class EntityManager implements EntityManagerInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @throws DeprecatedException
+     *
+     * @return object
      */
-    public function merge($object): void
+    public function merge($object)
     {
         @trigger_error('Merge operation is deprecated and will be removed in doctrine/persistence 2.0.', E_USER_DEPRECATED);
+        throw new DeprecatedException('Merge operation is deprecated and will be removed in doctrine/persistence 2.0.');
     }
 
     /**
@@ -182,7 +190,8 @@ class EntityManager implements EntityManagerInterface
      */
     public function detach($object): void
     {
-        @trigger_error('Merge operation is deprecated and will be removed in doctrine/persistence 2.0.', E_USER_DEPRECATED);
+        @trigger_error('Detach operation is deprecated and will be removed in doctrine/persistence 2.0.', E_USER_DEPRECATED);
+        throw new DeprecatedException('Detach operation is deprecated and will be removed in doctrine/persistence 2.0.');
     }
 
     /**
@@ -224,7 +233,7 @@ class EntityManager implements EntityManagerInterface
      * @throws MappingException
      * @throws \ReflectionException
      */
-    public function getClassMetadata($className)
+    public function getClassMetadata($className): ClassMetadataInterface
     {
         return $this->classMetadataFactory->getMetadataFor($className);
     }

@@ -106,7 +106,7 @@ final class RequestBuilder implements RequestBuilderInterface
             throw $fault;
         }
 
-        if (!$response) {
+        if (empty($response)) {
             return null;
         }
 
@@ -151,7 +151,7 @@ final class RequestBuilder implements RequestBuilderInterface
             throw $fault;
         }
 
-        if (!$response) {
+        if (empty($response)) {
             return yield from [];
         }
 

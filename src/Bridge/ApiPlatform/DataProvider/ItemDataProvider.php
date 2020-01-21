@@ -40,6 +40,7 @@ final class ItemDataProvider implements ItemDataProviderInterface, RestrictedDat
      */
     public function getItem(string $resourceClass, $identifier, string $operationName = null, array $context = []): ?object
     {
+        /** @var EntityManagerInterface $manager */
         $manager = $this->registry->getManagerForClass($resourceClass);
         $builder = $manager->createRequestBuilder($resourceClass);
         $builder->where($manager->getClassMetadata($resourceClass)->getIdentifier(), $identifier);

@@ -20,5 +20,11 @@ use Doctrine\Persistence\Event\LifecycleEventArgs;
  */
 final class PostLoadEvent extends LifecycleEventArgs implements EventInterface
 {
-    public const EVENT_NAME = 'postLoad';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return 'postLoad';
+    }
 }

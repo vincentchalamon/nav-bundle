@@ -20,5 +20,11 @@ use Doctrine\Persistence\Event\LifecycleEventArgs;
  */
 final class PostUpdateEvent extends LifecycleEventArgs implements EventInterface
 {
-    public const EVENT_NAME = 'postUpdate';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return 'postUpdate';
+    }
 }

@@ -4,4 +4,35 @@ parameters:
         - src
     inferPrivatePropertyTypeFromConstructor: true
     ignoreErrors:
-        - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::children\(\)\.#'
+        - '#Result of && is always false\.#'
+        - '#Strict comparison using === between .* and .* will always evaluate to false\.#'
+
+        - message: '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::children\(\)\.#'
+          count: 1
+          path: src/DependencyInjection/Configuration.php
+
+        - message: '#Parameter \#3 $offset of method NavBundle\\EntityPersister\\EntityPersisterInterface::loadAll\(\) expects string|null, int|null given\.#'
+          count: 1
+          path: src/EntityRepository/EntityRepository.php
+
+        - message: '#Method NavBundle\\Bridge\\ApiPlatform\\DataPersister\\DataPersister::getManager\(\) should return NavBundle\\EntityManager\\EntityManagerInterface|null but returns Doctrine\\Persistence\\ObjectManager|null\.#'
+          count: 1
+          path: src/Bridge/ApiPlatform/DataPersister/DataPersister.php
+
+        - message: '#Property NavBundle\\ClassMetadata\\Driver\\AnnotationDriver::\$entityAnnotationClasses .* does not accept default value of type .*\.#'
+          count: 1
+          path: src/ClassMetadata/Driver/AnnotationDriver.php
+
+        - message: '#Method NavBundle\\EntityManager\\EntityManager::getClassMetadata\(\) should return NavBundle\\ClassMetadata\\ClassMetadataInterface but returns Doctrine\\Persistence\\Mapping\\ClassMetadata\.#'
+          count: 1
+          path: src/EntityManager/EntityManager.php
+
+        - message: '#Parameter \#2 $eventArgs of method Doctrine\\Common\\EventManager::dispatchEvent\(\) expects Doctrine\\Common\\EventArgs|null, NavBundle\\Event\\EventInterface given\.#'
+          count: 1
+          path: src/Event/EventManager.php
+
+        - message: '#Method NavBundle\\Registry::getService\(\) should return Doctrine\\Persistence\\ObjectManager but returns object|null\.#'
+          count: 1
+          path: src/Registry.php
+
+        - '#Return type \(string|null\) of method NavBundle\\ClassMetadata\\ClassMetadataInterface::getIdentifier\(\) should be compatible with return type \(array\) of method Doctrine\\Persistence\\Mapping\\ClassMetadata::getIdentifier\(\)#'

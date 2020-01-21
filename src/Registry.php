@@ -15,9 +15,11 @@ namespace NavBundle;
 
 use Doctrine\Persistence\AbstractManagerRegistry;
 use Doctrine\Persistence\Proxy;
+use NavBundle\Connection\ConnectionInterface;
+use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\Exception\InvalidMethodCallException;
 use NavBundle\Exception\UnknownEntityNamespaceException;
-use Psr\Container\ContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\CacheWarmer\WarmableInterface;
 
 /**
@@ -37,7 +39,7 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
     /**
      * {@inheritdoc}
      */
-    protected function getService($name): object
+    protected function getService($name)
     {
         return $this->container->get($name);
     }
@@ -61,7 +63,10 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
     {
         foreach (array_keys($this->getManagers()) as $name) {
             try {
-                return $this->getManager($name)->getEntityNamespace($alias);
+                /** @var EntityManagerInterface $manager */
+                $manager = $this->getManager($name);
+
+                return $manager->getEntityNamespace($alias);
             } catch (\InvalidArgumentException $e) {
             }
         }
@@ -74,7 +79,9 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
      */
     public function getConnections(): iterable
     {
-        foreach ($this->getManagers() as $manager) {
+        /** @var EntityManagerInterface[] $managers */
+        $managers = $this->getManagers();
+        foreach ($managers as $manager) {
             foreach ($manager->getMetadataFactory()->getAllMetadata() as $classMetadata) {
                 yield $manager->getConnection($classMetadata->getName());
             }
@@ -87,8 +94,10 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
      * {@inheritdoc}
      *
      * @throws InvalidMethodCallException
+     *
+     * @return ConnectionInterface
      */
-    public function getConnection($name = null): void
+    public function getConnection($name = null)
     {
         throw new InvalidMethodCallException('Method getConnection() must not be called from Registry. You should invoke getManagerForClass($className)->getConnection($className).');
     }
@@ -97,8 +106,10 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
      * {@inheritdoc}
      *
      * @throws InvalidMethodCallException
+     *
+     * @return string[]
      */
-    public function getConnectionNames(): void
+    public function getConnectionNames()
     {
         throw new InvalidMethodCallException('Method getConnectionNames() must not be called.');
     }
@@ -107,8 +118,10 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
      * {@inheritdoc}
      *
      * @throws InvalidMethodCallException
+     *
+     * @return string
      */
-    public function getDefaultConnectionName(): void
+    public function getDefaultConnectionName()
     {
         throw new InvalidMethodCallException('Method getDefaultConnectionName() must not be called.');
     }

@@ -15,7 +15,7 @@ namespace NavBundle\EntityManager;
 
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\ObjectManager;
-use NavBundle\ClassMetadata\ClassMetadata;
+use NavBundle\ClassMetadata\ClassMetadataInterface;
 use NavBundle\Connection\ConnectionInterface;
 use NavBundle\Event\EventManagerInterface;
 use NavBundle\Hydrator\HydratorInterface;
@@ -60,14 +60,14 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @param string $className the entity name
      *
-     * @return ClassMetadata the class metadata
+     * @return ClassMetadataInterface the class metadata
      */
     public function getClassMetadata($className);
 
     /**
      * {@inheritdoc}
      *
-     * @param object|array|null the entity or an array of entities to flush
+     * @param object|array|null $object the entity or an array of entities to flush
      */
     public function flush($object = null);
 

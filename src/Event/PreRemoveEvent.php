@@ -20,5 +20,11 @@ use Doctrine\Persistence\Event\LifecycleEventArgs;
  */
 final class PreRemoveEvent extends LifecycleEventArgs implements EventInterface
 {
-    public const EVENT_NAME = 'preRemove';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return 'preRemove';
+    }
 }

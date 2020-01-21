@@ -20,5 +20,11 @@ use Doctrine\Persistence\Event\LifecycleEventArgs;
  */
 final class PostRemoveEvent extends LifecycleEventArgs implements EventInterface
 {
-    public const EVENT_NAME = 'postRemove';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return 'postRemove';
+    }
 }

@@ -28,6 +28,13 @@ interface EventInterface
     public function getObject();
 
     /**
+     * Gets the even name.
+     *
+     * @return string
+     */
+    public function getName();
+
+    /**
      * Retrieves the associated EntityManager.
      *
      * @return EntityManagerInterface

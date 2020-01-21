@@ -21,8 +21,8 @@ interface EntityPersisterInterface
     /**
      * Loads a list of entities by a list of field criteria.
      *
-     * @param int|null $limit
-     * @param int|null $offset
+     * @param int|null    $limit
+     * @param string|null $offset
      *
      * @return iterable
      */

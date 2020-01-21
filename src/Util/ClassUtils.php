@@ -31,8 +31,9 @@ final class ClassUtils
             $className = \get_class($className);
         }
 
-        if ((false === $positionCg = strrpos($className, '\\__CG__\\')) &&
-            (false === $positionPm = strrpos($className, '\\__PM__\\'))) {
+        $positionCg = strrpos($className, '\\__CG__\\');
+        $positionPm = strrpos($className, '\\__PM__\\');
+        if ((false === $positionCg) && (false === $positionPm)) {
             return $className;
         }
 

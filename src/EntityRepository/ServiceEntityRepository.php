@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace NavBundle\EntityRepository;
 
+use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\Exception\EntityManagerNotFoundException;
 use NavBundle\RegistryInterface;
 
@@ -28,6 +29,7 @@ class ServiceEntityRepository extends EntityRepository implements ServiceEntityR
      */
     public function __construct(RegistryInterface $registry, $className)
     {
+        /** @var EntityManagerInterface $manager */
         $manager = $registry->getManagerForClass($className);
 
         if (null === $manager) {

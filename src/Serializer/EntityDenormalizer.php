@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace NavBundle\Serializer;
 
+use NavBundle\ClassMetadata\ClassMetadata;
 use NavBundle\Exception\FieldNotFoundException;
 use NavBundle\RegistryInterface;
 use ProxyManager\Factory\LazyLoadingGhostFactory;
@@ -36,6 +37,7 @@ final class EntityDenormalizer implements DenormalizerInterface
      */
     public function denormalize($data, $type, $format = null, array $context = [])
     {
+        /** @var ClassMetadata $classMetadata */
         $classMetadata = $this->registry->getManagerForClass($type)->getClassMetadata($type);
 
         $object = $context['object_to_populate'] ?? (new LazyLoadingGhostFactory())->createProxy($type, function (

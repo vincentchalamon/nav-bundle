@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace NavBundle\ClassMetadata\Driver;
 
-use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
 use NavBundle\Annotation\Column;
 use NavBundle\Annotation\Entity;
@@ -42,7 +41,7 @@ final class AnnotationDriver extends AbstractAnnotationDriver
      * @throws InvalidEntityException
      * @throws PropertyTypeIsRequiredException
      */
-    public function loadMetadataForClass($className, ClassMetadata $classMetadata): void
+    public function loadMetadataForClass($className, $classMetadata): void
     {
         $reflectionClass = $classMetadata->getReflectionClass();
 

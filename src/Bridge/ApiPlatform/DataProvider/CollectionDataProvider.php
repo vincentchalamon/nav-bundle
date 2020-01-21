@@ -40,6 +40,7 @@ final class CollectionDataProvider implements ContextAwareCollectionDataProvider
      */
     public function getCollection(string $resourceClass, string $operationName = null, array $context = []): iterable
     {
+        /** @var EntityManagerInterface $manager */
         $manager = $this->registry->getManagerForClass($resourceClass);
         $builder = $manager->createRequestBuilder($resourceClass);
         foreach ($this->extensions as $extension) {

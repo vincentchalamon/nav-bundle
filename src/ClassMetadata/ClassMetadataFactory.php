@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace NavBundle\ClassMetadata;
 
 use Doctrine\Persistence\Mapping\AbstractClassMetadataFactory;
-use Doctrine\Persistence\Mapping\ClassMetadata as DoctrineClassMetadataInterface;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\ReflectionService;
 use NavBundle\EntityManager\EntityManagerInterface;
@@ -66,30 +65,38 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
 
     /**
      * {@inheritdoc}
+     *
+     * @param ClassMetadataInterface $classMetadata
      */
-    protected function wakeupReflection(DoctrineClassMetadataInterface $classMetadata, ReflectionService $reflService): void
+    protected function wakeupReflection($classMetadata, ReflectionService $reflService): void
     {
         $classMetadata->wakeupReflection($reflService);
     }
 
     /**
      * {@inheritdoc}
+     *
+     * @param ClassMetadataInterface $classMetadata
      */
-    protected function initializeReflection(DoctrineClassMetadataInterface $classMetadata, ReflectionService $reflService): void
+    protected function initializeReflection($classMetadata, ReflectionService $reflService): void
     {
         $classMetadata->initializeReflection($reflService);
     }
 
     /**
      * {@inheritdoc}
+     *
+     * @param ClassMetadataInterface $classMetadata
      */
-    protected function isEntity(DoctrineClassMetadataInterface $classMetadata): bool
+    protected function isEntity($classMetadata): bool
     {
         return true;
     }
 
     /**
      * {@inheritdoc}
+     *
+     * @param ClassMetadataInterface $classMetadata
      */
     protected function doLoadMetadata($classMetadata, $parent, $rootEntityFound, array $nonSuperclassParents): void
     {

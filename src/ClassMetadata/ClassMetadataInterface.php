@@ -111,14 +111,14 @@ interface ClassMetadataInterface extends ClassMetadata
     /**
      * Set the entity listeners.
      *
-     * @param array $entityListeners an array of entity listeners
+     * @param string[] $entityListeners an array of entity listeners
      */
     public function setEntityListeners($entityListeners): void;
 
     /**
      * Get the entity listeners.
      *
-     * @return object[] an array of entity listeners
+     * @return string[] an array of entity listeners
      */
     public function getEntityListeners();
 
@@ -187,4 +187,13 @@ interface ClassMetadataInterface extends ClassMetadata
      * @return string
      */
     public function retrieveField($columnName);
+
+    /**
+     * Checks whether the field is nullable.
+     *
+     * @param string $fieldName the field name
+     *
+     * @return bool
+     */
+    public function isNullable($fieldName);
 }

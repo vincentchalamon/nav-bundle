@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace NavBundle\Serializer;
 
+use NavBundle\ClassMetadata\ClassMetadata;
 use NavBundle\RegistryInterface;
 use NavBundle\Util\ClassUtils;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
@@ -39,6 +40,7 @@ final class EntityNormalizer implements NormalizerInterface, NormalizerAwareInte
     public function normalize($object, $format = null, array $context = []): array
     {
         $class = ClassUtils::getRealClass($object);
+        /** @var ClassMetadata $classMetadata */
         $classMetadata = $this->registry->getManagerForClass($class)->getClassMetadata($class);
         $data = [];
         if ($key = $classMetadata->getKeyValue($object)) {

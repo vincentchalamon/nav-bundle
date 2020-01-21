@@ -20,5 +20,11 @@ use Doctrine\Persistence\Event\PreUpdateEventArgs;
  */
 final class PreUpdateEvent extends PreUpdateEventArgs implements EventInterface
 {
-    public const EVENT_NAME = 'preUpdate';
+    /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return 'preUpdate';
+    }
 }
