@@ -26,7 +26,7 @@ use Symfony\Component\Routing\RouterInterface;
 final class DeleteController
 {
     /**
-     * @Route("/contacts/{no}", name="contact_delete", methods={"DELETE"}, requirements={"no"=".*"})
+     * @Route("/people/{no}", name="contact_delete", methods={"DELETE"}, requirements={"no"=".*"})
      * @ParamConverter("contact", class=Contact::class)
      */
     public function __invoke(RegistryInterface $registry, RouterInterface $router, Contact $contact)

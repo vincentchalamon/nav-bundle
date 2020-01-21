@@ -1,16 +1,15 @@
 {
     "name": "vincentchalamon/nav-bundle",
-    "description": "Symfony bundle for Microsoft Dynamics Nav",
+    "description": "Symfony bundle for Microsoft Dynamics NAV",
     "homepage": "https://github.com/vincentchalamon/nav-bundle",
     "license": "MIT",
     "type": "symfony-bundle",
-    "keywords": ["symfony","symfony-bundle","microsoft dynamic nav", "navision"],
+    "keywords": ["symfony", "symfony-bundle", "microsoft dynamic nav", "navision"],
     "readme": "README.md",
     "authors": [
         {
             "name": "Vincent Chalamon",
-            "email": "vincentchalamon@gmail.com",
-            "role": "Developer"
+            "email": "vincentchalamon@gmail.com"
         }
     ],
     "support": {
@@ -34,6 +33,7 @@
         "symfony/config": "^4.4",
         "symfony/event-dispatcher-contracts": "^1.1",
         "symfony/http-kernel": "^4.4",
+        "symfony/property-info": "^4.4",
         "symfony/serializer": "^4.4",
         "symfony/stopwatch": "^4.4"
     },
@@ -44,6 +44,7 @@
         "phpstan/phpstan": "^0.11.19",
         "phpunit/phpunit": "^8.0",
         "sensio/framework-extra-bundle": "^5.5",
+        "symfony/asset": "^4.4",
         "symfony/dotenv": "^4.4",
         "symfony/twig-bundle": "^4.4",
         "symfony/web-profiler-bundle": "^4.4"

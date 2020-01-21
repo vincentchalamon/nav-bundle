@@ -66,7 +66,8 @@ final class EntityNormalizer implements NormalizerInterface, NormalizerAwareInte
      */
     public function supportsNormalization($data, $format = null): bool
     {
-        return (\is_object($data) || class_exists($data))
+        return NavDecoder::FORMAT === $format
+            && (\is_object($data) || (\is_string($data) && class_exists($data)))
             && null !== $this->registry->getManagerForClass(ClassUtils::getRealClass($data));
     }
 }

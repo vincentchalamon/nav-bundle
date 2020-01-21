@@ -15,9 +15,9 @@ namespace NavBundle\EntityManager;
 
 use Doctrine\Common\EventManager as EventManagerInterface;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver as MappingDriverInterface;
+use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Persistence\ObjectRepository;
 use Doctrine\Persistence\Proxy;
-use Doctrine\Persistence\Mapping\MappingException;
 use NavBundle\ClassMetadata\ClassMetadataFactory;
 use NavBundle\Connection\ConnectionInterface;
 use NavBundle\Connection\ConnectionResolverInterface;

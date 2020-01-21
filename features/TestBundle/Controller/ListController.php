@@ -24,7 +24,7 @@ use Symfony\Component\Routing\Annotation\Route;
 final class ListController
 {
     /**
-     * @Route("/contacts", name="contact_list", methods={"GET"})
+     * @Route("/people", name="contact_list", methods={"GET"})
      * @Template("@Test/list.html.twig")
      */
     public function __invoke(RegistryInterface $registry)

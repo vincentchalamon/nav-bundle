@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace NavBundle\EntityPersister;
 
 use NavBundle\EntityManager\EntityManagerInterface;
-use NavBundle\Event\PostLoadEvent;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>

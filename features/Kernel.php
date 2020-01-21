@@ -30,6 +30,7 @@ final class Kernel extends BaseKernel
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new Symfony\Bundle\TwigBundle\TwigBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
+            new ApiPlatform\Core\Bridge\Symfony\Bundle\ApiPlatformBundle(),
             new NavBundle\NavBundle(),
             new NavBundle\E2e\TestBundle\TestBundle(),
         ];
@@ -60,6 +61,7 @@ final class Kernel extends BaseKernel
     {
         $routes->import('@TwigBundle/Resources/config/routing/errors.xml', '/_error');
         $routes->import('@TestBundle/Controller', null, 'annotation');
+        $routes->import('.', null, 'api_platform');
         if ($this->isDebug()) {
             $routes->import('@WebProfilerBundle/Resources/config/routing/wdt.xml', '/_wdt');
             $routes->import('@WebProfilerBundle/Resources/config/routing/profiler.xml', '/_profiler');
@@ -79,6 +81,13 @@ final class Kernel extends BaseKernel
 
         $c->loadFromExtension('sensio_framework_extra', [
             'request' => ['converters' => true, 'auto_convert' => true],
+        ]);
+
+        $c->loadFromExtension('api_platform', [
+            'title' => 'TestBundle',
+            'mapping' => [
+                'paths' => ['%kernel.project_dir%/TestBundle/Entity'],
+            ],
         ]);
 
         $c->loadFromExtension('nav', [

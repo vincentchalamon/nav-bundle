@@ -21,7 +21,6 @@ interface EntityPersisterInterface
     /**
      * Loads a list of entities by a list of field criteria.
      *
-     * @param array    $criteria
      * @param int|null $limit
      * @param int|null $offset
      *

@@ -9,3 +9,4 @@
 /vendor/
 /features/var
 /features/.env*
+/features/public/bundles

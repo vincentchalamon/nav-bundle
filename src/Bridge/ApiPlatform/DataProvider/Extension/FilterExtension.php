@@ -1,12 +1,23 @@
 <?php
 
+/*
+ * This file is part of the NavBundle.
+ *
+ * (c) Vincent Chalamon <vincentchalamon@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
-namespace Backup\NavBundle\Bridge\ApiPlatform\DataProvider\Extension;
+namespace NavBundle\Bridge\ApiPlatform\DataProvider\Extension;
 
 use ApiPlatform\Core\Exception\InvalidArgumentException;
+use ApiPlatform\Core\Exception\ResourceClassNotFoundException;
 use ApiPlatform\Core\Metadata\Resource\Factory\ResourceMetadataFactoryInterface;
-use Backup\NavBundle\Bridge\ApiPlatform\DataProvider\CollectionExtensionInterface;
+use NavBundle\Bridge\ApiPlatform\DataProvider\CollectionExtensionInterface;
+use NavBundle\RequestBuilder\RequestBuilderInterface;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -24,9 +35,12 @@ final class FilterExtension implements CollectionExtensionInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
+     *
+     * @throws ResourceClassNotFoundException
+     * @throws InvalidArgumentException
      */
-    public function applyToCollection(array $criteria, string $resourceClass, string $operationName = null, array $context = [])
+    public function applyToCollection(RequestBuilderInterface $builder, string $resourceClass, string $operationName = null, array $context = []): void
     {
         if (null === $resourceClass) {
             throw new InvalidArgumentException('The "$resourceClass" parameter must not be null');
@@ -43,7 +57,7 @@ final class FilterExtension implements CollectionExtensionInterface
             $filter = $this->filters->has($filterId) ? $this->filters->get($filterId) : null;
             if ($filter instanceof FilterInterface) {
                 $context['filters'] = $context['filters'] ?? [];
-                $filter->apply($criteria, $resourceClass, $operationName, $context);
+                $filter->apply($builder, $resourceClass, $operationName, $context);
             }
         }
     }

@@ -66,7 +66,7 @@ interface RequestBuilderInterface
      *        ->setFirstResult('id-of-last-result-read');
      * </code>
      *
-     * @param string $firstResult the id of the last result read
+     * @param string|null $firstResult the id of the last result read
      *
      * @return self
      */
@@ -89,7 +89,7 @@ interface RequestBuilderInterface
      *        ->setMaxResults(10);
      * </code>
      *
-     * @param int $maxResults the maximum number of results to retrieve
+     * @param int|null $maxResults the maximum number of results to retrieve
      *
      * @return self
      */
@@ -111,7 +111,7 @@ interface RequestBuilderInterface
      *        ->find(1);
      * </code>
      *
-     * @param mixed $identifier The identifier.
+     * @param mixed $identifier the identifier
      *
      * @return object|null the request result
      */

@@ -28,7 +28,7 @@ use Symfony\Component\Routing\RouterInterface;
 final class EditController
 {
     /**
-     * @Route("/contacts/{no}", name="contact_edit", methods={"GET", "PUT"}, requirements={"no"=".*"})
+     * @Route("/people/{no}", name="contact_edit", methods={"GET", "PUT"}, requirements={"no"=".*"})
      * @ParamConverter("contact", class=Contact::class)
      * @Template("@Test/edit.html.twig")
      */

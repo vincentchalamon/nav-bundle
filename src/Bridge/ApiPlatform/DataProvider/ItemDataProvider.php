@@ -11,24 +11,23 @@
 
 declare(strict_types=1);
 
-namespace Backup\NavBundle\Bridge\ApiPlatform\DataProvider;
+namespace NavBundle\Bridge\ApiPlatform\DataProvider;
 
-use ApiPlatform\Core\DataProvider\ContextAwareCollectionDataProviderInterface;
+use ApiPlatform\Core\DataProvider\ItemDataProviderInterface;
 use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
-use Backup\NavBundle\Exception\ManagerNotFoundException;
-use Backup\NavBundle\Manager\ManagerInterface;
-use Backup\NavBundle\RegistryInterface;
+use NavBundle\EntityManager\EntityManagerInterface;
+use NavBundle\RegistryInterface;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-final class CollectionDataProvider implements ContextAwareCollectionDataProviderInterface, RestrictedDataProviderInterface
+final class ItemDataProvider implements ItemDataProviderInterface, RestrictedDataProviderInterface
 {
     private $registry;
     private $extensions;
 
     /**
-     * @param CollectionExtensionInterface[] $extensions
+     * @param ItemExtensionInterface[] $extensions
      */
     public function __construct(RegistryInterface $registry, iterable $extensions)
     {
@@ -39,15 +38,16 @@ final class CollectionDataProvider implements ContextAwareCollectionDataProvider
     /**
      * {@inheritdoc}
      */
-    public function getCollection(string $resourceClass, string $operationName = null, array $context = []): iterable
+    public function getItem(string $resourceClass, $identifier, string $operationName = null, array $context = []): ?object
     {
         $manager = $this->registry->getManagerForClass($resourceClass);
-        $criteria = [];
+        $builder = $manager->createRequestBuilder($resourceClass);
+        $builder->where($manager->getClassMetadata($resourceClass)->getIdentifier(), $identifier);
         foreach ($this->extensions as $extension) {
-            $extension->applyToCollection($criteria, $resourceClass, $operationName, $context);
+            $extension->applyToItem($builder, $resourceClass, $identifier, $operationName, $context);
         }
 
-        return $manager->getRepository($resourceClass)->findBy($criteria);
+        return $builder->getOneOrNullResult();
     }
 
     /**
@@ -55,10 +55,6 @@ final class CollectionDataProvider implements ContextAwareCollectionDataProvider
      */
     public function supports(string $resourceClass, string $operationName = null, array $context = []): bool
     {
-        try {
-            return $this->registry->getManagerForClass($resourceClass) instanceof ManagerInterface;
-        } catch (ManagerNotFoundException $exception) {
-            return false;
-        }
+        return $this->registry->getManagerForClass($resourceClass) instanceof EntityManagerInterface;
     }
 }

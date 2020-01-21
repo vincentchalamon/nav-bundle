@@ -13,11 +13,13 @@ declare(strict_types=1);
 
 namespace NavBundle\E2e\TestBundle\Entity;
 
+use ApiPlatform\Core\Annotation as Api;
 use NavBundle\Annotation as Nav;
 use NavBundle\E2e\TestBundle\Repository\ContactRepository;
 
 /**
  * @Nav\Entity(namespace="INTWS_002_CONT", repositoryClass=ContactRepository::class)
+ * @Api\ApiResource
  */
 class Contact
 {

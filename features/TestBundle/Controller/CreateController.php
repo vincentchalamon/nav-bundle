@@ -27,7 +27,7 @@ use Symfony\Component\Routing\RouterInterface;
 final class CreateController
 {
     /**
-     * @Route("/contacts/create", name="contact_create", methods={"GET", "POST"})
+     * @Route("/people/create", name="contact_create", methods={"GET", "POST"})
      * @Template("@Test/create.html.twig")
      */
     public function __invoke(RegistryInterface $registry, RouterInterface $router, Request $request)

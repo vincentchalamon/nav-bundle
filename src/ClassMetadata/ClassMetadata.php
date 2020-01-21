@@ -216,6 +216,18 @@ final class ClassMetadata implements ClassMetadataInterface
     /**
      * {@inheritdoc}
      */
+    public function isNullable($fieldName)
+    {
+        if (!isset($this->fieldMappings[$fieldName])) {
+            throw new FieldNotFoundException("Field name expected, '$fieldName' is not a field.");
+        }
+
+        return $this->fieldMappings[$fieldName]['nullable'];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getAssociationTargetClass($assocName)
     {
         if (!isset($this->associationMappings[$assocName])) {

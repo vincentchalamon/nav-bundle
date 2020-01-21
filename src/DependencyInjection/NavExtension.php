@@ -13,6 +13,9 @@ declare(strict_types=1);
 
 namespace NavBundle\DependencyInjection;
 
+use NavBundle\Bridge\ApiPlatform\DataProvider\CollectionExtensionInterface;
+use NavBundle\Bridge\ApiPlatform\DataProvider\ItemExtensionInterface;
+use NavBundle\Bridge\PropertyInfo\NavExtractor;
 use NavBundle\Debug\Connection\TraceableConnectionResolver;
 use NavBundle\EntityManager\EntityManager;
 use NavBundle\EntityManager\EntityManagerInterface;
@@ -44,6 +47,12 @@ final class NavExtension extends Extension
         $container
             ->registerForAutoconfiguration(EventSubscriberInterface::class)
             ->addTag('nav.event_subscriber');
+        $container
+            ->registerForAutoconfiguration(CollectionExtensionInterface::class)
+            ->addTag('nav.api_platform.collection_extension');
+        $container
+            ->registerForAutoconfiguration(ItemExtensionInterface::class)
+            ->addTag('nav.api_platform.item_extension');
 
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
@@ -64,10 +73,10 @@ final class NavExtension extends Extension
                 ->setPublic(false)
                 ->setArgument('$wsdl', $options['wsdl'])
                 ->setArgument('$options', [
-                        'user' => $options['connection']['username'],
-                        'password' => $options['connection']['password'],
-                        'cache_dir' => '%kernel.cache_dir%/nav',
-                    ] + $options['soap_options']
+                    'user' => $options['connection']['username'],
+                    'password' => $options['connection']['password'],
+                    'cache_dir' => '%kernel.cache_dir%/nav',
+                ] + $options['soap_options']
                 );
 
             // Configure driver
@@ -77,6 +86,15 @@ final class NavExtension extends Extension
                 ->setArgument('$paths', array_values(array_map(function (array $path) {
                     return $path['path'];
                 }, $options['paths'])));
+
+            // Configure PropertyInfo extractor
+            $container
+                ->setDefinition("nav.entity_manager.$name.property_info_extractor", new Definition(NavExtractor::class))
+                ->setPublic(false)
+                ->setArgument('$entityManager', new Reference("nav.entity_manager.$name"))
+                ->addTag('property_info.list_extractor')
+                ->addTag('property_info.type_extractor')
+                ->addTag('property_info.access_extractor');
 
             // Configure entity manager
             $container

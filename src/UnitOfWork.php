@@ -25,7 +25,6 @@ use NavBundle\Event\PreUpdateEvent;
 use NavBundle\Exception\ObjectNotManagedException;
 use NavBundle\Serializer\NavDecoder;
 use NavBundle\Util\ClassUtils;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 

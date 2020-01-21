@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the NavBundle.
+ *
+ * (c) Vincent Chalamon <vincentchalamon@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
 namespace NavBundle\Debug\Connection;
@@ -9,7 +18,7 @@ use Symfony\Component\HttpKernel\CacheWarmer\WarmableInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
- * @author Vincent Chalamon <vincent@les-tilleuls.coop>
+ * @author Vincent Chalamon <vincentchalamon@gmail.com>
  *
  * @method object Read(array $criteria)
  * @method object ReadMultiple(array $criteria)
@@ -41,7 +50,7 @@ final class TraceableConnection implements ConnectionInterface, WarmableInterfac
     {
         $this->stopwatch->start($functionName, 'nav');
 
-        $response = call_user_func_array([$this->decorated, $functionName], $arguments);
+        $response = \call_user_func_array([$this->decorated, $functionName], $arguments);
 
         $event = $this->stopwatch->stop($functionName);
         $this->calls[] = [
@@ -83,7 +92,7 @@ final class TraceableConnection implements ConnectionInterface, WarmableInterfac
         return $this->calls;
     }
 
-    public function warmUp($cacheDir)
+    public function warmUp($cacheDir): void
     {
         if ($this->decorated instanceof WarmableInterface) {
             $this->decorated->warmUp($cacheDir);
