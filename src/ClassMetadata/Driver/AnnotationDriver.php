@@ -47,7 +47,8 @@ final class AnnotationDriver extends AbstractAnnotationDriver
 
         // Evaluate Entity annotation
         /** @var Entity|null $classAnnotation */
-        if (!$classAnnotation = $this->reader->getClassAnnotation($reflectionClass, Entity::class)) {
+        $classAnnotation = $this->reader->getClassAnnotation($reflectionClass, Entity::class);
+        if (!$classAnnotation) {
             throw new InvalidEntityException("Class '$className' is not a valid entity.");
         }
 
@@ -57,14 +58,16 @@ final class AnnotationDriver extends AbstractAnnotationDriver
 
         // Evaluate EntityListeners annotation
         /** @var EntityListeners|null $entityListenersAnnotation */
-        if ($entityListenersAnnotation = $this->reader->getClassAnnotation($reflectionClass, EntityListeners::class)) {
+        $entityListenersAnnotation = $this->reader->getClassAnnotation($reflectionClass, EntityListeners::class);
+        if ($entityListenersAnnotation) {
             $classMetadata->setEntityListeners($entityListenersAnnotation->listeners);
         }
 
         // Evaluate annotations on properties/fields
         foreach ($reflectionClass->getProperties() as $property) {
             /** @var Column|null $propertyAnnotation */
-            if (!$propertyAnnotation = $this->reader->getPropertyAnnotation($property, Column::class)) {
+            $propertyAnnotation = $this->reader->getPropertyAnnotation($property, Column::class);
+            if (!$propertyAnnotation) {
                 continue;
             }
 

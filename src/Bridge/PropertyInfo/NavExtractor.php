@@ -107,7 +107,7 @@ final class NavExtractor implements PropertyListExtractorInterface, PropertyType
         return false;
     }
 
-    private function getClassMetadata(string $class): ?ClassMetadataInterface
+    private function getClassMetadata(string $class): ClassMetadataInterface
     {
         return $this->entityManager->getClassMetadata($class);
     }

@@ -32,7 +32,7 @@ The Nav bundle follows [Symfony coding standards](https://symfony.com/doc/curren
 But don't worry, you can fix CS issues automatically using the [PHP CS Fixer](https://cs.sensiolabs.org/) tool:
 
 ```shell
-$ vendor/bin/php-cs-fixer fix
+$ php-cs-fixer fix
 ```
 
 And then, add the fixed file to your commit before pushing.
@@ -55,7 +55,7 @@ All Pull Requests must include [this header](.github/PULL_REQUEST_TEMPLATE.md).
 ### Static code analysis
 
 ```shell
-vendor/bin/phpstan analyze
+phpstan analyze
 ```
 
 ### PHPUnit and Coverage Generation
@@ -63,13 +63,13 @@ vendor/bin/phpstan analyze
 To launch unit tests:
 
 ```shell
-vendor/bin/phpunit
+phpunit
 ```
 
 If you want coverage, you will need the `phpdbg` package and run:
 
 ```shell
-phpdbg -qrr vendor/bin/phpunit --coverage-html coverage
+phpdbg -qrr phpunit --coverage-html coverage
 ```
 
 Sometimes there might be an error with too many open files when generating coverage. To fix this, you can increase the `ulimit`, for example:

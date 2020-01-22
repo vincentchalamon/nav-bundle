@@ -12,10 +12,6 @@ jobs:
   tests:
     name: Tests PHP ${{ matrix.php }} ${{ matrix.dependency }}
     runs-on: ubuntu-latest
-    container:
-      image: php:${{ matrix.php }}-fpm-alpine
-      options: >-
-        --tmpfs /tmp:exec
     strategy:
       # https://github.community/t5/GitHub-Actions/GitHub-Actions-Matrix-options-dont-work-as-documented/m-p/29558
       matrix:
@@ -31,31 +27,39 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
 
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v1
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: curl, dom, iconv, intl, json, libxml, mbstring, phar, soap, tokenizer, xdebug, xml, xmlwriter
+          coverage: xdebug
+          tools: php-cs-fixer, phpstan, phpunit
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
       - name: Cache dependencies
         uses: actions/cache@v1
         with:
-          path: ~/.composer/cache
-          key: ${{ matrix.php }}-composer-${{ matrix.dependency }}-${{ hashFiles('**/composer.json') }}
-          restore-keys: |
-            ${{ matrix.php }}-composer-${{ matrix.dependency }}-
-
-      - name: Install Composer
-        run: curl -sS -o - https://raw.githubusercontent.com/composer/getcomposer.org/ba13e3fc70f1c66250d1ea7ea4911d593aa1dba5/web/installer | php -- --install-dir=/usr/local/bin --filename=composer --quiet
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
 
       - name: Update project dependencies
         if: matrix.dependency == ''
-        run: composer update --no-progress --no-suggest --ansi --ignore-platform-reqs
+        run: composer update --no-progress --no-suggest --ansi
 
       - name: Update project dependencies lowest
         if: matrix.dependency == 'lowest'
-        run: composer update --no-progress --no-suggest --ansi --prefer-lowest --ignore-platform-reqs
+        run: composer update --no-progress --no-suggest --ansi --prefer-lowest
 
       - name: Run php-cs-fixer tests
-        run: vendor/bin/php-cs-fixer fix --dry-run --diff
+        run: php-cs-fixer fix --dry-run --diff
 
       - name: Run phpstan tests
         if: matrix.dependency == ''
-        run: vendor/bin/phpstan analyze
+        run: phpstan analyze
 
 #      - name: Run PHPUnit tests
-#        run: vendor/bin/phpunit --colors=always --testdox
+#        run: phpunit --colors=always --testdox

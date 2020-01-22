@@ -31,8 +31,4 @@ parameters:
           count: 1
           path: src/Event/EventManager.php
 
-        - message: '#Method NavBundle\\Registry::getService\(\) should return Doctrine\\Persistence\\ObjectManager but returns object|null\.#'
-          count: 1
-          path: src/Registry.php
-
         - '#Return type \(string|null\) of method NavBundle\\ClassMetadata\\ClassMetadataInterface::getIdentifier\(\) should be compatible with return type \(array\) of method Doctrine\\Persistence\\Mapping\\ClassMetadata::getIdentifier\(\)#'
