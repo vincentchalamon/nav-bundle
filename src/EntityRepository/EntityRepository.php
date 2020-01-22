@@ -42,16 +42,20 @@ class EntityRepository implements ObjectRepository
 
     /**
      * {@inheritdoc}
+     *
+     * @return object[]|iterable
      */
-    public function findAll(): iterable
+    public function findAll()
     {
         return $this->findBy([]);
     }
 
     /**
      * {@inheritdoc}
+     *
+     * @return object[]|iterable
      */
-    public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): iterable
+    public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null)
     {
         return $this->getEntityPersister()->loadAll($criteria, $limit, $offset);
     }

@@ -13,13 +13,13 @@ declare(strict_types=1);
 
 namespace NavBundle\ClassMetadata;
 
-use Doctrine\Persistence\Mapping\ClassMetadata;
+use Doctrine\Persistence\Mapping\ClassMetadata as DoctrineClassMetadataInterface;
 use Doctrine\Persistence\Mapping\ReflectionService;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-interface ClassMetadataInterface extends ClassMetadata
+interface ClassMetadataInterface extends DoctrineClassMetadataInterface
 {
     /**
      * Get the repository class configured for the entity.

@@ -27,7 +27,7 @@ interface HydratorInterface
      * @param ClassMetadataInterface $classMetadata the entity class metadata
      * @param array                  $context       the hydration context
      *
-     * @return object|iterable
+     * @return array|object|iterable
      */
     public function hydrateAll($response, ClassMetadataInterface $classMetadata, array $context = []);
 }

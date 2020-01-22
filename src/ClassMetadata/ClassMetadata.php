@@ -426,6 +426,8 @@ final class ClassMetadata implements ClassMetadataInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @return string|null
      */
     public function getIdentifier()
     {

@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace NavBundle\EntityManager;
 
+use Doctrine\Persistence\Mapping\ClassMetadata as DoctrineClassMetadataInterface;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver as MappingDriverInterface;
 use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Persistence\ObjectRepository;
@@ -232,8 +233,10 @@ class EntityManager implements EntityManagerInterface
      *
      * @throws MappingException
      * @throws \ReflectionException
+     *
+     * @return ClassMetadataInterface|DoctrineClassMetadataInterface
      */
-    public function getClassMetadata($className): ClassMetadataInterface
+    public function getClassMetadata($className)
     {
         return $this->classMetadataFactory->getMetadataFor($className);
     }

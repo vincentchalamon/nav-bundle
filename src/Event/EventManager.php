@@ -39,16 +39,18 @@ final class EventManager extends DoctrineEventManager implements EventManagerInt
      */
     public function dispatch(EventInterface $eventArgs): void
     {
+        $eventName = $eventArgs->getName();
+
         // Call entity listeners
         $object = $eventArgs->getObject();
         /** @var ClassMetadataInterface $classMetadata */
         $classMetadata = $eventArgs->getObjectManager()->getClassMetadata(ClassUtils::getRealClass($object));
         foreach ($classMetadata->getEntityListeners() as $entityListener) {
-            \call_user_func([$this->entityListenerResolver->resolve($entityListener), $eventArgs->getName()], $object, $eventArgs);
+            \call_user_func([$this->entityListenerResolver->resolve($entityListener), $eventName], $object, $eventArgs);
         }
 
         // Call event listeners/subscribers
         /* @var EventArgs $eventArgs */
-        parent::dispatchEvent($eventArgs->getName(), $eventArgs);
+        parent::dispatchEvent($eventName, $eventArgs);
     }
 }

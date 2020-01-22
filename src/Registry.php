@@ -68,6 +68,7 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
 
                 return $manager->getEntityNamespace($alias);
             } catch (\InvalidArgumentException $e) {
+                // Ignore and continue.
             }
         }
 
@@ -76,6 +77,8 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
 
     /**
      * {@inheritdoc}
+     *
+     * @return object[]|iterable
      */
     public function getConnections(): iterable
     {
