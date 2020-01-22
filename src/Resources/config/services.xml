@@ -109,10 +109,5 @@
             <argument type="tagged_locator" tag="nav.api_platform.filter"/>
             <tag name="nav.api_platform.collection_extension"/>
         </service>
-
-        <service id="nav.api_platform.extension.pagination" class="NavBundle\Bridge\ApiPlatform\DataProvider\Extension\PaginationExtension" public="false">
-            <argument type="service" id="request_stack"/>
-            <tag name="nav.api_platform.collection_extension"/>
-        </service>
     </services>
 </container>

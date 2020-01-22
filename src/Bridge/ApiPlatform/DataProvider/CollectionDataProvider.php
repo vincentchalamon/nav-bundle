@@ -45,6 +45,9 @@ final class CollectionDataProvider implements ContextAwareCollectionDataProvider
         $builder = $manager->createRequestBuilder($resourceClass);
         foreach ($this->extensions as $extension) {
             $extension->applyToCollection($builder, $resourceClass, $operationName, $context);
+            if ($extension instanceof ResultCollectionExtensionInterface && $extension->supportsResult($resourceClass, $operationName, $context)) {
+                return $extension->getResult($builder, $resourceClass, $operationName, $context);
+            }
         }
 
         return $builder->getResult();

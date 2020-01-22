@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace NavBundle\Bridge\ApiPlatform\DataProvider\Extension;
 
-use ApiPlatform\Core\Exception\InvalidArgumentException;
 use ApiPlatform\Core\Exception\ResourceClassNotFoundException;
 use ApiPlatform\Core\Metadata\Resource\Factory\ResourceMetadataFactoryInterface;
 use NavBundle\Bridge\ApiPlatform\DataProvider\CollectionExtensionInterface;
@@ -36,29 +35,25 @@ final class FilterExtension implements CollectionExtensionInterface
 
     /**
      * {@inheritdoc}
-     *
-     * @throws ResourceClassNotFoundException
-     * @throws InvalidArgumentException
      */
     public function applyToCollection(RequestBuilderInterface $builder, string $resourceClass, string $operationName = null, array $context = []): void
     {
-        if (null === $resourceClass) {
-            throw new InvalidArgumentException('The "$resourceClass" parameter must not be null');
-        }
-
-        $resourceMetadata = $this->resourceMetadataFactory->create($resourceClass);
-        $resourceFilters = $resourceMetadata->getCollectionOperationAttribute($operationName, 'filters', [], true);
-
-        if (empty($resourceFilters)) {
+        try {
+            $resourceFilters = $this->resourceMetadataFactory
+                ->create($resourceClass)
+                ->getCollectionOperationAttribute($operationName, 'filters', [], true);
+        } catch (ResourceClassNotFoundException $exception) {
             return;
         }
 
         foreach ($resourceFilters as $filterId) {
             $filter = $this->filters->has($filterId) ? $this->filters->get($filterId) : null;
-            if ($filter instanceof FilterInterface) {
-                $context['filters'] = $context['filters'] ?? [];
-                $filter->apply($builder, $resourceClass, $operationName, $context);
+            if (!$filter instanceof FilterInterface) {
+                continue;
             }
+
+            $context['filters'] = $context['filters'] ?? [];
+            $filter->apply($builder, $resourceClass, $operationName, $context);
         }
     }
 }
