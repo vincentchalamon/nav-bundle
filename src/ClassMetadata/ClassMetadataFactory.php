@@ -108,6 +108,6 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function newClassMetadataInstance($className): ClassMetadataInterface
     {
-        return new ClassMetadata($className, $this->em->getNamingStrategy());
+        return new ClassMetadata($className, $this->em->getNameConverter());
     }
 }

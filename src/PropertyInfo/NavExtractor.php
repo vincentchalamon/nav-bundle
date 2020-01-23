@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace NavBundle\Bridge\PropertyInfo;
+namespace NavBundle\PropertyInfo;
 
 use NavBundle\ClassMetadata\ClassMetadataInterface;
 use NavBundle\EntityManager\EntityManagerInterface;
@@ -58,7 +58,6 @@ final class NavExtractor implements PropertyListExtractorInterface, PropertyType
             return null;
         }
 
-        // TODO: Handle associations.
         if ($classMetadata->hasField($property)) {
             $typeOfField = $classMetadata->getTypeOfField($property);
             $nullable = $classMetadata->isNullable($property);
@@ -66,6 +65,7 @@ final class NavExtractor implements PropertyListExtractorInterface, PropertyType
             switch ($typeOfField) {
                 case Types::DATE:
                 case Types::DATETIME:
+                case Types::DATETIMEZ:
                 case Types::TIME:
                     return [new Type(Type::BUILTIN_TYPE_OBJECT, $nullable, 'DateTime')];
                 case Types::DATE_IMMUTABLE:
@@ -82,6 +82,12 @@ final class NavExtractor implements PropertyListExtractorInterface, PropertyType
 
                     return $builtinType ? [new Type($builtinType, $nullable)] : null;
             }
+        } elseif ($classMetadata->hasAssociation($property)) {
+            return [new Type(
+                Type::BUILTIN_TYPE_OBJECT,
+                $classMetadata->isNullable($property),
+                $classMetadata->getAssociationTargetClass($property)
+            )];
         }
 
         return null;

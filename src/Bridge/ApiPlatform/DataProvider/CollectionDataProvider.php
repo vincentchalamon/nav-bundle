@@ -43,6 +43,8 @@ final class CollectionDataProvider implements ContextAwareCollectionDataProvider
         /** @var EntityManagerInterface $manager */
         $manager = $this->registry->getManagerForClass($resourceClass);
         $builder = $manager->createRequestBuilder($resourceClass);
+        // TODO: Temporary set limit, waiting for PaginationExtension.
+        $builder->setMaxResults(10);
         foreach ($this->extensions as $extension) {
             $extension->applyToCollection($builder, $resourceClass, $operationName, $context);
             if ($extension instanceof ResultCollectionExtensionInterface && $extension->supportsResult($resourceClass, $operationName, $context)) {

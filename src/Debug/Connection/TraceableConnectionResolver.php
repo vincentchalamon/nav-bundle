@@ -37,14 +37,16 @@ final class TraceableConnectionResolver implements ConnectionResolverInterface
      */
     public function resolve($className, $namespace): ConnectionInterface
     {
-        if (isset($this->connections[$className = trim($className, '\\')])) {
-            return $this->connections[$className];
+        $className = trim($className, '\\');
+        $oid = md5("$className::$namespace");
+        if (isset($this->connections[$oid])) {
+            return $this->connections[$oid];
         }
 
         $this->stopwatch->start('fetch WSDL', 'nav');
         $parentConnection = $this->decorated->resolve($className, $namespace);
         $this->stopwatch->stop('fetch WSDL');
 
-        return $this->connections[$className] = new TraceableConnection($parentConnection, $this->stopwatch);
+        return $this->connections[$oid] = new TraceableConnection($parentConnection, $this->stopwatch);
     }
 }

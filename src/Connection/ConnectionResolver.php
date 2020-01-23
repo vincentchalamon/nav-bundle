@@ -38,10 +38,12 @@ final class ConnectionResolver implements ConnectionResolverInterface
      */
     public function resolve($className, $namespace): object
     {
-        if (isset($this->connections[$className = trim($className, '\\')])) {
-            return $this->connections[$className];
+        $className = trim($className, '\\');
+        $oid = md5("$className::$namespace");
+        if (isset($this->connections[$oid])) {
+            return $this->connections[$oid];
         }
 
-        return $this->connections[$className] = new Connection($this->wsdl.$namespace, $this->options);
+        return $this->connections[$oid] = new $className($this->wsdl.$namespace, $this->options);
     }
 }

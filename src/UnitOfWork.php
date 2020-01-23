@@ -186,7 +186,7 @@ final class UnitOfWork
             try {
                 $response = $this->em->getConnection($className)->Update([
                     $classMetadata->getNamespace() => $this->normalizer->normalize($obj, NavDecoder::FORMAT, [
-                        'properties' => $changeSet,
+                        'properties' => array_merge(array_keys($changeSet), ['key']),
                     ]),
                 ]);
             } catch (\SoapFault $fault) {

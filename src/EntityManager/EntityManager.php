@@ -29,7 +29,6 @@ use NavBundle\Exception\InvalidEntityNameException;
 use NavBundle\Exception\InvalidObjectException;
 use NavBundle\Exception\UnknownEntityNamespaceException;
 use NavBundle\Hydrator\HydratorInterface;
-use NavBundle\NamingStrategy\NamingStrategyInterface;
 use NavBundle\RequestBuilder\RequestBuilder;
 use NavBundle\RequestBuilder\RequestBuilderInterface;
 use NavBundle\UnitOfWork;
@@ -37,6 +36,7 @@ use NavBundle\Util\ClassUtils;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
@@ -48,7 +48,7 @@ class EntityManager implements EntityManagerInterface
     protected $eventManager;
     protected $connectionResolver;
     protected $mappingDriver;
-    protected $namingStrategy;
+    protected $nameConverter;
     protected $hydrator;
     protected $entityNamespaces = [];
     protected $unitOfWork;
@@ -69,7 +69,7 @@ class EntityManager implements EntityManagerInterface
         NormalizerInterface $normalizer,
         ConnectionResolverInterface $connectionResolver,
         MappingDriverInterface $mappingDriver,
-        NamingStrategyInterface $namingStrategy,
+        NameConverterInterface $nameConverter,
         HydratorInterface $hydrator,
         array $entityNamespaces
     ) {
@@ -77,7 +77,7 @@ class EntityManager implements EntityManagerInterface
         $this->eventManager = $eventManager;
         $this->connectionResolver = $connectionResolver;
         $this->mappingDriver = $mappingDriver;
-        $this->namingStrategy = $namingStrategy;
+        $this->nameConverter = $nameConverter;
         $this->hydrator = $hydrator;
         $this->entityNamespaces = $entityNamespaces;
 
@@ -307,9 +307,9 @@ class EntityManager implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getNamingStrategy(): NamingStrategyInterface
+    public function getNameConverter(): NameConverterInterface
     {
-        return $this->namingStrategy;
+        return $this->nameConverter;
     }
 
     /**

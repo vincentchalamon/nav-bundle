@@ -15,7 +15,7 @@ namespace NavBundle\DependencyInjection;
 
 use NavBundle\Bridge\ApiPlatform\DataProvider\CollectionExtensionInterface;
 use NavBundle\Bridge\ApiPlatform\DataProvider\ItemExtensionInterface;
-use NavBundle\Bridge\PropertyInfo\NavExtractor;
+use NavBundle\PropertyInfo\NavExtractor;
 use NavBundle\Debug\Connection\TraceableConnectionResolver;
 use NavBundle\EntityManager\EntityManager;
 use NavBundle\EntityManager\EntityManagerInterface;
@@ -102,7 +102,7 @@ final class NavExtension extends Extension
                 ->setPublic(true)
                 ->setArgument('$connectionResolver', new Reference("nav.connection_resolver.$name"))
                 ->setArgument('$mappingDriver', new Reference("nav.entity_manager.$name.driver"))
-                ->setArgument('$namingStrategy', new Reference($options['naming_strategy']))
+                ->setArgument('$nameConverter', new Reference($options['name_converter']))
                 ->setArgument('$hydrator', new Reference($options['default_hydrator']))
                 ->setArgument('$entityNamespaces', array_map(function (array $path) {
                     return $path['namespace'];

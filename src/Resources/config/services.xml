@@ -33,7 +33,7 @@
             <argument type="service" id="serializer"/>
             <argument/> <!-- connection resolver -->
             <argument/> <!-- mappingDriver -->
-            <argument/> <!-- namingStrategy -->
+            <argument/> <!-- nameConverter -->
             <argument/> <!-- hydrator -->
             <argument/> <!-- entityNamespaces -->
             <call method="setEntityRepositoryFactory">
@@ -54,7 +54,9 @@
             <argument type="service" id="serializer"/>
         </service>
 
-        <service id="nav.naming_strategy.default" class="NavBundle\NamingStrategy\DefaultNamingStrategy" public="false"/>
+        <service id="nav.serializer.name_converter.camel_case_to_nav" class="NavBundle\Serializer\NameConverter\CamelCaseToNavNameConverter" public="false">
+            <argument type="service" id="nav.registry"/>
+        </service>
 
         <service id="nav.serializer.decoder" class="NavBundle\Serializer\NavDecoder" public="false">
             <tag name="serializer.encoder" priority="-1"/>
@@ -68,14 +70,13 @@
             <tag name="serializer.normalizer" priority="-1"/>
         </service>
 
-        <service id="nav.serializer.entity_denormalizer" class="NavBundle\Serializer\EntityDenormalizer" public="false">
-            <argument type="service" id="nav.registry"/>
-            <tag name="serializer.normalizer" priority="-2"/>
-        </service>
-
         <service id="nav.serializer.entity_normalizer" class="NavBundle\Serializer\EntityNormalizer" public="false">
             <argument type="service" id="nav.registry"/>
-            <tag name="serializer.normalizer" priority="-1"/>
+            <argument type="service" id="serializer.mapping.class_metadata_factory"/>
+            <argument type="service" id="nav.serializer.name_converter.camel_case_to_nav"/>
+            <argument type="service" id="property_info"/>
+            <argument type="service" id="serializer.mapping.class_discriminator_resolver"/>
+            <tag name="serializer.normalizer" priority="-2"/>
         </service>
 
         <service id="nav.param_converter" class="NavBundle\Bridge\FrameworkExtraBundle\Request\ParamConverter" public="false">
@@ -89,6 +90,7 @@
         </service>
 
         <service id="nav.api_platform.data_persister" class="NavBundle\Bridge\ApiPlatform\DataPersister\DataPersister" public="false">
+            <argument type="service" id="nav.registry"/>
             <tag name="api_platform.data_persister" priority="-1"/>
         </service>
 

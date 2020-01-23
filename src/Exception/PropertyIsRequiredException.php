@@ -11,18 +11,13 @@
 
 declare(strict_types=1);
 
-namespace Backup\NavBundle\Type;
+namespace NavBundle\Exception;
+
+use Doctrine\Persistence\Mapping\MappingException;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-class StringType extends AbstractType
+final class PropertyIsRequiredException extends MappingException
 {
-    /**
-     * {@inheritdoc}
-     */
-    final public function getBuiltInType(): string
-    {
-        return 'string';
-    }
 }

@@ -11,18 +11,33 @@
 
 declare(strict_types=1);
 
-namespace Backup\NavBundle\Type;
+namespace NavBundle\Annotation;
 
 /**
+ * @Annotation
+ * @Target("PROPERTY")
+ *
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-class FloatType extends AbstractType
+final class ManyToOne
 {
     /**
-     * {@inheritdoc}
+     * @var string
      */
-    final public function getBuiltInType(): string
-    {
-        return 'float';
-    }
+    public $targetClass;
+
+    /**
+     * @var string
+     */
+    public $columnName;
+
+    /**
+     * @var bool
+     */
+    public $nullable = false;
+
+    /**
+     * @var array<string>
+     */
+    public $cascade;
 }

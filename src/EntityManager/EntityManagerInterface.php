@@ -19,10 +19,10 @@ use NavBundle\ClassMetadata\ClassMetadataInterface;
 use NavBundle\Connection\ConnectionInterface;
 use NavBundle\Event\EventManagerInterface;
 use NavBundle\Hydrator\HydratorInterface;
-use NavBundle\NamingStrategy\NamingStrategyInterface;
 use NavBundle\RequestBuilder\RequestBuilderInterface;
 use NavBundle\UnitOfWork;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
@@ -97,11 +97,11 @@ interface EntityManagerInterface extends ObjectManager
     public function getMappingDriver();
 
     /**
-     * Get the NamingStrategy.
+     * Get the NameConverter.
      *
-     * @return NamingStrategyInterface
+     * @return NameConverterInterface
      */
-    public function getNamingStrategy();
+    public function getNameConverter();
 
     /**
      * Get the Hydrator.

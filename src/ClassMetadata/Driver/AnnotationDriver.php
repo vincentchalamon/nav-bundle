@@ -19,9 +19,10 @@ use NavBundle\Annotation\Entity;
 use NavBundle\Annotation\EntityListeners;
 use NavBundle\Annotation\Id;
 use NavBundle\Annotation\Key;
+use NavBundle\Annotation\ManyToOne;
 use NavBundle\ClassMetadata\ClassMetadataInterface;
 use NavBundle\Exception\InvalidEntityException;
-use NavBundle\Exception\PropertyTypeIsRequiredException;
+use NavBundle\Exception\PropertyIsRequiredException;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
@@ -39,7 +40,7 @@ final class AnnotationDriver extends AbstractAnnotationDriver
      * @param ClassMetadataInterface $classMetadata
      *
      * @throws InvalidEntityException
-     * @throws PropertyTypeIsRequiredException
+     * @throws PropertyIsRequiredException
      */
     public function loadMetadataForClass($className, $classMetadata): void
     {
@@ -65,46 +66,60 @@ final class AnnotationDriver extends AbstractAnnotationDriver
 
         // Evaluate annotations on properties/fields
         foreach ($reflectionClass->getProperties() as $property) {
-            /** @var Column|null $propertyAnnotation */
-            $propertyAnnotation = $this->reader->getPropertyAnnotation($property, Column::class);
-            if (!$propertyAnnotation) {
-                continue;
+            $propertyAnnotations = $this->reader->getPropertyAnnotations($property);
+            foreach ($propertyAnnotations as $propertyAnnotation) {
+                if ($propertyAnnotation instanceof Column) {
+                    if (null === $propertyAnnotation->type) {
+                        throw new PropertyIsRequiredException("The attribute 'type' is required for the column description of property $className::\${$property->getName()}.");
+                    }
+
+                    $mapping = [
+                        'fieldName' => $property->getName(),
+                        'type' => $propertyAnnotation->type,
+                        'nullable' => $propertyAnnotation->nullable,
+                    ];
+
+                    if ($this->reader->getPropertyAnnotation($property, Id::class)) {
+                        $classMetadata->setIdentifier($mapping['fieldName']);
+
+                        // Must be hardcoded cause its name never change on Nav
+                        $mapping['columnName'] = 'No';
+                    }
+
+                    if ($this->reader->getPropertyAnnotation($property, Key::class)) {
+                        $classMetadata->setKey($mapping['fieldName']);
+
+                        // Must be hardcoded cause its name never change on Nav
+                        $mapping['columnName'] = 'Key';
+                    }
+
+                    if ($name = $propertyAnnotation->name) {
+                        $mapping['columnName'] = $name;
+                    }
+
+                    $classMetadata->mapField($mapping);
+                } elseif ($propertyAnnotation instanceof ManyToOne) {
+                    if (null === $propertyAnnotation->targetClass) {
+                        throw new PropertyIsRequiredException("The attribute 'targetClass' is required for the column description of property $className::\${$property->getName()}.");
+                    }
+
+                    $mapping = [
+                        'fieldName' => $property->getName(),
+                        'targetEntity' => $propertyAnnotation->targetClass,
+                        'nullable' => $propertyAnnotation->nullable,
+                        'cascade' => $propertyAnnotation->cascade,
+                    ];
+
+                    if ($name = $propertyAnnotation->columnName) {
+                        $mapping['columnName'] = $name;
+                    }
+
+                    $classMetadata->mapManyToOne($mapping);
+                    // TODO: add ManyToMany association mapping
+                    // TODO: add OneToMany association mapping
+                    // TODO: add OneToOne association mapping
+                }
             }
-
-            if (null === $propertyAnnotation->type) {
-                throw new PropertyTypeIsRequiredException("The attribute 'type' is required for the column description of property $className::\${$property->getName()}.");
-            }
-
-            $mapping = [
-                'fieldName' => $property->getName(),
-                'type' => $propertyAnnotation->type,
-                'nullable' => $propertyAnnotation->nullable,
-            ];
-
-            if ($this->reader->getPropertyAnnotation($property, Id::class)) {
-                $classMetadata->setIdentifier($mapping['fieldName']);
-
-                // Must be hardcoded cause its name never change on Nav
-                $mapping['columnName'] = 'No';
-            }
-
-            if ($this->reader->getPropertyAnnotation($property, Key::class)) {
-                $classMetadata->setKey($mapping['fieldName']);
-
-                // Must be hardcoded cause its name never change on Nav
-                $mapping['columnName'] = 'Key';
-            }
-
-            if ($name = $propertyAnnotation->name) {
-                $mapping['columnName'] = $name;
-            }
-
-            $classMetadata->mapField($mapping);
-
-            // TODO: add ManyToOne association mapping
-            // TODO: add ManyToMany association mapping
-            // TODO: add OneToMany association mapping
-            // TODO: add OneToOne association mapping
         }
     }
 }

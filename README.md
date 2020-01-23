@@ -45,7 +45,7 @@ nav:
                 path: '%kernel.project_dir%/src/Entity/Foo'
                 namespace: 'App/Entity/Foo'
         driver: nav.class_metadata.driver.annotation
-        naming_strategy: nav.naming_strategy.default
+        name_converter: nav.serializer.name_converter.camel_case_to_nav
         default_hydrator: nav.hydrator.serializer
         soap_options:
             soap_version: 1
@@ -62,7 +62,7 @@ nav:
             username: '%env(ANOTHER_USERNAME)%'
             password: '%env(ANOTHER_PASSWORD)%'
         driver: app.class_metadata.custom
-        naming_strategy: app.naming_strategy.custom
+        name_converter: nav.serializer.name_converter.camel_case_to_nav
         default_hydrator: app.hydrator.customer
         soap_options:
             soap_version: 1

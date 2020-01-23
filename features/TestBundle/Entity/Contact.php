@@ -18,6 +18,8 @@ use NavBundle\Annotation as Nav;
 use NavBundle\E2e\TestBundle\Repository\ContactRepository;
 
 /**
+ * @author Vincent Chalamon <vincent@les-tilleuls.coop>
+ *
  * @Nav\Entity(namespace="INTWS_002_CONT", repositoryClass=ContactRepository::class)
  * @Api\ApiResource
  */
@@ -42,7 +44,7 @@ class Contact
     /**
      * @var string
      *
-     * @Nav\Column(name="Name")
+     * @Nav\Column
      */
     public $name;
 
@@ -63,7 +65,14 @@ class Contact
     /**
      * @var string
      *
-     * @Nav\Column(name="Type")
+     * @Nav\Column
      */
     public $type;
+
+    /**
+     * @var string
+     *
+     * @Nav\Column(name="Company_Name")
+     */
+    public $company;
 }

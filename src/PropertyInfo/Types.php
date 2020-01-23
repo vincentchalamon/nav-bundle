@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace NavBundle\Bridge\PropertyInfo;
+namespace NavBundle\PropertyInfo;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
@@ -20,6 +20,7 @@ final class Types
 {
     public const DATE = 'date';
     public const DATETIME = 'datetime';
+    public const DATETIMEZ = 'datetimez';
     public const TIME = 'time';
     public const DATE_IMMUTABLE = 'date_immutable';
     public const DATETIME_IMMUTABLE = 'datetime_immutable';

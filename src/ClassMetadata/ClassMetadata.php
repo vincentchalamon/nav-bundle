@@ -19,7 +19,7 @@ use NavBundle\EntityRepository\EntityRepository;
 use NavBundle\Exception\AssociationNotFoundException;
 use NavBundle\Exception\FieldNotFoundException;
 use NavBundle\Exception\InvalidMethodCallException;
-use NavBundle\NamingStrategy\NamingStrategyInterface;
+use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
@@ -62,7 +62,7 @@ final class ClassMetadata implements ClassMetadataInterface
     private $fieldMappings = [];
     private $associationMappings = [];
     private $name;
-    private $namingStrategy;
+    private $nameConverter;
 
     /**
      * @var string|null
@@ -89,10 +89,10 @@ final class ClassMetadata implements ClassMetadataInterface
      */
     private $entityListeners = [];
 
-    public function __construct(string $name, NamingStrategyInterface $namingStrategy)
+    public function __construct(string $name, NameConverterInterface $nameConverter)
     {
         $this->name = $name;
-        $this->namingStrategy = $namingStrategy;
+        $this->nameConverter = $nameConverter;
     }
 
     /**
@@ -218,11 +218,15 @@ final class ClassMetadata implements ClassMetadataInterface
      */
     public function isNullable($fieldName)
     {
-        if (!isset($this->fieldMappings[$fieldName])) {
-            throw new FieldNotFoundException("Field name expected, '$fieldName' is not a field.");
+        if (isset($this->fieldMappings[$fieldName])) {
+            return $this->fieldMappings[$fieldName]['nullable'];
         }
 
-        return $this->fieldMappings[$fieldName]['nullable'];
+        if (isset($this->associationMappings[$fieldName])) {
+            return $this->associationMappings[$fieldName]['nullable'];
+        }
+
+        throw new FieldNotFoundException("Field name expected, '$fieldName' is not a field nor an association.");
     }
 
     /**
@@ -327,7 +331,7 @@ final class ClassMetadata implements ClassMetadataInterface
     public function mapField(array $mapping): void
     {
         if (!isset($mapping['columnName'])) {
-            $mapping['columnName'] = $this->namingStrategy->propertyToColumnName($mapping['fieldName'], $this->getName());
+            $mapping['columnName'] = $this->nameConverter->denormalize($mapping['fieldName']);
         }
         $this->fieldMappings[$mapping['fieldName']] = $mapping;
     }
@@ -337,6 +341,9 @@ final class ClassMetadata implements ClassMetadataInterface
      */
     public function mapOneToOne(array $mapping): void
     {
+        if (!isset($mapping['columnName'])) {
+            $mapping['columnName'] = $this->nameConverter->denormalize($mapping['fieldName'].'No');
+        }
         $mapping['type'] = self::ONE_TO_ONE;
         $this->associationMappings[$mapping['fieldName']] = $mapping;
     }
@@ -346,6 +353,9 @@ final class ClassMetadata implements ClassMetadataInterface
      */
     public function mapOneToMany(array $mapping): void
     {
+        if (!isset($mapping['columnName'])) {
+            $mapping['columnName'] = $this->nameConverter->denormalize($mapping['fieldName'].'No');
+        }
         $mapping['type'] = self::ONE_TO_MANY;
         $this->associationMappings[$mapping['fieldName']] = $mapping;
     }
@@ -355,6 +365,9 @@ final class ClassMetadata implements ClassMetadataInterface
      */
     public function mapManyToOne(array $mapping): void
     {
+        if (!isset($mapping['columnName'])) {
+            $mapping['columnName'] = $this->nameConverter->denormalize($mapping['fieldName'].'No');
+        }
         $mapping['type'] = self::MANY_TO_ONE;
         $this->associationMappings[$mapping['fieldName']] = $mapping;
     }
@@ -364,6 +377,9 @@ final class ClassMetadata implements ClassMetadataInterface
      */
     public function mapManyToMany(array $mapping): void
     {
+        if (!isset($mapping['columnName'])) {
+            $mapping['columnName'] = $this->nameConverter->denormalize($mapping['fieldName'].'No');
+        }
         $mapping['type'] = self::MANY_TO_MANY;
         $this->associationMappings[$mapping['fieldName']] = $mapping;
     }
