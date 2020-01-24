@@ -50,52 +50,43 @@
             <p>No calls have been collected.</p>
         </div>
     {% else %}
-        <div class="sf-tabs">
-            {% for name, connection in collector.connections %}
-                <div class="tab">
-                    <h3 class="tab-title">{{ name }}<span class="badge">{{ connection.count }}</span></h3>
-                    <div class="tab-content">
-                        <div class="metrics">
-                            <div class="metric">
-                                <span class="value">{{ '%.0f'|format(connection.duration) }} <span class="unit">ms</span></span>
-                                <span class="label">Total execution time</span>
-                            </div>
-                            <div class="metric">
-                                <span class="value">{{ '%.2f'|format(connection.memory / 1024 / 1024) }} <span class="unit">MB</span></span>
-                                <span class="label">Peak memory usage</span>
-                            </div>
-                        </div>
-
-                        <table>
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Time</th>
-                                <th>Memory</th>
-                                <th>Request</th>
-                            </tr>
-                            </thead>
-                            {% for i, call in connection.calls %}
-                                <tr>
-                                    <td class="font-normal text-small text-muted nowrap">{{ i + 1 }}</td>
-                                    <td class="nowrap">{{ '%.0f'|format(call.event.duration) }} ms</td>
-                                    <td class="nowrap">{{ '%.2f'|format(call.event.memory / 1024 / 1024) }} MB</td>
-                                    <td>
-                                        <pre class="nav-container">{{ call.request }}</pre>
-                                        <div class="text-small font-normal">
-                                            <a href="#" onclick="return toggle(this);" class="sf-toggle link-inverse" data-toggle-selector="#response-{{ i }}-{{ loop.index }}" data-toggle-alt-content="Hide response">View response</a>
-                                        </div>
-                                        <div id="response-{{ i }}-{{ loop.index }}" class="hidden">
-                                            <pre class="nav-container">{{ call.response }}</pre>
-                                        </div>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </table>
-                    </div>
-                </div>
-            {% endfor %}
+        <div class="metrics">
+            <div class="metric">
+                <span class="value">{{ '%.0f'|format(collector.duration) }} <span class="unit">ms</span></span>
+                <span class="label">Total execution time</span>
+            </div>
+            <div class="metric">
+                <span class="value">{{ '%.2f'|format(collector.memory / 1024 / 1024) }} <span class="unit">MB</span></span>
+                <span class="label">Peak memory usage</span>
+            </div>
         </div>
+
+        <table>
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Time</th>
+                <th>Memory</th>
+                <th>Request</th>
+            </tr>
+            </thead>
+            {% for call in collector.calls %}
+                <tr>
+                    <td class="font-normal text-small text-muted nowrap">{{ loop.index }}</td>
+                    <td class="nowrap">{{ '%.0f'|format(call.event.duration) }} ms</td>
+                    <td class="nowrap">{{ '%.2f'|format(call.event.memory / 1024 / 1024) }} MB</td>
+                    <td>
+                        <pre class="nav-container">{{ call.request }}</pre>
+                        <div class="text-small font-normal">
+                            <a href="#" onclick="return toggle(this);" class="sf-toggle link-inverse" data-toggle-selector="#response-{{ i }}-{{ loop.index }}" data-toggle-alt-content="Hide response">View response</a>
+                        </div>
+                        <div id="response-{{ i }}-{{ loop.index }}" class="hidden">
+                            <pre class="nav-container">{{ call.response }}</pre>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
     {% endif %}
 
     <script type="text/javascript">//<![CDATA[

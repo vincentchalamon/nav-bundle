@@ -53,7 +53,7 @@ interface RegistryInterface extends ManagerRegistry
     /**
      * {@inheritdoc}
      *
-     * @return EntityManagerInterface
+     * @return EntityManagerInterface|null
      */
     public function getManagerForClass($class);
 }

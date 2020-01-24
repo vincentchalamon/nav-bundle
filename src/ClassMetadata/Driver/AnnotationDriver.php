@@ -14,12 +14,14 @@ declare(strict_types=1);
 namespace NavBundle\ClassMetadata\Driver;
 
 use Doctrine\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
+use NavBundle\Annotation\Association;
 use NavBundle\Annotation\Column;
 use NavBundle\Annotation\Entity;
 use NavBundle\Annotation\EntityListeners;
 use NavBundle\Annotation\Id;
 use NavBundle\Annotation\Key;
 use NavBundle\Annotation\ManyToOne;
+use NavBundle\Annotation\OneToMany;
 use NavBundle\ClassMetadata\ClassMetadataInterface;
 use NavBundle\Exception\InvalidEntityException;
 use NavBundle\Exception\PropertyIsRequiredException;
@@ -68,6 +70,11 @@ final class AnnotationDriver extends AbstractAnnotationDriver
         foreach ($reflectionClass->getProperties() as $property) {
             $propertyAnnotations = $this->reader->getPropertyAnnotations($property);
             foreach ($propertyAnnotations as $propertyAnnotation) {
+                if (!$propertyAnnotation instanceof Column && !$propertyAnnotation instanceof Association) {
+                    continue;
+                }
+
+                // It's a field
                 if ($propertyAnnotation instanceof Column) {
                     if (null === $propertyAnnotation->type) {
                         throw new PropertyIsRequiredException("The attribute 'type' is required for the column description of property $className::\${$property->getName()}.");
@@ -98,26 +105,38 @@ final class AnnotationDriver extends AbstractAnnotationDriver
                     }
 
                     $classMetadata->mapField($mapping);
-                } elseif ($propertyAnnotation instanceof ManyToOne) {
-                    if (null === $propertyAnnotation->targetClass) {
-                        throw new PropertyIsRequiredException("The attribute 'targetClass' is required for the column description of property $className::\${$property->getName()}.");
-                    }
+                    continue;
+                }
 
-                    $mapping = [
-                        'fieldName' => $property->getName(),
-                        'targetEntity' => $propertyAnnotation->targetClass,
-                        'nullable' => $propertyAnnotation->nullable,
-                        'cascade' => $propertyAnnotation->cascade,
-                    ];
+                // It's an association
+                if (null === $propertyAnnotation->targetClass) {
+                    throw new PropertyIsRequiredException("The attribute 'targetClass' is required for the column description of property $className::\${$property->getName()}.");
+                }
 
-                    if ($name = $propertyAnnotation->columnName) {
-                        $mapping['columnName'] = $name;
-                    }
+                $mapping = [
+                    'fieldName' => $property->getName(),
+                    'targetEntity' => $propertyAnnotation->targetClass,
+                    'cascade' => $propertyAnnotation->cascade,
+                    'fetch' => $propertyAnnotation->fetch,
+                ];
 
-                    $classMetadata->mapManyToOne($mapping);
-                    // TODO: add ManyToMany association mapping
-                    // TODO: add OneToMany association mapping
-                    // TODO: add OneToOne association mapping
+                switch (true) {
+                    case $propertyAnnotation instanceof ManyToOne:
+                        $mapping['nullable'] = $propertyAnnotation->nullable;
+                        // TODO: Support inversedBy property.
+                        if ($name = $propertyAnnotation->columnName) {
+                            $mapping['columnName'] = $name;
+                        }
+
+                        $classMetadata->mapManyToOne($mapping);
+                        break;
+                    case $propertyAnnotation instanceof OneToMany:
+                        $mapping['nullable'] = false;
+                        $mapping['mappedBy'] = $propertyAnnotation->mappedBy;
+
+                        $classMetadata->mapOneToMany($mapping);
+                        break;
+                    // TODO: Add OneToOne association mapping
                 }
             }
         }

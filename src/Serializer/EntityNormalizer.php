@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace NavBundle\Serializer;
 
 use NavBundle\ClassMetadata\ClassMetadata;
+use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\RegistryInterface;
 use NavBundle\Util\ClassUtils;
 use Symfony\Component\PropertyInfo\PropertyTypeExtractorInterface;
@@ -39,8 +40,7 @@ final class EntityNormalizer extends AbstractObjectNormalizer
         ClassDiscriminatorResolverInterface $classDiscriminatorResolver = null,
         callable $objectClassResolver = null,
         array $defaultContext = []
-    )
-    {
+    ) {
         parent::__construct($classMetadataFactory, $nameConverter, $propertyTypeExtractor, $classDiscriminatorResolver, $objectClassResolver, $defaultContext);
 
         $this->registry = $registry;
@@ -89,11 +89,39 @@ final class EntityNormalizer extends AbstractObjectNormalizer
      */
     public function denormalize($data, $type, $format = null, array $context = [])
     {
-        if (is_string($data) && class_exists($type) && ($manager = $this->registry->getManagerForClass($type))) {
+        if (\is_string($data) && class_exists($type) && ($manager = $this->registry->getManagerForClass($type))) {
             return $manager->getRepository($type)->find($data);
         }
 
-        return parent::denormalize($data, $type, $format, $context);
+        $object = parent::denormalize($data, $type, $format, $context);
+
+        /** @var EntityManagerInterface $manager */
+        $manager = $this->registry->getManagerForClass($type);
+        $manager->getUnitOfWork()->addToIdentityMap($object);
+        /** @var ClassMetadata $classMetadata */
+        $classMetadata = $manager->getClassMetadata($type);
+        foreach ($classMetadata->getAssociationNames() as $associationName) {
+            // Checks whether fetch is EAGER or value is not already set
+            if (
+                ClassMetadata::FETCH_EAGER !== $classMetadata->getAssociationFetchMode($associationName)
+                || $classMetadata->isSingleValuedAssociation($associationName)
+                || !empty($this->getAttributeValue($object, $associationName, $format, $context))
+            ) {
+                // Fetch mode is not EAGER, or association have already been set from $data.
+                continue;
+            }
+
+            // TODO: Support lazy & extra_lazy and implement CollectionInterface.
+            $targetClass = $classMetadata->getAssociationTargetClass($associationName);
+            $classMetadata->reflFields[$associationName]->setValue(
+                $object,
+                $this->registry->getManagerForClass($targetClass)->getRepository($targetClass)->findBy([
+                    $classMetadata->getAssociationMappedByTargetField($associationName) => $classMetadata->getIdentifierValue($object),
+                ])
+            );
+        }
+
+        return $object;
     }
 
     /**
@@ -155,6 +183,10 @@ final class EntityNormalizer extends AbstractObjectNormalizer
     {
         $className = ClassUtils::getRealClass($classOrObject);
 
+//        dump("$className::$attribute", parent::isAllowedAttribute($classOrObject, $attribute, $format, $context) && (
+//                $this->registry->getManagerForClass($className)->getClassMetadata($className)->hasField($attribute) ||
+//                $this->registry->getManagerForClass($className)->getClassMetadata($className)->hasAssociation($attribute)
+//            ));
         return parent::isAllowedAttribute($classOrObject, $attribute, $format, $context) && (
                 $this->registry->getManagerForClass($className)->getClassMetadata($className)->hasField($attribute) ||
                 $this->registry->getManagerForClass($className)->getClassMetadata($className)->hasAssociation($attribute)

@@ -43,7 +43,7 @@ class EntityRepository implements ObjectRepository
     /**
      * {@inheritdoc}
      *
-     * @return object[]|iterable
+     * @return object[]|iterable|\Generator
      */
     public function findAll()
     {
@@ -53,7 +53,7 @@ class EntityRepository implements ObjectRepository
     /**
      * {@inheritdoc}
      *
-     * @return object[]|iterable
+     * @return object[]|iterable|\Generator
      */
     public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null)
     {

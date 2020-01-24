@@ -11,11 +11,27 @@
 
 declare(strict_types=1);
 
-namespace NavBundle\Exception;
+namespace NavBundle\Annotation;
+
+use NavBundle\ClassMetadata\ClassMetadata;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-final class DeprecatedException extends \LogicException
+abstract class Association
 {
+    /**
+     * @var string
+     */
+    public $targetClass;
+
+    /**
+     * @var string
+     */
+    public $fetch = ClassMetadata::FETCH_LAZY;
+
+    /**
+     * @var array<string>
+     */
+    public $cascade;
 }

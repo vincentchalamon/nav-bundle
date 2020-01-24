@@ -75,4 +75,11 @@ class Contact
      * @Nav\Column(name="Company_Name")
      */
     public $company;
+
+    /**
+     * @var Intervention[]|iterable
+     *
+     * @Nav\OneToMany(targetClass=Intervention::class, mappedBy="contact", fetch="eager")
+     */
+    public $interventions;
 }

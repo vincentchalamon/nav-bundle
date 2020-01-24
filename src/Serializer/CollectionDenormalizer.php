@@ -29,7 +29,11 @@ final class CollectionDenormalizer implements ContextAwareDenormalizerInterface,
      */
     public function denormalize($data, $type, $format = null, array $context = [])
     {
-        $data = $data['ReadMultiple_Result'][$context['namespace']];
+        $data = $data['ReadMultiple_Result'][$context[ObjectDenormalizer::NAMESPACE]] ?? null;
+
+        if (!$data) {
+            return null;
+        }
 
         if (!isset($data[0])) {
             $data = [$data];
@@ -46,6 +50,6 @@ final class CollectionDenormalizer implements ContextAwareDenormalizerInterface,
     public function supportsDenormalization($data, $type, $format = null, array $context = []): bool
     {
         return NavDecoder::FORMAT === $format
-            && \is_array($data) && isset($data['ReadMultiple_Result'][$context['namespace']]);
+            && \is_array($data) && isset($data['ReadMultiple_Result']);
     }
 }

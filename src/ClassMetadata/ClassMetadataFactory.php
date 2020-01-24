@@ -58,7 +58,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * {@inheritdoc}
      */
-    protected function getDriver(): MappingDriver
+    protected function getDriver(): ?MappingDriver
     {
         return $this->driver;
     }

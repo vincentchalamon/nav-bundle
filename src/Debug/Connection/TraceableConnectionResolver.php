@@ -43,9 +43,9 @@ final class TraceableConnectionResolver implements ConnectionResolverInterface
             return $this->connections[$oid];
         }
 
-        $this->stopwatch->start('fetch WSDL', 'nav');
+        $this->stopwatch->start($oid, 'nav');
         $parentConnection = $this->decorated->resolve($className, $namespace);
-        $this->stopwatch->stop('fetch WSDL');
+        $this->stopwatch->stop($oid);
 
         return $this->connections[$oid] = new TraceableConnection($parentConnection, $this->stopwatch);
     }

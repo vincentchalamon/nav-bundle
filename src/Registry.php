@@ -78,7 +78,7 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
     /**
      * {@inheritdoc}
      *
-     * @return object[]|iterable
+     * @return object[]|iterable|\Generator
      */
     public function getConnections(): iterable
     {

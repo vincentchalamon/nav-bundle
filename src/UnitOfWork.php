@@ -123,17 +123,15 @@ final class UnitOfWork
     public function refresh(object $object): void
     {
         $className = ClassUtils::getRealClass($object);
-        $this->addToIdentityMap(
-            $this->em->createRequestBuilder($className)->loadById(
-                $this->em->getClassMetadata($className)->getIdentifierValue($object)
-            )
+        $this->em->createRequestBuilder($className)->loadById(
+            $this->em->getClassMetadata($className)->getIdentifierValue($object)
         );
     }
 
     /**
      * Commits the UnitOfWork, executing all operations that have been postponed up to this point.
      *
-     * @param object|array|null $object the entity or an array of entities to flush
+     * @param object|null $object the entity to flush
      *
      * @throws ExceptionInterface
      * @throws \SoapFault
@@ -166,7 +164,6 @@ final class UnitOfWork
             $this->em->getHydrator()->hydrateAll($response, $classMetadata, [
                 'object_to_populate' => $obj,
             ]);
-            $this->addToIdentityMap($obj);
             unset($this->entitiesScheduledForInsertion[$oid]);
 
             $this->em->getEventManager()->dispatch(new PostPersistEvent($obj, $this->em));
@@ -198,7 +195,6 @@ final class UnitOfWork
             $this->em->getHydrator()->hydrateAll($response, $classMetadata, [
                 'object_to_populate' => $obj,
             ]);
-            $this->addToIdentityMap($obj);
             unset(
                 $this->entityChangeSets[$oid],
                 $this->entitiesScheduledForUpdate[$oid]
@@ -276,6 +272,10 @@ final class UnitOfWork
      */
     public function addToIdentityMap($object): void
     {
+        if ($this->isInIdentityMap($object)) {
+            return;
+        }
+
         $className = ClassUtils::getRealClass($object);
         /** @var ClassMetadata $classMetadata */
         $classMetadata = $this->em->getClassMetadata($className);
@@ -331,5 +331,7 @@ final class UnitOfWork
             $this->entityChangeSets[$oid] = $changeSet;
             $this->entitiesScheduledForUpdate[$oid] = $object;
         }
+
+        // TODO: Implement cascade remove/persist/all.
     }
 }

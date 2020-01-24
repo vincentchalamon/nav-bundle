@@ -40,20 +40,19 @@ final class NavDataCollector extends DataCollector
             'count' => 0,
             'duration' => 0.,
             'memory' => 0.,
-            'connections' => [],
+            'calls' => [],
         ];
 
-        foreach ($this->registry->getConnections() as $name => $connection) {
-            $this->data['connections'][$name] = [
-                'calls' => $connection->getCalls(),
-                'duration' => $connection->getDuration(),
-                'memory' => $connection->getMemory(),
-                'count' => $connection->count(),
-            ];
+        /** @var TraceableConnection[] $connections */
+        $connections = $this->registry->getConnections();
+        foreach ($connections as $connection) {
+            foreach ($connection->getCalls() as $call) {
+                $this->data['calls'][] = $call;
+            }
 
-            $this->data['duration'] += $this->data['connections'][$name]['duration'];
-            $this->data['memory'] += $this->data['connections'][$name]['memory'];
-            $this->data['count'] += $this->data['connections'][$name]['count'];
+            $this->data['duration'] += $connection->getDuration();
+            $this->data['memory'] += $connection->getMemory();
+            $this->data['count'] += $connection->count();
         }
     }
 
@@ -83,10 +82,10 @@ final class NavDataCollector extends DataCollector
     }
 
     /**
-     * @return TraceableConnection[]
+     * @return array<array>
      */
-    public function getConnections(): array
+    public function getCalls(): array
     {
-        return $this->data['connections'];
+        return $this->data['calls'];
     }
 }

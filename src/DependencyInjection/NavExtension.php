@@ -15,13 +15,13 @@ namespace NavBundle\DependencyInjection;
 
 use NavBundle\Bridge\ApiPlatform\DataProvider\CollectionExtensionInterface;
 use NavBundle\Bridge\ApiPlatform\DataProvider\ItemExtensionInterface;
-use NavBundle\PropertyInfo\NavExtractor;
 use NavBundle\Debug\Connection\TraceableConnectionResolver;
 use NavBundle\EntityManager\EntityManager;
 use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\EntityRepository\ServiceEntityRepositoryInterface;
 use NavBundle\Event\EventSubscriberInterface;
 use NavBundle\Exception\DriverNotFoundException;
+use NavBundle\PropertyInfo\NavExtractor;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ChildDefinition;

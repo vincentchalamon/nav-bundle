@@ -48,11 +48,12 @@ final class TraceableConnection implements ConnectionInterface, WarmableInterfac
      */
     public function __call($functionName, $arguments)
     {
-        $this->stopwatch->start($functionName, 'nav');
+        $eventName = md5("$functionName(".serialize($arguments).'):'.(microtime(true) * 1000));
 
+        $this->stopwatch->start($eventName, 'nav');
         $response = \call_user_func_array([$this->decorated, $functionName], $arguments);
+        $event = $this->stopwatch->stop($eventName);
 
-        $event = $this->stopwatch->stop($functionName);
         $this->calls[] = [
             'event' => $event,
             'request' => $this->format($this->decorated->__getLastRequest()),
@@ -108,6 +109,7 @@ final class TraceableConnection implements ConnectionInterface, WarmableInterfac
 
             return $doc->saveXML();
         } catch (\Exception $e) {
+            // Ignore error and return $string
         }
 
         return $string;

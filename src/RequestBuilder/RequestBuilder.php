@@ -15,6 +15,7 @@ namespace NavBundle\RequestBuilder;
 
 use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\Event\PostLoadEvent;
+use NavBundle\Exception\FieldNotFoundException;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
@@ -25,7 +26,7 @@ final class RequestBuilder implements RequestBuilderInterface
     private $className;
     private $filters = [];
     private $offset;
-    private $limit = 0;
+    private $limit;
 
     public function __construct(EntityManagerInterface $em, string $className)
     {
@@ -111,7 +112,6 @@ final class RequestBuilder implements RequestBuilderInterface
         }
 
         $object = $this->em->getHydrator()->hydrateAll($response, $this->em->getClassMetadata($this->className));
-        $this->em->getUnitOfWork()->addToIdentityMap($object);
         $this->em->getEventManager()->dispatch(new PostLoadEvent($object, $this->em));
 
         return $object;
@@ -127,7 +127,6 @@ final class RequestBuilder implements RequestBuilderInterface
         $this->setMaxResults(1);
 
         foreach ($this->getResult() as $object) {
-            $this->em->getUnitOfWork()->addToIdentityMap($object);
             $this->em->getEventManager()->dispatch(new PostLoadEvent($object, $this->em));
 
             return $object;
@@ -156,9 +155,7 @@ final class RequestBuilder implements RequestBuilderInterface
         }
 
         $objects = $this->em->getHydrator()->hydrateAll($response, $this->em->getClassMetadata($this->className));
-        $uow = $this->em->getUnitOfWork();
         foreach ($objects as $object) {
-            $uow->addToIdentityMap($object);
             $this->em->getEventManager()->dispatch(new PostLoadEvent($object, $this->em));
             yield $object;
         }
@@ -177,8 +174,22 @@ final class RequestBuilder implements RequestBuilderInterface
 
         $classMetadata = $this->em->getClassMetadata($this->className);
         foreach ($this->filters as $field => $value) {
+            if ($classMetadata->hasField($field)) {
+                $field = $classMetadata->getFieldColumnName($field);
+            // TODO: Transform value if necessary.
+            } elseif ($classMetadata->hasAssociation($field)) {
+                // TODO: Transform value if necessary.
+                if ($classMetadata->isSingleValuedAssociation($field)) {
+                    $field = $classMetadata->getSingleValuedAssociationColumnName($field);
+                } else {
+                    $field = $classMetadata->getAssociationMappedByTargetField($field);
+                }
+            } else {
+                throw new FieldNotFoundException("Field name expected, '$field' is not a field nor an association.");
+            }
+
             $criteria['filter'][] = [
-                'Field' => $classMetadata->getFieldColumnName($field),
+                'Field' => $field,
                 'Criteria' => $value,
             ];
         }

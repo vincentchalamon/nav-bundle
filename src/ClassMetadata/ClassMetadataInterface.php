@@ -74,13 +74,6 @@ interface ClassMetadataInterface extends DoctrineClassMetadataInterface
     public function mapManyToOne(array $mapping): void;
 
     /**
-     * Adds a many-to-many mapping.
-     *
-     * @param array $mapping the mapping
-     */
-    public function mapManyToMany(array $mapping): void;
-
-    /**
      * Initializes Reflection after ClassMetadata was constructed.
      *
      * @param ReflectionService $reflService the reflection service
@@ -189,6 +182,15 @@ interface ClassMetadataInterface extends DoctrineClassMetadataInterface
     public function retrieveField($columnName);
 
     /**
+     * Gets the single valued association name for the column.
+     *
+     * @param string $columnName the column name
+     *
+     * @return string
+     */
+    public function retrieveSingleValuedAssociation($columnName);
+
+    /**
      * Checks whether the field is nullable.
      *
      * @param string $fieldName the field name
@@ -196,4 +198,22 @@ interface ClassMetadataInterface extends DoctrineClassMetadataInterface
      * @return bool
      */
     public function isNullable($fieldName);
+
+    /**
+     * Gets the association fetch mode.
+     *
+     * @param string $assocName the association name
+     *
+     * @return string
+     */
+    public function getAssociationFetchMode($assocName);
+
+    /**
+     * Gets the association column name.
+     *
+     * @param string $assocName the association name
+     *
+     * @return string
+     */
+    public function getSingleValuedAssociationColumnName($assocName);
 }

@@ -56,6 +56,22 @@ final class ClassMetadata implements ClassMetadataInterface
      */
     public const TO_MANY = 12;
 
+    /**
+     * Specifies that an association is to be fetched when it is first accessed.
+     */
+    public const FETCH_LAZY = 'lazy';
+
+    /**
+     * Specifies that an association is to be fetched when the owner of the association is fetched.
+     */
+    public const FETCH_EAGER = 'eager';
+
+    /**
+     * Specifies that an association is to be fetched lazy (on first access) and that commands such as Collection#count,
+     * Collection#slice are issued directly against the database if the collection is not yet initialized.
+     */
+    public const FETCH_EXTRA_LAZY = 'extra_lazy';
+
     private $repositoryClass = EntityRepository::class;
     private $connectionClass = Connection::class;
     private $namespace;
@@ -188,6 +204,20 @@ final class ClassMetadata implements ClassMetadataInterface
     /**
      * {@inheritdoc}
      */
+    public function retrieveSingleValuedAssociation($columnName)
+    {
+        foreach ($this->associationMappings as $associationName => $associationMapping) {
+            if ($this->isSingleValuedAssociation($associationName) && $columnName === $associationMapping['columnName']) {
+                return $associationName;
+            }
+        }
+
+        throw new AssociationNotFoundException("No single valued association found corresponding to column '$columnName'.");
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getIdentifierFieldNames()
     {
         return [$this->identifier];
@@ -223,7 +253,7 @@ final class ClassMetadata implements ClassMetadataInterface
         }
 
         if (isset($this->associationMappings[$fieldName])) {
-            return $this->associationMappings[$fieldName]['nullable'];
+            return $this->associationMappings[$fieldName]['nullable'] ?? true;
         }
 
         throw new FieldNotFoundException("Field name expected, '$fieldName' is not a field nor an association.");
@@ -244,9 +274,33 @@ final class ClassMetadata implements ClassMetadataInterface
     /**
      * {@inheritdoc}
      */
+    public function getAssociationFetchMode($assocName): string
+    {
+        if (!isset($this->associationMappings[$assocName])) {
+            throw new AssociationNotFoundException("Association name expected, '$assocName' is not an association.");
+        }
+
+        return $this->associationMappings[$assocName]['fetch'];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSingleValuedAssociationColumnName($assocName): string
+    {
+        if (!isset($this->associationMappings[$assocName]) || !$this->isSingleValuedAssociation($assocName)) {
+            throw new AssociationNotFoundException("Association name expected, '$assocName' is not an association or is not a single valued association.");
+        }
+
+        return $this->associationMappings[$assocName]['columnName'];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function isAssociationInverseSide($assocName)
     {
-        // TODO: Implement isAssociationInverseSide() method.
+        // TODO: Implement method isAssociationInverseSide().
         return false;
     }
 
@@ -255,8 +309,11 @@ final class ClassMetadata implements ClassMetadataInterface
      */
     public function getAssociationMappedByTargetField($assocName)
     {
-        // TODO: Implement getAssociationMappedByTargetField() method.
-        return '';
+        if (!isset($this->associationMappings[$assocName])) {
+            throw new AssociationNotFoundException("Association name expected, '$assocName' is not an association.");
+        }
+
+        return $this->associationMappings[$assocName]['mappedBy'];
     }
 
     /**
@@ -331,7 +388,7 @@ final class ClassMetadata implements ClassMetadataInterface
     public function mapField(array $mapping): void
     {
         if (!isset($mapping['columnName'])) {
-            $mapping['columnName'] = $this->nameConverter->denormalize($mapping['fieldName']);
+            $mapping['columnName'] = $this->nameConverter->normalize($mapping['fieldName']);
         }
         $this->fieldMappings[$mapping['fieldName']] = $mapping;
     }
@@ -342,21 +399,9 @@ final class ClassMetadata implements ClassMetadataInterface
     public function mapOneToOne(array $mapping): void
     {
         if (!isset($mapping['columnName'])) {
-            $mapping['columnName'] = $this->nameConverter->denormalize($mapping['fieldName'].'No');
+            $mapping['columnName'] = $this->nameConverter->normalize($mapping['fieldName'].'No');
         }
         $mapping['type'] = self::ONE_TO_ONE;
-        $this->associationMappings[$mapping['fieldName']] = $mapping;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function mapOneToMany(array $mapping): void
-    {
-        if (!isset($mapping['columnName'])) {
-            $mapping['columnName'] = $this->nameConverter->denormalize($mapping['fieldName'].'No');
-        }
-        $mapping['type'] = self::ONE_TO_MANY;
         $this->associationMappings[$mapping['fieldName']] = $mapping;
     }
 
@@ -366,7 +411,7 @@ final class ClassMetadata implements ClassMetadataInterface
     public function mapManyToOne(array $mapping): void
     {
         if (!isset($mapping['columnName'])) {
-            $mapping['columnName'] = $this->nameConverter->denormalize($mapping['fieldName'].'No');
+            $mapping['columnName'] = $this->nameConverter->normalize($mapping['fieldName'].'No');
         }
         $mapping['type'] = self::MANY_TO_ONE;
         $this->associationMappings[$mapping['fieldName']] = $mapping;
@@ -375,12 +420,9 @@ final class ClassMetadata implements ClassMetadataInterface
     /**
      * {@inheritdoc}
      */
-    public function mapManyToMany(array $mapping): void
+    public function mapOneToMany(array $mapping): void
     {
-        if (!isset($mapping['columnName'])) {
-            $mapping['columnName'] = $this->nameConverter->denormalize($mapping['fieldName'].'No');
-        }
-        $mapping['type'] = self::MANY_TO_MANY;
+        $mapping['type'] = self::ONE_TO_MANY;
         $this->associationMappings[$mapping['fieldName']] = $mapping;
     }
 

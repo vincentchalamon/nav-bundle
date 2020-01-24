@@ -83,10 +83,25 @@ final class NavExtractor implements PropertyListExtractorInterface, PropertyType
                     return $builtinType ? [new Type($builtinType, $nullable)] : null;
             }
         } elseif ($classMetadata->hasAssociation($property)) {
+            if ($classMetadata->isSingleValuedAssociation($property)) {
+                return [new Type(
+                    Type::BUILTIN_TYPE_OBJECT,
+                    $classMetadata->isNullable($property),
+                    $classMetadata->getAssociationTargetClass($property)
+                )];
+            }
+
             return [new Type(
-                Type::BUILTIN_TYPE_OBJECT,
-                $classMetadata->isNullable($property),
-                $classMetadata->getAssociationTargetClass($property)
+                Type::BUILTIN_TYPE_ITERABLE,
+                false,
+                null,
+                true,
+                null,
+                new Type(
+                    Type::BUILTIN_TYPE_OBJECT,
+                    false,
+                    $classMetadata->getAssociationTargetClass($property)
+                )
             )];
         }
 

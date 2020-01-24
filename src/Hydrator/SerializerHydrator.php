@@ -14,7 +14,9 @@ declare(strict_types=1);
 namespace NavBundle\Hydrator;
 
 use NavBundle\ClassMetadata\ClassMetadataInterface;
+use NavBundle\Serializer\EntityNormalizer;
 use NavBundle\Serializer\NavDecoder;
+use NavBundle\Serializer\ObjectDenormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
@@ -35,7 +37,9 @@ final class SerializerHydrator implements HydratorInterface
     public function hydrateAll($response, ClassMetadataInterface $classMetadata, array $context = [])
     {
         return $this->serializer->deserialize($response, $classMetadata->getName(), NavDecoder::FORMAT, $context + [
-            'namespace' => $classMetadata->getNamespace(),
-        ]);
+            ObjectDenormalizer::NAMESPACE => $classMetadata->getNamespace(),
+            EntityNormalizer::ENABLE_MAX_DEPTH => true,
+        ]
+        );
     }
 }

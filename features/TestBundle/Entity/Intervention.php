@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the NavBundle.
+ *
+ * (c) Vincent Chalamon <vincentchalamon@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
 namespace NavBundle\E2e\TestBundle\Entity;
@@ -42,7 +51,6 @@ class Intervention
      * @Nav\Id
      */
     public $no;
-
 
     /**
      * @var string|null
@@ -185,11 +193,12 @@ class Intervention
     public $vendorCountryCode;
 
     /**
-     * @var Contact|null
+     * @var contact|null
      *
-     * @Nav\ManyToOne(targetClass=Contact::class, columnName="Vendor_No", nullable=false)
+     * TODO: Add inversedBy="interventions"
+     * @Nav\ManyToOne(targetClass=Contact::class, columnName="Vendor_Contact", nullable=false)
      */
-    public $vendorContact;
+    public $contact;
 
     /**
      * @var string|null

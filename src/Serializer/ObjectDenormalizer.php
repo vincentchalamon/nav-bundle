@@ -24,12 +24,14 @@ final class ObjectDenormalizer implements ContextAwareDenormalizerInterface, Den
 {
     use DenormalizerAwareTrait;
 
+    public const NAMESPACE = 'namespace';
+
     /**
      * {@inheritdoc}
      */
     public function denormalize($data, $type, $format = null, array $context = [])
     {
-        return $this->denormalizer->denormalize($data[$context['namespace']], $type, $format, $context);
+        return $this->denormalizer->denormalize($data[$context[self::NAMESPACE]], $type, $format, $context);
     }
 
     /**
@@ -39,6 +41,6 @@ final class ObjectDenormalizer implements ContextAwareDenormalizerInterface, Den
     {
         return NavDecoder::FORMAT === $format
             && \is_array($data)
-            && isset($data[$context['namespace']]);
+            && isset($data[$context[self::NAMESPACE]]);
     }
 }

@@ -11,11 +11,18 @@
 
 declare(strict_types=1);
 
-namespace NavBundle\Exception;
+namespace NavBundle\Annotation;
 
 /**
+ * @Annotation
+ * @Target("PROPERTY")
+ *
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-final class DeprecatedException extends \LogicException
+final class OneToMany extends Association
 {
+    /**
+     * @var string
+     */
+    public $mappedBy;
 }
