@@ -272,10 +272,6 @@ final class UnitOfWork
      */
     public function addToIdentityMap($object): void
     {
-        if ($this->isInIdentityMap($object)) {
-            return;
-        }
-
         $className = ClassUtils::getRealClass($object);
         /** @var ClassMetadata $classMetadata */
         $classMetadata = $this->em->getClassMetadata($className);

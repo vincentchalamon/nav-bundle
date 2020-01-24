@@ -75,7 +75,7 @@ final class NavExtension extends Extension
                 ->setArgument('$options', [
                     'user' => $options['connection']['username'],
                     'password' => $options['connection']['password'],
-                    'cache_dir' => '%kernel.cache_dir%/nav',
+                    'cache_dir' => '%kernel.cache_dir%/nav/WSDL',
                 ] + $options['soap_options']
                 );
 

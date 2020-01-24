@@ -3,11 +3,16 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services
         https://symfony.com/schema/dic/services/services-1.0.xsd">
+    <parameters>
+        <parameter key="nav.proxies.cache_dir">%kernel.cache_dir%/nav/Proxies</parameter>
+    </parameters>
+
     <services>
         <service id="nav.registry" class="NavBundle\Registry" public="true">
             <argument type="service" id="service_container"/>
             <argument/> <!-- managers -->
             <argument/> <!-- default manager name -->
+            <argument>%nav.proxies.cache_dir%</argument>
             <tag name="kernel.cache_warmer"/>
         </service>
         <service id="NavBundle\Registry" alias="nav.registry" public="true"/>
@@ -54,6 +59,27 @@
             <argument type="service" id="serializer"/>
         </service>
 
+        <service id="nav.proxy_manager.file_locator" class="ProxyManager\FileLocator\FileLocator" public="false">
+            <argument>%nav.proxies.cache_dir%</argument>
+        </service>
+
+        <service id="nav.proxy_manager.generator_strategy.file_writer" class="ProxyManager\GeneratorStrategy\FileWriterGeneratorStrategy" public="false">
+            <argument type="service" id="nav.proxy_manager.file_locator"/>
+        </service>
+
+        <service id="nav.proxy_manager.configuration" class="ProxyManager\Configuration" public="false">
+            <call method="setGeneratorStrategy">
+                <argument type="service" id="nav.proxy_manager.generator_strategy.file_writer"/>
+            </call>
+            <call method="setProxiesTargetDir">
+                <argument>%nav.proxies.cache_dir%</argument>
+            </call>
+        </service>
+
+        <service id="nav.proxy_manager.lazy_loading_value_holder_factory" class="ProxyManager\Factory\LazyLoadingValueHolderFactory" public="true">
+            <argument type="service" id="nav.proxy_manager.configuration"/>
+        </service>
+
         <service id="nav.serializer.name_converter.camel_case_to_nav" class="NavBundle\Serializer\NameConverter\CamelCaseToNavNameConverter" public="false">
             <argument type="service" id="nav.registry"/>
         </service>
@@ -72,6 +98,7 @@
 
         <service id="nav.serializer.entity_normalizer" class="NavBundle\Serializer\EntityNormalizer" public="false">
             <argument type="service" id="nav.registry"/>
+            <argument type="service" id="nav.proxy_manager.lazy_loading_value_holder_factory"/>
             <argument type="service" id="serializer.mapping.class_metadata_factory"/>
             <argument type="service" id="nav.serializer.name_converter.camel_case_to_nav"/>
             <argument type="service" id="property_info"/>

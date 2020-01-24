@@ -17,6 +17,8 @@ use NavBundle\ClassMetadata\ClassMetadata;
 use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\RegistryInterface;
 use NavBundle\Util\ClassUtils;
+use ProxyManager\Factory\LazyLoadingValueHolderFactory;
+use ProxyManager\Proxy\LazyLoadingInterface;
 use Symfony\Component\PropertyInfo\PropertyTypeExtractorInterface;
 use Symfony\Component\Serializer\Mapping\ClassDiscriminatorResolverInterface;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactoryInterface;
@@ -25,15 +27,15 @@ use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
- *
- * TODO: Implement proxy from ocramius/proxy-manager.
  */
 final class EntityNormalizer extends AbstractObjectNormalizer
 {
     private $registry;
+    private $holderFactory;
 
     public function __construct(
         RegistryInterface $registry,
+        LazyLoadingValueHolderFactory $holderFactory,
         ClassMetadataFactoryInterface $classMetadataFactory = null,
         NameConverterInterface $nameConverter = null,
         PropertyTypeExtractorInterface $propertyTypeExtractor = null,
@@ -44,45 +46,8 @@ final class EntityNormalizer extends AbstractObjectNormalizer
         parent::__construct($classMetadataFactory, $nameConverter, $propertyTypeExtractor, $classDiscriminatorResolver, $objectClassResolver, $defaultContext);
 
         $this->registry = $registry;
+        $this->holderFactory = $holderFactory;
     }
-
-//    /**
-//     * {@inheritdoc}
-//     */
-//    public function denormalize($data, $type, $format = null, array $context = [])
-//    {
-//        /** @var ClassMetadata $classMetadata */
-//        $classMetadata = $this->registry->getManagerForClass($type)->getClassMetadata($type);
-//
-//        $object = $context['object_to_populate'] ?? (new LazyLoadingGhostFactory())->createProxy($type, function (
-//            GhostObjectInterface $ghostObject,
-//            string $method,
-//            array $parameters,
-//            &$initializer,
-//            array $properties
-//        ) use ($data, $classMetadata, $type, $format) {
-//            $initializer = null;
-//
-//            foreach ($data as $key => $value) {
-//                try {
-//                    $property = $classMetadata->retrieveField($key);
-//                } catch (FieldNotFoundException $exception) {
-//                    // Key does not match any property
-//                    unset($data[$key]);
-//                    continue;
-//                }
-//
-//                $properties[$property] = $value;
-//            }
-//
-//            return true;
-//        }, ['skippedProperties' => [$classMetadata->getIdentifier(), $classMetadata->getKey()]]);
-//
-//        $classMetadata->reflFields[$classMetadata->getIdentifier()]->setValue($object, $data['No']);
-//        $classMetadata->reflFields[$classMetadata->getKey()]->setValue($object, $data['Key']);
-//
-//        return $object;
-//    }
 
     /**
      * {@inheritdoc}
@@ -93,35 +58,45 @@ final class EntityNormalizer extends AbstractObjectNormalizer
             return $manager->getRepository($type)->find($data);
         }
 
-        $object = parent::denormalize($data, $type, $format, $context);
+        return $this->holderFactory->createProxy($type, function (
+            &$wrappedObject,
+            LazyLoadingInterface $proxy,
+            $method,
+            array $parameters,
+            &$initializer
+        ) use ($data, $type, $format, $context) {
+            $initializer = null;
+            $wrappedObject = parent::denormalize($data, $type, $format, $context);
 
-        /** @var EntityManagerInterface $manager */
-        $manager = $this->registry->getManagerForClass($type);
-        $manager->getUnitOfWork()->addToIdentityMap($object);
-        /** @var ClassMetadata $classMetadata */
-        $classMetadata = $manager->getClassMetadata($type);
-        foreach ($classMetadata->getAssociationNames() as $associationName) {
-            // Checks whether fetch is EAGER or value is not already set
-            if (
-                ClassMetadata::FETCH_EAGER !== $classMetadata->getAssociationFetchMode($associationName)
-                || $classMetadata->isSingleValuedAssociation($associationName)
-                || !empty($this->getAttributeValue($object, $associationName, $format, $context))
-            ) {
-                // Fetch mode is not EAGER, or association have already been set from $data.
-                continue;
+            /** @var EntityManagerInterface $manager */
+            $manager = $this->registry->getManagerForClass($type);
+            /** @var ClassMetadata $classMetadata */
+            $classMetadata = $manager->getClassMetadata($type);
+
+            foreach ($classMetadata->getAssociationNames() as $associationName) {
+                // Checks whether fetch is EAGER or value is not already set
+                if (
+                    ClassMetadata::FETCH_EAGER !== $classMetadata->getAssociationFetchMode($associationName)
+                    || $classMetadata->isSingleValuedAssociation($associationName)
+                    || !empty($this->getAttributeValue($wrappedObject, $associationName, $format, $context))
+                ) {
+                    // Fetch mode is not EAGER, or association have already been set from $data.
+                    continue;
+                }
+
+                // TODO: Support lazy & extra_lazy and implement CollectionInterface.
+                $targetClass = $classMetadata->getAssociationTargetClass($associationName);
+                $classMetadata->reflFields[$associationName]->setValue(
+                    $wrappedObject,
+                    $this->registry->getManagerForClass($targetClass)->getRepository($targetClass)->findBy([
+                        $classMetadata->getAssociationMappedByTargetField($associationName) => $classMetadata->getIdentifierValue($wrappedObject),
+                    ])
+                );
             }
+            $manager->getUnitOfWork()->addToIdentityMap($wrappedObject);
 
-            // TODO: Support lazy & extra_lazy and implement CollectionInterface.
-            $targetClass = $classMetadata->getAssociationTargetClass($associationName);
-            $classMetadata->reflFields[$associationName]->setValue(
-                $object,
-                $this->registry->getManagerForClass($targetClass)->getRepository($targetClass)->findBy([
-                    $classMetadata->getAssociationMappedByTargetField($associationName) => $classMetadata->getIdentifierValue($object),
-                ])
-            );
-        }
-
-        return $object;
+            return true;
+        });
     }
 
     /**
@@ -183,10 +158,6 @@ final class EntityNormalizer extends AbstractObjectNormalizer
     {
         $className = ClassUtils::getRealClass($classOrObject);
 
-//        dump("$className::$attribute", parent::isAllowedAttribute($classOrObject, $attribute, $format, $context) && (
-//                $this->registry->getManagerForClass($className)->getClassMetadata($className)->hasField($attribute) ||
-//                $this->registry->getManagerForClass($className)->getClassMetadata($className)->hasAssociation($attribute)
-//            ));
         return parent::isAllowedAttribute($classOrObject, $attribute, $format, $context) && (
                 $this->registry->getManagerForClass($className)->getClassMetadata($className)->hasField($attribute) ||
                 $this->registry->getManagerForClass($className)->getClassMetadata($className)->hasAssociation($attribute)

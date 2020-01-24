@@ -48,10 +48,14 @@ final class NavDataCollector extends DataCollector
         foreach ($connections as $connection) {
             foreach ($connection->getCalls() as $call) {
                 $this->data['calls'][] = $call;
+
+                // Update "peak memory usage"
+                if ($this->data['memory'] < $call['memory']) {
+                    $this->data['memory'] = $call['memory'];
+                }
             }
 
             $this->data['duration'] += $connection->getDuration();
-            $this->data['memory'] += $connection->getMemory();
             $this->data['count'] += $connection->count();
         }
     }

@@ -52,6 +52,10 @@
     {% else %}
         <div class="metrics">
             <div class="metric">
+                <span class="value">{{ collector.count }}</span>
+                <span class="label">Total calls</span>
+            </div>
+            <div class="metric">
                 <span class="value">{{ '%.0f'|format(collector.duration) }} <span class="unit">ms</span></span>
                 <span class="label">Total execution time</span>
             </div>
@@ -73,8 +77,8 @@
             {% for call in collector.calls %}
                 <tr>
                     <td class="font-normal text-small text-muted nowrap">{{ loop.index }}</td>
-                    <td class="nowrap">{{ '%.0f'|format(call.event.duration) }} ms</td>
-                    <td class="nowrap">{{ '%.2f'|format(call.event.memory / 1024 / 1024) }} MB</td>
+                    <td class="nowrap">{{ '%.0f'|format(call.duration) }} ms</td>
+                    <td class="nowrap">{{ '%.2f'|format(call.memory / 1024 / 1024) }} MB</td>
                     <td>
                         <pre class="nav-container">{{ call.request }}</pre>
                         <div class="text-small font-normal">

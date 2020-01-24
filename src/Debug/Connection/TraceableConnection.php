@@ -33,12 +33,14 @@ final class TraceableConnection implements ConnectionInterface, WarmableInterfac
      */
     private $decorated;
     private $stopwatch;
+    private $namespace;
     private $calls = [];
 
-    public function __construct(ConnectionInterface $decorated, Stopwatch $stopwatch)
+    public function __construct(ConnectionInterface $decorated, Stopwatch $stopwatch, string $namespace)
     {
         $this->decorated = $decorated;
         $this->stopwatch = $stopwatch;
+        $this->namespace = $namespace;
     }
 
     /**
@@ -48,14 +50,15 @@ final class TraceableConnection implements ConnectionInterface, WarmableInterfac
      */
     public function __call($functionName, $arguments)
     {
-        $eventName = md5("$functionName(".serialize($arguments).'):'.(microtime(true) * 1000));
+        $eventName = "$functionName($this->namespace)";
 
         $this->stopwatch->start($eventName, 'nav');
         $response = \call_user_func_array([$this->decorated, $functionName], $arguments);
-        $event = $this->stopwatch->stop($eventName);
+        $periods = $this->stopwatch->stop($eventName)->getPeriods();
 
         $this->calls[] = [
-            'event' => $event,
+            'duration' => end($periods)->getDuration(),
+            'memory' => end($periods)->getMemory(),
             'request' => $this->format($this->decorated->__getLastRequest()),
             'response' => $this->format($this->decorated->__getLastResponse()),
         ];
@@ -67,20 +70,10 @@ final class TraceableConnection implements ConnectionInterface, WarmableInterfac
     {
         $duration = 0.;
         foreach ($this->calls as $call) {
-            $duration += $call['event']->getDuration();
+            $duration += $call['duration'];
         }
 
         return $duration;
-    }
-
-    public function getMemory(): float
-    {
-        $memory = 0.;
-        foreach ($this->calls as $call) {
-            $memory += $call['event']->getMemory();
-        }
-
-        return $memory;
     }
 
     public function count(): int

@@ -38,15 +38,15 @@ final class TraceableConnectionResolver implements ConnectionResolverInterface
     public function resolve($className, $namespace): ConnectionInterface
     {
         $className = trim($className, '\\');
-        $oid = md5("$className::$namespace");
-        if (isset($this->connections[$oid])) {
-            return $this->connections[$oid];
+        if (isset($this->connections[$namespace])) {
+            return $this->connections[$namespace];
         }
 
-        $this->stopwatch->start($oid, 'nav');
+        $eventName = "fetchWSDL($namespace)";
+        $this->stopwatch->start($eventName, 'nav');
         $parentConnection = $this->decorated->resolve($className, $namespace);
-        $this->stopwatch->stop($oid);
+        $this->stopwatch->stop($eventName);
 
-        return $this->connections[$oid] = new TraceableConnection($parentConnection, $this->stopwatch);
+        return $this->connections[$namespace] = new TraceableConnection($parentConnection, $this->stopwatch, $namespace);
     }
 }

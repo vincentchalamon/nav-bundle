@@ -193,7 +193,7 @@ class Intervention
     public $vendorCountryCode;
 
     /**
-     * @var contact|null
+     * @var Contact|null
      *
      * TODO: Add inversedBy="interventions"
      * @Nav\ManyToOne(targetClass=Contact::class, columnName="Vendor_Contact", nullable=false)

@@ -19,6 +19,7 @@ use NavBundle\Connection\ConnectionInterface;
 use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\Exception\InvalidMethodCallException;
 use NavBundle\Exception\UnknownEntityNamespaceException;
+use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\CacheWarmer\WarmableInterface;
 
@@ -29,9 +30,13 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
 {
     private $container;
 
-    public function __construct(ContainerInterface $container, array $managers, string $defaultManagerName)
+    public function __construct(ContainerInterface $container, array $managers, string $defaultManagerName, string $proxiesCacheDir)
     {
         $this->container = $container;
+
+        if (!is_dir($proxiesCacheDir)) {
+            mkdir($proxiesCacheDir, 0777, true);
+        }
 
         parent::__construct('NAV', [], $managers, '', $defaultManagerName, Proxy::class);
     }
@@ -134,9 +139,21 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
      */
     public function warmUp($cacheDir): void
     {
+        // Warm up connections WSDL
         foreach ($this->getConnections() as $connection) {
             if ($connection instanceof WarmableInterface) {
                 $connection->warmUp($cacheDir);
+            }
+        }
+
+        // Warm up entities proxy
+        /** @var LazyLoadingValueHolderFactory|null $holderFactory */
+        $holderFactory = $this->container->get('nav.proxy_manager.lazy_loading_value_holder_factory');
+        if (null !== $holderFactory) {
+            foreach ($this->getManagers() as $manager) {
+                foreach ($manager->getMetadataFactory()->getAllMetadata() as $classMetadata) {
+                    $holderFactory->createProxy($classMetadata->getName(), function (): void {});
+                }
             }
         }
     }
