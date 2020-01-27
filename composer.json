@@ -26,7 +26,6 @@
         "ext-curl": "*",
         "ext-dom": "*",
         "ext-soap": "*",
-        "doctrine/event-manager": "^1.1",
         "doctrine/persistence": "^1.2",
         "jamesiarmes/php-ntlm": "^1.0",
         "ocramius/proxy-manager": "^2.2",

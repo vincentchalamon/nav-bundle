@@ -106,9 +106,11 @@ interface EntityManagerInterface extends ObjectManager
     /**
      * Get the Hydrator.
      *
+     * @param string|null $hydrator the hydrator class name
+     *
      * @return HydratorInterface
      */
-    public function getHydrator();
+    public function getHydrator(string $hydrator = null);
 
     /**
      * Get the logger.

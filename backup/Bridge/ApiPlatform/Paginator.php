@@ -7,7 +7,7 @@ namespace NavBundle\Bridge\ApiPlatform;
 use ApiPlatform\Core\DataProvider\PartialPaginatorInterface;
 
 /**
- * @author Vincent Chalamon <vincent@les-tilleuls.coop>
+ * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
 final class Paginator implements PartialPaginatorInterface
 {

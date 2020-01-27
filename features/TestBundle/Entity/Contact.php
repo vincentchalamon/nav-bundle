@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace NavBundle\E2e\TestBundle\Entity;
 
 use ApiPlatform\Core\Annotation as Api;
+use Doctrine\Common\Collections\Collection;
 use NavBundle\Annotation as Nav;
 use NavBundle\E2e\TestBundle\Repository\ContactRepository;
 
@@ -77,9 +78,9 @@ class Contact
     public $company;
 
     /**
-     * @var Intervention[]|iterable
+     * @var Intervention[]|Collection
      *
-     * @Nav\OneToMany(targetClass=Intervention::class, mappedBy="contact", fetch="eager")
+     * @Nav\OneToMany(targetClass=Intervention::class, mappedBy="contact", fetch="extra_lazy")
      */
     public $interventions;
 }

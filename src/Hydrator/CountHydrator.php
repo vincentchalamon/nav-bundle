@@ -18,14 +18,17 @@ use NavBundle\ClassMetadata\ClassMetadataInterface;
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-interface HydratorInterface
+final class CountHydrator implements HydratorInterface
 {
     /**
-     * Hydrate objects from a connection response.
-     *
-     * @param mixed                  $response      the connection response
-     * @param ClassMetadataInterface $classMetadata the entity class metadata
-     * @param array                  $context       the hydration context
+     * {@inheritdoc}
      */
-    public function hydrateAll($response, ClassMetadataInterface $classMetadata, array $context = []);
+    public function hydrateAll($response, ClassMetadataInterface $classMetadata, array $context = []): int
+    {
+        if (!isset($response->ReadMultiple_Result->{$classMetadata->getNamespace()})) {
+            return 0;
+        }
+
+        return \count($response->ReadMultiple_Result->{$classMetadata->getNamespace()});
+    }
 }

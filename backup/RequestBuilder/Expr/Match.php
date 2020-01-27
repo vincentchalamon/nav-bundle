@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Backup\NavBundle\RequestBuilder\Expr;
 
 /**
- * @author Vincent Chalamon <vincent@les-tilleuls.coop>
+ * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
 final class Match implements ExprInterface
 {

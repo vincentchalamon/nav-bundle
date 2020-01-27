@@ -13,7 +13,10 @@ declare(strict_types=1);
 
 namespace NavBundle\Serializer;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use NavBundle\ClassMetadata\ClassMetadata;
+use NavBundle\Collection\ExtraLazyCollection;
+use NavBundle\Collection\LazyCollection;
 use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\RegistryInterface;
 use NavBundle\Util\ClassUtils;
@@ -74,24 +77,38 @@ final class EntityNormalizer extends AbstractObjectNormalizer
             $classMetadata = $manager->getClassMetadata($type);
 
             foreach ($classMetadata->getAssociationNames() as $associationName) {
-                // Checks whether fetch is EAGER or value is not already set
-                if (
-                    ClassMetadata::FETCH_EAGER !== $classMetadata->getAssociationFetchMode($associationName)
-                    || $classMetadata->isSingleValuedAssociation($associationName)
-                    || !empty($this->getAttributeValue($wrappedObject, $associationName, $format, $context))
-                ) {
-                    // Fetch mode is not EAGER, or association have already been set from $data.
+                // TODO: Is there any possibility to lazy-load a single valued association?
+                if ($classMetadata->isSingleValuedAssociation($associationName)) {
+                    // Value should have been set from $data.
                     continue;
                 }
 
-                // TODO: Support lazy & extra_lazy and implement CollectionInterface.
-                $targetClass = $classMetadata->getAssociationTargetClass($associationName);
-                $classMetadata->reflFields[$associationName]->setValue(
-                    $wrappedObject,
-                    $this->registry->getManagerForClass($targetClass)->getRepository($targetClass)->findBy([
-                        $classMetadata->getAssociationMappedByTargetField($associationName) => $classMetadata->getIdentifierValue($wrappedObject),
-                    ])
-                );
+                $value = $classMetadata->reflFields[$associationName]->getValue($wrappedObject);
+
+                switch ($classMetadata->getAssociationFetchMode($associationName)) {
+                    case ClassMetadata::FETCH_EAGER:
+                        $targetClass = $classMetadata->getAssociationTargetClass($associationName);
+                        $classMetadata->reflFields[$associationName]->setValue(
+                            $wrappedObject,
+                            $this->registry->getManagerForClass($targetClass)->getRepository($targetClass)->findBy([
+                                $classMetadata->getAssociationMappedByTargetField($associationName) => $classMetadata->getIdentifierValue($wrappedObject),
+                            ])
+                        );
+                        break;
+                    case ClassMetadata::FETCH_EXTRA_LAZY:
+                        $classMetadata->reflFields[$associationName]->setValue(
+                            $wrappedObject,
+                            new ExtraLazyCollection($this->registry, $value ?: new ArrayCollection(), $associationName, $wrappedObject)
+                        );
+                        break;
+                    default:
+                    case ClassMetadata::FETCH_LAZY:
+                        $classMetadata->reflFields[$associationName]->setValue(
+                            $wrappedObject,
+                            new LazyCollection($this->registry, $value ?: new ArrayCollection(), $associationName, $wrappedObject)
+                        );
+                        break;
+                }
             }
             $manager->getUnitOfWork()->addToIdentityMap($wrappedObject);
 

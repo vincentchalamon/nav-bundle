@@ -13,14 +13,13 @@ declare(strict_types=1);
 
 namespace NavBundle\DependencyInjection;
 
-use NavBundle\Bridge\ApiPlatform\DataProvider\CollectionExtensionInterface;
-use NavBundle\Bridge\ApiPlatform\DataProvider\ItemExtensionInterface;
 use NavBundle\Debug\Connection\TraceableConnectionResolver;
 use NavBundle\EntityManager\EntityManager;
 use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\EntityRepository\ServiceEntityRepositoryInterface;
 use NavBundle\Event\EventSubscriberInterface;
 use NavBundle\Exception\DriverNotFoundException;
+use NavBundle\Hydrator\HydratorInterface;
 use NavBundle\PropertyInfo\NavExtractor;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Alias;
@@ -48,11 +47,8 @@ final class NavExtension extends Extension
             ->registerForAutoconfiguration(EventSubscriberInterface::class)
             ->addTag('nav.event_subscriber');
         $container
-            ->registerForAutoconfiguration(CollectionExtensionInterface::class)
-            ->addTag('nav.api_platform.collection_extension');
-        $container
-            ->registerForAutoconfiguration(ItemExtensionInterface::class)
-            ->addTag('nav.api_platform.item_extension');
+            ->registerForAutoconfiguration(HydratorInterface::class)
+            ->addTag('nav.hydrator');
 
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
@@ -103,7 +99,6 @@ final class NavExtension extends Extension
                 ->setArgument('$connectionResolver', new Reference("nav.connection_resolver.$name"))
                 ->setArgument('$mappingDriver', new Reference("nav.entity_manager.$name.driver"))
                 ->setArgument('$nameConverter', new Reference($options['name_converter']))
-                ->setArgument('$hydrator', new Reference($options['default_hydrator']))
                 ->setArgument('$entityNamespaces', array_map(function (array $path) {
                     return $path['namespace'];
                 }, $options['paths']));

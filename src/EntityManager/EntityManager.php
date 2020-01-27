@@ -29,10 +29,12 @@ use NavBundle\Exception\InvalidEntityNameException;
 use NavBundle\Exception\InvalidObjectException;
 use NavBundle\Exception\UnknownEntityNamespaceException;
 use NavBundle\Hydrator\HydratorInterface;
+use NavBundle\Hydrator\SerializerHydrator;
 use NavBundle\RequestBuilder\RequestBuilder;
 use NavBundle\RequestBuilder\RequestBuilderInterface;
 use NavBundle\UnitOfWork;
 use NavBundle\Util\ClassUtils;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
@@ -49,7 +51,7 @@ class EntityManager implements EntityManagerInterface
     protected $connectionResolver;
     protected $mappingDriver;
     protected $nameConverter;
-    protected $hydrator;
+    protected $hydrators;
     protected $entityNamespaces = [];
     protected $unitOfWork;
 
@@ -67,18 +69,18 @@ class EntityManager implements EntityManagerInterface
         ?LoggerInterface $logger,
         EventManagerInterface $eventManager,
         NormalizerInterface $normalizer,
+        ContainerInterface $hydrators,
         ConnectionResolverInterface $connectionResolver,
         MappingDriverInterface $mappingDriver,
         NameConverterInterface $nameConverter,
-        HydratorInterface $hydrator,
         array $entityNamespaces
     ) {
         $this->logger = $logger ?: new NullLogger();
         $this->eventManager = $eventManager;
+        $this->hydrators = $hydrators;
         $this->connectionResolver = $connectionResolver;
         $this->mappingDriver = $mappingDriver;
         $this->nameConverter = $nameConverter;
-        $this->hydrator = $hydrator;
         $this->entityNamespaces = $entityNamespaces;
 
         $this->unitOfWork = new UnitOfWork($this, $normalizer);
@@ -316,9 +318,17 @@ class EntityManager implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getHydrator(): HydratorInterface
+    public function getHydrator(string $hydrator = null): HydratorInterface
     {
-        return $this->hydrator;
+        if (null === $hydrator) {
+            $hydrator = SerializerHydrator::class;
+        }
+
+        if (!$this->hydrators->has($hydrator)) {
+            throw new \InvalidArgumentException("Hydrator $hydrator does not exist.");
+        }
+
+        return $this->hydrators->get($hydrator);
     }
 
     /**

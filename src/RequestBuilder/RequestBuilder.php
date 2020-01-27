@@ -16,6 +16,7 @@ namespace NavBundle\RequestBuilder;
 use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\Event\PostLoadEvent;
 use NavBundle\Exception\FieldNotFoundException;
+use NavBundle\Hydrator\CountHydrator;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
@@ -122,11 +123,11 @@ final class RequestBuilder implements RequestBuilderInterface
      *
      * @throws \SoapFault
      */
-    public function getOneOrNullResult(): ?object
+    public function getOneOrNullResult(string $hydrator = null): ?object
     {
         $this->setMaxResults(1);
 
-        foreach ($this->getResult() as $object) {
+        foreach ($this->getResult($hydrator) as $object) {
             $this->em->getEventManager()->dispatch(new PostLoadEvent($object, $this->em));
 
             return $object;
@@ -140,7 +141,7 @@ final class RequestBuilder implements RequestBuilderInterface
      *
      * @throws \SoapFault
      */
-    public function getResult(): iterable
+    public function getResult(string $hydrator = null): iterable
     {
         try {
             $response = $this->em->getConnection($this->className)->ReadMultiple($this->computeFilters());
@@ -154,11 +155,29 @@ final class RequestBuilder implements RequestBuilderInterface
             return yield from [];
         }
 
-        $objects = $this->em->getHydrator()->hydrateAll($response, $this->em->getClassMetadata($this->className));
+        $objects = $this->em->getHydrator($hydrator)->hydrateAll($response, $this->em->getClassMetadata($this->className));
         foreach ($objects as $object) {
             $this->em->getEventManager()->dispatch(new PostLoadEvent($object, $this->em));
             yield $object;
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @throws \SoapFault
+     */
+    public function count()
+    {
+        try {
+            $response = $this->em->getConnection($this->className)->ReadMultiple($this->computeFilters());
+        } catch (\SoapFault $fault) {
+            $this->em->getLogger()->critical($fault->getMessage());
+
+            throw $fault;
+        }
+
+        return $this->em->getHydrator(CountHydrator::class)->hydrateAll($response, $this->em->getClassMetadata($this->className));
     }
 
     private function computeFilters(): array

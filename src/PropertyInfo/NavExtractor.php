@@ -13,7 +13,11 @@ declare(strict_types=1);
 
 namespace NavBundle\PropertyInfo;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use NavBundle\ClassMetadata\ClassMetadata;
 use NavBundle\ClassMetadata\ClassMetadataInterface;
+use NavBundle\Collection\ExtraLazyCollection;
+use NavBundle\Collection\LazyCollection;
 use NavBundle\EntityManager\EntityManagerInterface;
 use Symfony\Component\PropertyInfo\PropertyAccessExtractorInterface;
 use Symfony\Component\PropertyInfo\PropertyListExtractorInterface;
@@ -91,10 +95,23 @@ final class NavExtractor implements PropertyListExtractorInterface, PropertyType
                 )];
             }
 
+            switch ($classMetadata->getAssociationFetchMode($property)) {
+                case ClassMetadata::FETCH_EAGER:
+                    $collectionClass = ArrayCollection::class;
+                    break;
+                case ClassMetadata::FETCH_EXTRA_LAZY:
+                    $collectionClass = ExtraLazyCollection::class;
+                    break;
+                default:
+                case ClassMetadata::FETCH_LAZY:
+                    $collectionClass = LazyCollection::class;
+                    break;
+            }
+
             return [new Type(
-                Type::BUILTIN_TYPE_ITERABLE,
+                Type::BUILTIN_TYPE_OBJECT,
                 false,
-                null,
+                $collectionClass,
                 true,
                 null,
                 new Type(

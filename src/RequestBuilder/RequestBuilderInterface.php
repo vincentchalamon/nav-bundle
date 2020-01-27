@@ -126,9 +126,11 @@ interface RequestBuilderInterface
      *        ->getOneOrNullResult();
      * </code>
      *
+     * @param string|null $hydrator the hydrator to use
+     *
      * @return object|null the request result
      */
-    public function getOneOrNullResult();
+    public function getOneOrNullResult(string $hydrator = null);
 
     /**
      * Executes the request and returns the result.
@@ -139,7 +141,22 @@ interface RequestBuilderInterface
      *        ->getResult();
      * </code>
      *
+     * @param string|null $hydrator the hydrator to use
+     *
      * @return iterable the request result
      */
-    public function getResult();
+    public function getResult(string $hydrator = null);
+
+    /**
+     * Executes the request and count the number of results.
+     *
+     * <code>
+     *     $em->createRequestBuilder(User::class)
+     *        ->where('username', 'username')
+     *        ->count();
+     * </code>
+     *
+     * @return int the request number of results
+     */
+    public function count();
 }
