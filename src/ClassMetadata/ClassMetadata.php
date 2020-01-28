@@ -300,8 +300,7 @@ final class ClassMetadata implements ClassMetadataInterface
      */
     public function isAssociationInverseSide($assocName)
     {
-        // TODO: Implement method isAssociationInverseSide().
-        return false;
+        return isset($this->associationMappings[$assocName]) && !$this->associationMappings[$assocName]['isOwningSide'];
     }
 
     /**
@@ -398,7 +397,8 @@ final class ClassMetadata implements ClassMetadataInterface
      */
     public function mapOneToOne(array $mapping): void
     {
-        if (!isset($mapping['columnName'])) {
+        $mapping['isOwningSide'] = isset($mapping['mappedBy']) ? false : true;
+        if ($mapping['isOwningSide'] && !isset($mapping['columnName'])) {
             $mapping['columnName'] = $this->nameConverter->normalize($mapping['fieldName'].'No');
         }
         $mapping['type'] = self::ONE_TO_ONE;
@@ -413,6 +413,7 @@ final class ClassMetadata implements ClassMetadataInterface
         if (!isset($mapping['columnName'])) {
             $mapping['columnName'] = $this->nameConverter->normalize($mapping['fieldName'].'No');
         }
+        $mapping['isOwningSide'] = true;
         $mapping['type'] = self::MANY_TO_ONE;
         $this->associationMappings[$mapping['fieldName']] = $mapping;
     }
@@ -422,6 +423,7 @@ final class ClassMetadata implements ClassMetadataInterface
      */
     public function mapOneToMany(array $mapping): void
     {
+        $mapping['isOwningSide'] = false;
         $mapping['type'] = self::ONE_TO_MANY;
         $this->associationMappings[$mapping['fieldName']] = $mapping;
     }

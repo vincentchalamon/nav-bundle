@@ -18,6 +18,7 @@ use NavBundle\ClassMetadata\ClassMetadata;
 use NavBundle\Collection\ExtraLazyCollection;
 use NavBundle\Collection\LazyCollection;
 use NavBundle\EntityManager\EntityManagerInterface;
+use NavBundle\Exception\EntityNotFoundException;
 use NavBundle\RegistryInterface;
 use NavBundle\Util\ClassUtils;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
@@ -58,7 +59,22 @@ final class EntityNormalizer extends AbstractObjectNormalizer
     public function denormalize($data, $type, $format = null, array $context = [])
     {
         if (\is_string($data) && class_exists($type) && ($manager = $this->registry->getManagerForClass($type))) {
-            return $manager->getRepository($type)->find($data);
+            return $this->holderFactory->createProxy($type, function (
+                &$wrappedObject,
+                LazyLoadingInterface $proxy,
+                $method,
+                array $parameters,
+                &$initializer
+            ) use ($data, $type, $manager): void {
+                $initializer = null;
+
+                $object = $manager->getRepository($type)->find($data);
+                if (!$object) {
+                    throw new EntityNotFoundException("Entity of class '$type' with identifier '$data' not found.");
+                }
+
+                $wrappedObject = $object;
+            });
         }
 
         return $this->holderFactory->createProxy($type, function (
@@ -77,7 +93,6 @@ final class EntityNormalizer extends AbstractObjectNormalizer
             $classMetadata = $manager->getClassMetadata($type);
 
             foreach ($classMetadata->getAssociationNames() as $associationName) {
-                // TODO: Is there any possibility to lazy-load a single valued association?
                 if ($classMetadata->isSingleValuedAssociation($associationName)) {
                     // Value should have been set from $data.
                     continue;

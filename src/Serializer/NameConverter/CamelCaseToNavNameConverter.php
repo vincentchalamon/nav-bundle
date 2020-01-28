@@ -45,11 +45,10 @@ final class CamelCaseToNavNameConverter extends CamelCaseToSnakeCaseNameConverte
 
             if ($classMetadata->hasField($propertyName)) {
                 return $classMetadata->getFieldColumnName($propertyName);
-            } elseif ($classMetadata->hasAssociation($propertyName)) {
-                if (!$classMetadata->isSingleValuedAssociation($propertyName)) {
-                    // TODO: Throw exception, this situation should never happen (isn't it?).
-                }
-
+            } elseif (
+                $classMetadata->hasAssociation($propertyName)
+                && $classMetadata->isSingleValuedAssociation($propertyName)
+            ) {
                 return $classMetadata->getSingleValuedAssociationColumnName($propertyName);
             }
         }

@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace NavBundle\ClassMetadata\Driver;
 
 use Doctrine\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
+use Doctrine\Persistence\Mapping\MappingException;
 use NavBundle\Annotation\Association;
 use NavBundle\Annotation\Column;
 use NavBundle\Annotation\Entity;
@@ -22,6 +23,7 @@ use NavBundle\Annotation\Id;
 use NavBundle\Annotation\Key;
 use NavBundle\Annotation\ManyToOne;
 use NavBundle\Annotation\OneToMany;
+use NavBundle\Annotation\OneToOne;
 use NavBundle\ClassMetadata\ClassMetadataInterface;
 use NavBundle\Exception\InvalidEntityException;
 use NavBundle\Exception\PropertyIsRequiredException;
@@ -43,6 +45,7 @@ final class AnnotationDriver extends AbstractAnnotationDriver
      *
      * @throws InvalidEntityException
      * @throws PropertyIsRequiredException
+     * @throws MappingException
      */
     public function loadMetadataForClass($className, $classMetadata): void
     {
@@ -123,9 +126,11 @@ final class AnnotationDriver extends AbstractAnnotationDriver
                 switch (true) {
                     case $propertyAnnotation instanceof ManyToOne:
                         $mapping['nullable'] = $propertyAnnotation->nullable;
-                        // TODO: Support inversedBy property.
                         if ($name = $propertyAnnotation->columnName) {
                             $mapping['columnName'] = $name;
+                        }
+                        if ($inversedBy = $propertyAnnotation->inversedBy) {
+                            $mapping['inversedBy'] = $inversedBy;
                         }
 
                         $classMetadata->mapManyToOne($mapping);
@@ -136,7 +141,22 @@ final class AnnotationDriver extends AbstractAnnotationDriver
 
                         $classMetadata->mapOneToMany($mapping);
                         break;
-                    // TODO: Add OneToOne association mapping
+                    case $propertyAnnotation instanceof OneToOne:
+                        $mapping['nullable'] = $propertyAnnotation->nullable;
+                        if ($name = $propertyAnnotation->columnName) {
+                            $mapping['columnName'] = $name;
+                        }
+                        if ($mappedBy = $propertyAnnotation->mappedBy) {
+                            if (isset($mapping['columnName'])) {
+                                throw new MappingException("Invalid mapping for association '$className::{$property->getName()}': columnName is only supported for owning side association.");
+                            }
+                            $mapping['mappedBy'] = $mappedBy;
+                        } elseif ($inversedBy = $propertyAnnotation->inversedBy) {
+                            $mapping['inversedBy'] = $inversedBy;
+                        }
+
+                        $classMetadata->mapOneToOne($mapping);
+                        break;
                 }
             }
         }

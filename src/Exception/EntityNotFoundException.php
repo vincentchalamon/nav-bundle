@@ -11,28 +11,11 @@
 
 declare(strict_types=1);
 
-namespace NavBundle\Annotation;
+namespace NavBundle\Exception;
 
 /**
- * @Annotation
- * @Target("PROPERTY")
- *
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-final class ManyToOne extends Association
+final class EntityNotFoundException extends \RuntimeException
 {
-    /**
-     * @var string
-     */
-    public $columnName;
-
-    /**
-     * @var string
-     */
-    public $inversedBy;
-
-    /**
-     * @var bool
-     */
-    public $nullable = true;
 }

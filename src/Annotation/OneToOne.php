@@ -19,7 +19,7 @@ namespace NavBundle\Annotation;
  *
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-final class ManyToOne extends Association
+final class OneToOne extends Association
 {
     /**
      * @var string
@@ -35,4 +35,9 @@ final class ManyToOne extends Association
      * @var bool
      */
     public $nullable = true;
+
+    /**
+     * @var string
+     */
+    public $mappedBy;
 }
