@@ -33,7 +33,7 @@ jobs:
           php-version: ${{ matrix.php }}
           extensions: curl, dom, iconv, intl, json, libxml, mbstring, phar, soap, tokenizer, xdebug, xml, xmlwriter
           coverage: xdebug
-          tools: php-cs-fixer, phpstan, phpunit
+          tools: php-cs-fixer:2.16.1, phpstan:0.12.8, phpunit:8.5.2
 
       - name: Get Composer Cache Directory
         id: composer-cache
@@ -61,5 +61,5 @@ jobs:
         if: matrix.dependency == ''
         run: phpstan analyze
 
-#      - name: Run PHPUnit tests
-#        run: phpunit --colors=always --testdox
+      - name: Run PHPUnit tests
+        run: phpunit --colors=always --testdox

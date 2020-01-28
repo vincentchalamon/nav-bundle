@@ -1,0 +1,7 @@
+nav:
+  enable_profiler: false
+  url: http://username:password@example.com/WS/Page/
+  paths:
+    App:
+      path: '%kernel.project_dir%/src/Entity'
+      namespace: App\Entity

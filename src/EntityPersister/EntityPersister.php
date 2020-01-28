@@ -53,11 +53,11 @@ final class EntityPersister implements EntityPersisterInterface
         }
 
         if (null !== $limit) {
-            $builder->setMaxResults($limit);
+            $builder->setSize($limit);
         }
 
         if (null !== $offset) {
-            $builder->setFirstResult($offset);
+            $builder->setBookmarkKey($offset);
         }
 
         return $builder->getResult();

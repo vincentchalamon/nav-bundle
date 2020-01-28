@@ -13,7 +13,7 @@ HEADER;
 
 $finder = PhpCsFixer\Finder::create()
     ->in(__DIR__)
-    ->exclude('features/var')
+    ->exclude('features')
     ->exclude('backup');
 
 return PhpCsFixer\Config::create()

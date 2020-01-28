@@ -27,4 +27,8 @@ parameters:
           count: 1
           path: src/Event/EventManager.php
 
+        - message: '#Method NavBundle\\Bridge\\ApiPlatform\\DataPersister\\DataPersister::getManager\(\) should return NavBundle\\EntityManager\\EntityManagerInterface|null but returns Doctrine\\Persistence\\ObjectManager|null\.#'
+          count: 1
+          path: src/Bridge/ApiPlatform/DataPersister/DataPersister.php
+
         - '#Return type \(string|null\) of method NavBundle\\ClassMetadata\\ClassMetadataInterface::getIdentifier\(\) should be compatible with return type \(array\) of method Doctrine\\Persistence\\Mapping\\ClassMetadata::getIdentifier\(\)#'

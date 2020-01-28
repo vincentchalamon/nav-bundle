@@ -16,6 +16,7 @@ namespace NavBundle\Bridge\ApiPlatform\DataProvider\Extension;
 use ApiPlatform\Core\Exception\ResourceClassNotFoundException;
 use ApiPlatform\Core\Metadata\Resource\Factory\ResourceMetadataFactoryInterface;
 use NavBundle\Bridge\ApiPlatform\DataProvider\CollectionExtensionInterface;
+use NavBundle\Bridge\ApiPlatform\DataProvider\Extension\Filter\FilterInterface;
 use NavBundle\RequestBuilder\RequestBuilderInterface;
 use Psr\Container\ContainerInterface;
 

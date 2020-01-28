@@ -17,7 +17,7 @@ use ApiPlatform\Core\Annotation as Api;
 use NavBundle\Annotation as Nav;
 
 /**
- * @author Vincent Chalamon <vincent@les-tilleuls.coop>
+ * @author Vincent Chalamon <vincentchalamon@gmail.com>
  *
  * @Nav\Entity(namespace="INTWS_020_DI_HEADER")
  * @Api\ApiResource

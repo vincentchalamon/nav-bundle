@@ -22,7 +22,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-final class SerializerHydrator implements HydratorInterface
+final class ObjectHydrator implements HydratorInterface
 {
     private $serializer;
 

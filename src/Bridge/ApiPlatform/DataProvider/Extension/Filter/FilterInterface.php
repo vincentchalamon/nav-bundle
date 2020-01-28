@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace NavBundle\Bridge\ApiPlatform\DataProvider\Extension;
+namespace NavBundle\Bridge\ApiPlatform\DataProvider\Extension\Filter;
 
 use NavBundle\RequestBuilder\RequestBuilderInterface;
 

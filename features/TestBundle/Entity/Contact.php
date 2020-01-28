@@ -19,7 +19,7 @@ use NavBundle\Annotation as Nav;
 use NavBundle\E2e\TestBundle\Repository\ContactRepository;
 
 /**
- * @author Vincent Chalamon <vincent@les-tilleuls.coop>
+ * @author Vincent Chalamon <vincentchalamon@gmail.com>
  *
  * @Nav\Entity(namespace="INTWS_002_CONT", repositoryClass=ContactRepository::class)
  * @Api\ApiResource

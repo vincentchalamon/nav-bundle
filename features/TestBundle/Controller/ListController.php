@@ -16,6 +16,7 @@ namespace NavBundle\E2e\TestBundle\Controller;
 use NavBundle\E2e\TestBundle\Entity\Contact;
 use NavBundle\RegistryInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -27,13 +28,18 @@ final class ListController
      * @Route("/people", name="contact_list", methods={"GET"})
      * @Template("@Test/list.html.twig")
      */
-    public function __invoke(RegistryInterface $registry)
+    public function __invoke(RegistryInterface $registry, Request $request)
     {
+        $criteria = [];
+        if ($request->query->has('no')) {
+            $criteria['no'] = $request->query->get('no');
+        }
+
         return [
             'contacts' => $registry
                 ->getManagerForClass(Contact::class)
                 ->getRepository(Contact::class)
-                ->findBy([], null, 10),
+                ->findBy($criteria, null, 10),
         ];
     }
 }

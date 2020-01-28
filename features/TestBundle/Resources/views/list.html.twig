@@ -11,7 +11,7 @@
 
 {% block content %}
     <form action="{{ path('contact_search') }}" method="get">
-        <input placeholder="Mail" type="search" id="search" name="email" value="{{ app.request.query.get('email') }}"/>
+        <input placeholder="N°" type="search" id="search" name="no" value="{{ app.request.query.get('no') }}"/>
 
         <button type="submit">Search</button>
     </form>
@@ -19,7 +19,7 @@
     <ul>
         {% for contact in contacts %}
             <li>
-                <a href="{{ path('contact_edit', {'no': contact.no}) }}">{{ contact.no }}</a> - {{ contact.name }} ({{ contact.email }})
+                <a href="{{ path('contact_edit', {'no': contact.no}) }}">{{ contact.no }}</a> - {{ contact.name }} ({{ contact.interventions.count }} interventions)
             </li>
         {% endfor %}
     </ul>

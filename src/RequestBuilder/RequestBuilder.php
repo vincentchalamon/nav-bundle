@@ -58,7 +58,7 @@ final class RequestBuilder implements RequestBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function setFirstResult($firstResult)
+    public function setBookmarkKey($firstResult)
     {
         $this->offset = $firstResult;
 
@@ -68,7 +68,7 @@ final class RequestBuilder implements RequestBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function getFirstResult()
+    public function getBookmarkKey()
     {
         return $this->offset;
     }
@@ -76,7 +76,7 @@ final class RequestBuilder implements RequestBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function setMaxResults($maxResults)
+    public function setSize($maxResults)
     {
         $this->limit = $maxResults;
 
@@ -86,7 +86,7 @@ final class RequestBuilder implements RequestBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function getMaxResults()
+    public function getSize()
     {
         return $this->limit;
     }
@@ -125,7 +125,7 @@ final class RequestBuilder implements RequestBuilderInterface
      */
     public function getOneOrNullResult(string $hydrator = null): ?object
     {
-        $this->setMaxResults(1);
+        $this->setSize(1);
 
         foreach ($this->getResult($hydrator) as $object) {
             $this->em->getEventManager()->dispatch(new PostLoadEvent($object, $this->em));

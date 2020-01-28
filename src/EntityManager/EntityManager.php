@@ -29,7 +29,7 @@ use NavBundle\Exception\InvalidEntityNameException;
 use NavBundle\Exception\InvalidObjectException;
 use NavBundle\Exception\UnknownEntityNamespaceException;
 use NavBundle\Hydrator\HydratorInterface;
-use NavBundle\Hydrator\SerializerHydrator;
+use NavBundle\Hydrator\ObjectHydrator;
 use NavBundle\RequestBuilder\RequestBuilder;
 use NavBundle\RequestBuilder\RequestBuilderInterface;
 use NavBundle\UnitOfWork;
@@ -321,7 +321,7 @@ class EntityManager implements EntityManagerInterface
     public function getHydrator(string $hydrator = null): HydratorInterface
     {
         if (null === $hydrator) {
-            $hydrator = SerializerHydrator::class;
+            $hydrator = ObjectHydrator::class;
         }
 
         if (!$this->hydrators->has($hydrator)) {

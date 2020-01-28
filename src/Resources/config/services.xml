@@ -55,7 +55,7 @@
             <argument type="tagged_iterator" tag="nav.event_subscriber"/>
         </service>
 
-        <service id="NavBundle\Hydrator\SerializerHydrator" class="NavBundle\Hydrator\SerializerHydrator" public="false">
+        <service id="NavBundle\Hydrator\ObjectHydrator" class="NavBundle\Hydrator\ObjectHydrator" public="false">
             <argument type="service" id="serializer"/>
             <tag name="nav.hydrator"/>
         </service>
@@ -81,7 +81,7 @@
             </call>
         </service>
 
-        <service id="nav.proxy_manager.lazy_loading_value_holder_factory" class="ProxyManager\Factory\LazyLoadingValueHolderFactory" public="true">
+        <service id="nav.proxy_manager.lazy_loading_value_holder_factory" class="ProxyManager\Factory\LazyLoadingValueHolderFactory" public="false">
             <argument type="service" id="nav.proxy_manager.configuration"/>
         </service>
 
@@ -109,11 +109,6 @@
             <argument type="service" id="property_info"/>
             <argument type="service" id="serializer.mapping.class_discriminator_resolver"/>
             <tag name="serializer.normalizer" priority="-2"/>
-        </service>
-
-        <service id="nav.param_converter" class="NavBundle\Bridge\FrameworkExtraBundle\Request\ParamConverter" public="false">
-            <argument type="service" id="nav.registry"/>
-            <tag name="request.param_converter" converter="nav"/>
         </service>
     </services>
 </container>

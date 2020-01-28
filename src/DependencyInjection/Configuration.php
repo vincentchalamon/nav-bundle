@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace NavBundle\DependencyInjection;
 
-use NavBundle\Connection\Connection;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -107,19 +106,9 @@ final class Configuration implements ConfigurationInterface
                                 ->defaultValue('nav.serializer.name_converter.camel_case_to_nav')
                                 ->cannotBeEmpty()
                             ->end()
-                            ->scalarNode('default_hydrator')
-                                ->info('Default hydrator.')
-                                ->defaultValue('nav.hydrator.serializer')
-                                ->cannotBeEmpty()
-                            ->end()
                             ->arrayNode('connection')
                                 ->addDefaultsIfNotSet()
                                 ->children()
-                                    ->scalarNode('class')
-                                        ->info('Connection class name.')
-                                        ->defaultValue(Connection::class)
-                                        ->cannotBeEmpty()
-                                    ->end()
                                     ->scalarNode('username')
                                         ->info('Connection username.')
                                         ->cannotBeEmpty()

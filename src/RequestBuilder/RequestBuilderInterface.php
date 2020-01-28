@@ -63,22 +63,22 @@ interface RequestBuilderInterface
      * <code>
      *     $em->createRequestBuilder(User::class)
      *        ->where('username', 'username')
-     *        ->setFirstResult('id-of-last-result-read');
+     *        ->setBookmarkKey('id-of-last-result-read');
      * </code>
      *
      * @param string|null $firstResult the id of the last result read
      *
      * @return self
      */
-    public function setFirstResult($firstResult);
+    public function setBookmarkKey($firstResult);
 
     /**
      * Gets the id of the last result read (the "bookmarkKey").
-     * Returns NULL if {@link setFirstResult} was not applied to this RequestBuilder.
+     * Returns NULL if {@link setBookmarkKey} was not applied to this RequestBuilder.
      *
      * @return string|null the id of the last result read
      */
-    public function getFirstResult();
+    public function getBookmarkKey();
 
     /**
      * Sets the maximum number of results to retrieve (the "setSize").
@@ -86,22 +86,22 @@ interface RequestBuilderInterface
      * <code>
      *     $em->createRequestBuilder(User::class)
      *        ->where('username', 'username')
-     *        ->setMaxResults(10);
+     *        ->setSize(10);
      * </code>
      *
      * @param int|null $maxResults the maximum number of results to retrieve
      *
      * @return self
      */
-    public function setMaxResults($maxResults);
+    public function setSize($maxResults);
 
     /**
      * Gets the maximum number of results the request object was set to retrieve (the "setSize").
-     * Returns NULL if {@link setMaxResults} was not applied to this RequestBuilder.
+     * Returns NULL if {@link setSize} was not applied to this RequestBuilder.
      *
      * @return int|null maximum number of results
      */
-    public function getMaxResults();
+    public function getSize();
 
     /**
      * Find an object by its identifier.

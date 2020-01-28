@@ -57,6 +57,14 @@ final class NavExtension extends Extension
             $loader->load('debug.xml');
         }
 
+        if ($container->hasExtension('api_platform')) {
+            $loader->load('api_platform.xml');
+        }
+
+        if ($container->hasExtension('sensio_framework_extra')) {
+            $loader->load('sensio_framework_extra.xml');
+        }
+
         $managers = [];
         foreach ($config['managers'] as $name => $options) {
             if (!$container->hasDefinition($options['driver'])) {

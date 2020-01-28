@@ -42,11 +42,6 @@ final class ClassMetadata implements ClassMetadataInterface
     public const ONE_TO_MANY = 4;
 
     /**
-     * Identifies a many-to-many association.
-     */
-    public const MANY_TO_MANY = 8;
-
-    /**
      * Combined bitmask for to-one (single-valued) associations.
      */
     public const TO_ONE = 3;
