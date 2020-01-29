@@ -81,7 +81,7 @@
             </call>
         </service>
 
-        <service id="nav.proxy_manager.lazy_loading_value_holder_factory" class="ProxyManager\Factory\LazyLoadingValueHolderFactory" public="false">
+        <service id="nav.proxy_manager.lazy_loading_value_holder_factory" class="ProxyManager\Factory\LazyLoadingValueHolderFactory" public="true">
             <argument type="service" id="nav.proxy_manager.configuration"/>
         </service>
 
