@@ -17,7 +17,6 @@ use Doctrine\Persistence\Mapping\ClassMetadata as DoctrineClassMetadataInterface
 use Doctrine\Persistence\Mapping\Driver\MappingDriver as MappingDriverInterface;
 use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Persistence\ObjectRepository;
-use Doctrine\Persistence\Proxy;
 use NavBundle\ClassMetadata\ClassMetadataFactory;
 use NavBundle\ClassMetadata\ClassMetadataInterface;
 use NavBundle\Connection\ConnectionInterface;
@@ -34,6 +33,7 @@ use NavBundle\RequestBuilder\RequestBuilder;
 use NavBundle\RequestBuilder\RequestBuilderInterface;
 use NavBundle\UnitOfWork;
 use NavBundle\Util\ClassUtils;
+use ProxyManager\Proxy\LazyLoadingInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -256,8 +256,8 @@ class EntityManager implements EntityManagerInterface
      */
     public function initializeObject($obj): void
     {
-        if ($obj instanceof Proxy && !$obj->__isInitialized()) {
-            $obj->__load();
+        if ($obj instanceof LazyLoadingInterface && !$obj->isProxyInitialized()) {
+            $obj->initializeProxy();
         }
     }
 
@@ -279,10 +279,7 @@ class EntityManager implements EntityManagerInterface
      */
     public function getConnection($className): ConnectionInterface
     {
-        /** @var ClassMetadataInterface $classMetadata */
-        $classMetadata = $this->getClassMetadata($className);
-
-        return $this->connectionResolver->resolve($classMetadata->getConnectionClass(), $classMetadata->getNamespace());
+        return $this->connectionResolver->resolve($this->getClassMetadata($className)->getNamespace());
     }
 
     /**

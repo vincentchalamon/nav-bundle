@@ -14,13 +14,13 @@ declare(strict_types=1);
 namespace NavBundle;
 
 use Doctrine\Persistence\AbstractManagerRegistry;
-use Doctrine\Persistence\Proxy;
 use NavBundle\Connection\ConnectionInterface;
 use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\Exception\InvalidMethodCallException;
 use NavBundle\Exception\UnknownEntityNamespaceException;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use ProxyManager\Proxy\LazyLoadingInterface;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpKernel\CacheWarmer\WarmableInterface;
 
 /**
@@ -38,7 +38,7 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
             mkdir($proxiesCacheDir, 0777, true);
         }
 
-        parent::__construct('NAV', [], $managers, '', $defaultManagerName, Proxy::class);
+        parent::__construct('NAV', [], $managers, '', $defaultManagerName, LazyLoadingInterface::class);
     }
 
     /**
@@ -82,20 +82,21 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
 
     /**
      * {@inheritdoc}
-     *
-     * @return object[]|iterable|\Generator
      */
-    public function getConnections(): iterable
+    public function getConnections(): array
     {
+        dump(__CLASS__.'::'.__FUNCTION__);
+        $connections = [];
         /** @var EntityManagerInterface[] $managers */
         $managers = $this->getManagers();
         foreach ($managers as $manager) {
             foreach ($manager->getMetadataFactory()->getAllMetadata() as $classMetadata) {
-                yield $manager->getConnection($classMetadata->getName());
+                dump($classMetadata->getName());
+//                $connections[$classMetadata->getName()] = $manager->getConnection($classMetadata->getName());
             }
         }
 
-        return yield from [];
+        return $connections;
     }
 
     /**
@@ -105,7 +106,7 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
      *
      * @return ConnectionInterface
      */
-    public function getConnection($name = null)
+    public function getConnection($name = null): ConnectionInterface
     {
         throw new InvalidMethodCallException('Method getConnection() must not be called from Registry. You should invoke getManagerForClass($className)->getConnection($className).');
     }
@@ -148,7 +149,7 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
 
         // Warm up entities proxy
         /** @var LazyLoadingValueHolderFactory|null $holderFactory */
-        $holderFactory = $this->container->get('nav.proxy_manager.lazy_loading_value_holder_factory');
+        $holderFactory = $this->getService('nav.proxy_manager.lazy_loading_value_holder_factory');
         if (null !== $holderFactory) {
             foreach ($this->getManagers() as $manager) {
                 foreach ($manager->getMetadataFactory()->getAllMetadata() as $classMetadata) {

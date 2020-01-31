@@ -38,7 +38,7 @@ final class CollectionDataProvider implements ContextAwareCollectionDataProvider
     /**
      * {@inheritdoc}
      */
-    public function getCollection(string $resourceClass, string $operationName = null, array $context = []): iterable
+    public function getCollection(string $resourceClass, string $operationName = null, array $context = []): \Iterator
     {
         /** @var EntityManagerInterface $manager */
         $manager = $this->registry->getManagerForClass($resourceClass);

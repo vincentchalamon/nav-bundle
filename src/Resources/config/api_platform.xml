@@ -4,7 +4,7 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services
         https://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="nav.api_platform.metadata.property.metadata_factory" class="NavBundle\Bridge\ApiPlatform\Metadata\Property\Factory\NavPropertyMetadataFactory" decorates="api_platform.metadata.property.metadata_factory" public="false">
+        <service id="nav.api_platform.metadata.property.metadata_factory" class="NavBundle\Bridge\ApiPlatform\Metadata\Property\Factory\NavPropertyMetadataFactory" decorates="api_platform.metadata.property.metadata_factory" decoration-priority="100" public="false">
             <argument type="service" id="nav.api_platform.metadata.property.metadata_factory.inner" />
             <argument type="service" id="nav.registry" />
         </service>

@@ -36,6 +36,7 @@ class Connection extends SoapClient implements ConnectionInterface, WarmableInte
      * @var array
      */
     protected static $wsdlCache = [];
+    protected $wsdl;
 
     public function __construct(string $wsdl, array $options = null)
     {
@@ -47,9 +48,9 @@ class Connection extends SoapClient implements ConnectionInterface, WarmableInte
             'wsdl_cache_enabled' => ini_get('soap.wsdl_cache_enabled'),
             'soap_version' => SOAP_1_1,
         ];
-        $wsdl = $this->fetchWSDL($wsdl);
+        $this->wsdl = $wsdl;
 
-        parent::__construct($wsdl, $options);
+        parent::__construct($this->fetchWSDL($wsdl), $options);
     }
 
     /**
@@ -86,9 +87,8 @@ class Connection extends SoapClient implements ConnectionInterface, WarmableInte
      */
     public function warmUp($cacheDir): void
     {
-        foreach (self::$wsdlCache as $wsdl => $file) {
-            $this->fetchWSDL($wsdl, true);
-        }
+        dump($this->wsdl);
+        $this->fetchWSDL($this->wsdl, true);
     }
 
     /**

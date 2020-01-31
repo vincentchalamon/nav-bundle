@@ -18,17 +18,16 @@ namespace NavBundle\Connection;
  */
 final class ConnectionResolver implements ConnectionResolverInterface
 {
+    private $className;
     private $wsdl;
     private $options;
     private $connections = [];
 
-    public function __construct(string $wsdl, array $options, iterable $connections)
+    public function __construct(string $className, string $wsdl, array $options)
     {
+        $this->className = $className;
         $this->wsdl = $wsdl;
         $this->options = $options;
-        foreach ($connections as $connection) {
-            $this->connections[\get_class($connection)] = $connection;
-        }
     }
 
     /**
@@ -36,14 +35,13 @@ final class ConnectionResolver implements ConnectionResolverInterface
      *
      * @throws \SoapFault
      */
-    public function resolve($className, $namespace): object
+    public function resolve($namespace): object
     {
-        $className = trim($className, '\\');
-        $oid = md5("$className::$namespace");
-        if (isset($this->connections[$oid])) {
-            return $this->connections[$oid];
+        if (isset($this->connections[$namespace])) {
+            return $this->connections[$namespace];
         }
+        $className = $this->className;
 
-        return $this->connections[$oid] = new $className($this->wsdl.$namespace, $this->options);
+        return $this->connections[$namespace] = new $className($this->wsdl.$namespace, $this->options);
     }
 }

@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace NavBundle\DependencyInjection;
 
+use ApiPlatform\Core\Metadata\Property\Factory\PropertyMetadataFactoryInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Configuration\ConfigPassInterface;
 use NavBundle\Debug\Connection\TraceableConnectionResolver;
 use NavBundle\EntityManager\EntityManager;
 use NavBundle\EntityManager\EntityManagerInterface;
@@ -21,6 +23,7 @@ use NavBundle\Event\EventSubscriberInterface;
 use NavBundle\Exception\DriverNotFoundException;
 use NavBundle\Hydrator\HydratorInterface;
 use NavBundle\PropertyInfo\NavExtractor;
+use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ChildDefinition;
@@ -50,19 +53,23 @@ final class NavExtension extends Extension
             ->registerForAutoconfiguration(HydratorInterface::class)
             ->addTag('nav.hydrator');
 
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.xml');
 
         if ($config['enable_profiler']) {
             $loader->load('debug.xml');
         }
 
-        if ($container->hasExtension('api_platform')) {
+        if (interface_exists(PropertyMetadataFactoryInterface::class)) {
             $loader->load('api_platform.xml');
         }
 
-        if ($container->hasExtension('sensio_framework_extra')) {
+        if (interface_exists(ParamConverterInterface::class)) {
             $loader->load('sensio_framework_extra.xml');
+        }
+
+        if (interface_exists(ConfigPassInterface::class)) {
+            $loader->load('easy_admin.xml');
         }
 
         $managers = [];
@@ -75,12 +82,13 @@ final class NavExtension extends Extension
             $container
                 ->setDefinition("nav.connection_resolver.$name", new ChildDefinition('nav.connection_resolver.abstract'))
                 ->setPublic(false)
+                ->setArgument('$className', $options['connection']['class'])
                 ->setArgument('$wsdl', $options['wsdl'])
                 ->setArgument('$options', [
-                    'user' => $options['connection']['username'],
-                    'password' => $options['connection']['password'],
-                    'cache_dir' => '%kernel.cache_dir%/nav/WSDL',
-                ] + $options['soap_options']
+                        'user' => $options['connection']['username'],
+                        'password' => $options['connection']['password'],
+                        'cache_dir' => '%kernel.cache_dir%/nav/WSDL',
+                    ] + $options['soap_options']
                 );
 
             // Configure driver
@@ -103,6 +111,7 @@ final class NavExtension extends Extension
             // Configure entity manager
             $container
                 ->setDefinition("nav.entity_manager.$name", new ChildDefinition('nav.entity_manager.abstract'))
+                ->setClass($options['entity_manager_class'])
                 ->setPublic(true)
                 ->setArgument('$connectionResolver', new Reference("nav.connection_resolver.$name"))
                 ->setArgument('$mappingDriver', new Reference("nav.entity_manager.$name.driver"))

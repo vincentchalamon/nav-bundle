@@ -39,8 +39,6 @@ final class ObjectDenormalizer implements ContextAwareDenormalizerInterface, Den
      */
     public function supportsDenormalization($data, $type, $format = null, array $context = []): bool
     {
-        return NavDecoder::FORMAT === $format
-            && \is_array($data)
-            && isset($data[$context[self::NAMESPACE]]);
+        return NavDecoder::FORMAT === $format && \is_array($data) && isset($data[$context[self::NAMESPACE]]);
     }
 }

@@ -90,6 +90,6 @@ final class NavDataCollector extends DataCollector
      */
     public function getCalls(): array
     {
-        return $this->data['calls'];
+        return array_reverse($this->data['calls']);
     }
 }

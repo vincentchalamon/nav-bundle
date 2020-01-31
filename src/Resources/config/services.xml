@@ -23,9 +23,9 @@
         </service>
 
         <service id="nav.connection_resolver.abstract" class="NavBundle\Connection\ConnectionResolver" abstract="true">
+            <argument/> <!-- className -->
             <argument/> <!-- WSDL -->
             <argument/> <!-- options -->
-            <argument type="tagged_iterator" tag="nav.connection"/>
         </service>
 
         <service id="nav.entity_listener_resolver" class="NavBundle\EntityListener\EntityListenerResolver" public="false">

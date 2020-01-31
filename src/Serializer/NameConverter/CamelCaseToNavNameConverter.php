@@ -53,7 +53,7 @@ final class CamelCaseToNavNameConverter extends CamelCaseToSnakeCaseNameConverte
             }
         }
 
-        return ucfirst(parent::normalize($propertyName));
+        return ucfirst(preg_replace('/([a-z])([A-Z])/', '$1_$2', $propertyName));
     }
 
     /**

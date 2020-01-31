@@ -29,10 +29,5 @@ final class Entity
     /**
      * @var string
      */
-    public $connectionClass;
-
-    /**
-     * @var string
-     */
     public $namespace;
 }

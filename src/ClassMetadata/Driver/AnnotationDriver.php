@@ -62,9 +62,6 @@ final class AnnotationDriver extends AbstractAnnotationDriver
         if ($repositoryClass = $classAnnotation->repositoryClass) {
             $classMetadata->setEntityRepositoryClass($repositoryClass);
         }
-        if ($connectionClass = $classAnnotation->connectionClass) {
-            $classMetadata->setConnectionClass($connectionClass);
-        }
 
         // Evaluate EntityListeners annotation
         /** @var EntityListeners|null $entityListenersAnnotation */
@@ -93,22 +90,24 @@ final class AnnotationDriver extends AbstractAnnotationDriver
                         'nullable' => $propertyAnnotation->nullable,
                     ];
 
+                    if ($name = $propertyAnnotation->name) {
+                        $mapping['columnName'] = $name;
+                    }
+
                     if ($this->reader->getPropertyAnnotation($property, Id::class)) {
                         $classMetadata->setIdentifier($mapping['fieldName']);
 
-                        // Must be hardcoded cause its name never change on Nav
-                        $mapping['columnName'] = 'No';
+                        if (!isset($mapping['columnName'])) {
+                            $mapping['columnName'] = 'No';
+                        }
                     }
 
                     if ($this->reader->getPropertyAnnotation($property, Key::class)) {
                         $classMetadata->setKey($mapping['fieldName']);
 
-                        // Must be hardcoded cause its name never change on Nav
-                        $mapping['columnName'] = 'Key';
-                    }
-
-                    if ($name = $propertyAnnotation->name) {
-                        $mapping['columnName'] = $name;
+                        if (!isset($mapping['columnName'])) {
+                            $mapping['columnName'] = 'Key';
+                        }
                     }
 
                     $classMetadata->mapField($mapping);

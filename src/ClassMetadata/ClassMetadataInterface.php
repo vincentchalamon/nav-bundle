@@ -34,18 +34,6 @@ interface ClassMetadataInterface extends DoctrineClassMetadataInterface
     public function setEntityRepositoryClass(string $repositoryClass): void;
 
     /**
-     * Set the entity custom connection class.
-     */
-    public function setConnectionClass(string $connection): void;
-
-    /**
-     * Get the entity connection class.
-     *
-     * @return string
-     */
-    public function getConnectionClass();
-
-    /**
      * Adds a mapped field to the class.
      *
      * @param array $mapping the field mapping
@@ -99,14 +87,14 @@ interface ClassMetadataInterface extends DoctrineClassMetadataInterface
      *
      * @param string $namespace the entity NAV namespace
      */
-    public function setNamespace($namespace): void;
+    public function setNamespace(string $namespace): void;
 
     /**
      * Set the entity listeners.
      *
      * @param string[] $entityListeners an array of entity listeners
      */
-    public function setEntityListeners($entityListeners): void;
+    public function setEntityListeners(array $entityListeners): void;
 
     /**
      * Get the entity listeners.
@@ -146,7 +134,7 @@ interface ClassMetadataInterface extends DoctrineClassMetadataInterface
      *
      * @param string $identifier the identifier
      */
-    public function setIdentifier($identifier): void;
+    public function setIdentifier(string $identifier): void;
 
     /**
      * Gets the mapped key field name.
@@ -161,7 +149,7 @@ interface ClassMetadataInterface extends DoctrineClassMetadataInterface
      *
      * @param string $key the key
      */
-    public function setKey($key): void;
+    public function setKey(string $key): void;
 
     /**
      * Gets the column name for the field.
@@ -170,7 +158,7 @@ interface ClassMetadataInterface extends DoctrineClassMetadataInterface
      *
      * @return string
      */
-    public function getFieldColumnName($fieldName);
+    public function getFieldColumnName(string $fieldName);
 
     /**
      * Gets the field name for the column.
@@ -179,7 +167,7 @@ interface ClassMetadataInterface extends DoctrineClassMetadataInterface
      *
      * @return string
      */
-    public function retrieveField($columnName);
+    public function retrieveField(string $columnName);
 
     /**
      * Gets the single valued association name for the column.
@@ -188,7 +176,7 @@ interface ClassMetadataInterface extends DoctrineClassMetadataInterface
      *
      * @return string
      */
-    public function retrieveSingleValuedAssociation($columnName);
+    public function retrieveSingleValuedAssociation(string $columnName);
 
     /**
      * Checks whether the field is nullable.
@@ -197,7 +185,7 @@ interface ClassMetadataInterface extends DoctrineClassMetadataInterface
      *
      * @return bool
      */
-    public function isNullable($fieldName);
+    public function isNullable(string $fieldName);
 
     /**
      * Gets the association fetch mode.
@@ -206,7 +194,7 @@ interface ClassMetadataInterface extends DoctrineClassMetadataInterface
      *
      * @return string
      */
-    public function getAssociationFetchMode($assocName);
+    public function getAssociationFetchMode(string $assocName);
 
     /**
      * Gets the association column name.
@@ -215,5 +203,5 @@ interface ClassMetadataInterface extends DoctrineClassMetadataInterface
      *
      * @return string
      */
-    public function getSingleValuedAssociationColumnName($assocName);
+    public function getSingleValuedAssociationColumnName(string $assocName);
 }

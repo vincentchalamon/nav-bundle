@@ -17,6 +17,8 @@ use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\Event\PostLoadEvent;
 use NavBundle\Exception\FieldNotFoundException;
 use NavBundle\Hydrator\CountHydrator;
+use NavBundle\PropertyInfo\Types;
+use Symfony\Component\PropertyInfo\Type;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
@@ -33,6 +35,14 @@ final class RequestBuilder implements RequestBuilderInterface
     {
         $this->em = $em;
         $this->className = $className;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassName()
+    {
+        return $this->className;
     }
 
     /**
@@ -141,7 +151,17 @@ final class RequestBuilder implements RequestBuilderInterface
      *
      * @throws \SoapFault
      */
-    public function getResult(string $hydrator = null): iterable
+    public function count()
+    {
+        return $this->getResult(CountHydrator::class);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @throws \SoapFault
+     */
+    public function getResult(string $hydrator = null)
     {
         try {
             $response = $this->em->getConnection($this->className)->ReadMultiple($this->computeFilters());
@@ -152,32 +172,20 @@ final class RequestBuilder implements RequestBuilderInterface
         }
 
         if (empty($response)) {
-            return yield from [];
+            return new \ArrayIterator();
         }
 
-        $objects = $this->em->getHydrator($hydrator)->hydrateAll($response, $this->em->getClassMetadata($this->className));
-        foreach ($objects as $object) {
+        $result = $this->em->getHydrator($hydrator)->hydrateAll($response, $this->em->getClassMetadata($this->className));
+
+        if (is_a($hydrator, CountHydrator::class, true)) {
+            return $result;
+        }
+
+        foreach ($result as $object) {
             $this->em->getEventManager()->dispatch(new PostLoadEvent($object, $this->em));
-            yield $object;
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @throws \SoapFault
-     */
-    public function count()
-    {
-        try {
-            $response = $this->em->getConnection($this->className)->ReadMultiple($this->computeFilters());
-        } catch (\SoapFault $fault) {
-            $this->em->getLogger()->critical($fault->getMessage());
-
-            throw $fault;
         }
 
-        return $this->em->getHydrator(CountHydrator::class)->hydrateAll($response, $this->em->getClassMetadata($this->className));
+        return $result;
     }
 
     private function computeFilters(): array
@@ -194,15 +202,10 @@ final class RequestBuilder implements RequestBuilderInterface
         $classMetadata = $this->em->getClassMetadata($this->className);
         foreach ($this->filters as $field => $value) {
             if ($classMetadata->hasField($field)) {
+                $value = $this->formatValue($classMetadata->getTypeOfField($field), $value);
                 $field = $classMetadata->getFieldColumnName($field);
-            // TODO: Transform value if necessary.
             } elseif ($classMetadata->hasAssociation($field)) {
-                // TODO: Transform value if necessary.
-                if ($classMetadata->isSingleValuedAssociation($field)) {
-                    $field = $classMetadata->getSingleValuedAssociationColumnName($field);
-                } else {
-                    $field = $classMetadata->getAssociationMappedByTargetField($field);
-                }
+                throw new \InvalidArgumentException('Find by association is not supported yet.');
             } else {
                 throw new FieldNotFoundException("Field name expected, '$field' is not a field nor an association.");
             }
@@ -214,5 +217,31 @@ final class RequestBuilder implements RequestBuilderInterface
         }
 
         return $criteria;
+    }
+
+    /**
+     * @param mixed $value
+     *
+     * @return string
+     */
+    private function formatValue($type, $value): string
+    {
+        switch ($type) {
+            case Types::DATE:
+            case Types::DATE_IMMUTABLE:
+                return $value instanceof \DateTime ? $value->format('m-d-Y') : $value;
+            case Types::DATETIME:
+            case Types::DATETIMEZ:
+            case Types::DATETIME_IMMUTABLE:
+            case Types::DATETIMEZ_IMMUTABLE:
+                return $value instanceof \DateTime ? $value->format('m-d-Y H:i:s') : $value;
+            case Types::TIME:
+            case Types::TIME_IMMUTABLE:
+                return $value instanceof \DateTime ? $value->format('H:i:s') : $value;
+            case Types::ARRAY:
+                return is_array($value) ? implode('|', array_map([$this, 'formatValue'], $value)) : $value;
+            default:
+                return $value;
+        }
     }
 }

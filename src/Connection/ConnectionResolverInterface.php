@@ -21,10 +21,9 @@ interface ConnectionResolverInterface
     /**
      * Returns a connection instance for the given class name.
      *
-     * @param string $className the fully-qualified class name
      * @param string $namespace the entity NAV namespace
      *
      * @return ConnectionInterface a connection
      */
-    public function resolve($className, $namespace);
+    public function resolve($namespace);
 }

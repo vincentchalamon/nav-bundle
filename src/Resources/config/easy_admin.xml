@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services
+        https://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service id="nav.easyadmin.nav_metadata_config_pass" class="NavBundle\Bridge\EasyAdminBundle\Configuration\NavMetadataConfigPass" decorates="easyadmin.configuration.metadata_config_pass" decoration-priority="100" public="false">
+            <argument type="service" id="nav.easyadmin.nav_metadata_config_pass.inner"/>
+            <argument type="service" id="nav.registry"/>
+        </service>
+
+        <service id="nav.easyadmin.listener.request_post_initialize" class="NavBundle\Bridge\EasyAdminBundle\EventListener\RequestPostInitializeListener" decorates="easyadmin.listener.request_post_initialize" decoration-priority="100" public="false">
+            <argument type="service" id="nav.easyadmin.listener.request_post_initialize.inner"/>
+            <argument type="service" id="request_stack"/>
+            <argument type="service" id="nav.registry"/>
+        </service>
+
+        <service id="nav.easyadmin.paginator" class="NavBundle\Bridge\EasyAdminBundle\Search\Paginator" public="true">
+            <argument type="service" id="nav.registry"/>
+        </service>
+        <service id="NavBundle\Bridge\EasyAdminBundle\Search\Paginator" alias="nav.easyadmin.paginator" public="true"/>
+
+        <service id="nav.easyadmin.filter.registry" class="NavBundle\Bridge\EasyAdminBundle\Form\Filter\FilterRegistry" public="true"/>
+        <service id="NavBundle\Bridge\EasyAdminBundle\Form\Filter\FilterRegistry" alias="nav.easyadmin.filter.registry" public="true"/>
+
+        <service id="nav.easyadmin.request_builder" class="NavBundle\Bridge\EasyAdminBundle\Search\RequestBuilder" public="true">
+            <argument type="service" id="nav.registry"/>
+        </service>
+        <service id="NavBundle\Bridge\EasyAdminBundle\Search\RequestBuilder" alias="nav.easyadmin.request_builder" public="true"/>
+    </services>
+</container>

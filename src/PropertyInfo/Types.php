@@ -26,7 +26,6 @@ final class Types
     public const DATETIME_IMMUTABLE = 'datetime_immutable';
     public const DATETIMEZ_IMMUTABLE = 'datetimetz_immutable';
     public const TIME_IMMUTABLE = 'time_immutable';
-    public const DATE_INTERVAL = 'dateinterval';
     public const ARRAY = 'array';
     public const SMALLINT = 'smallint';
     public const INT = 'int';

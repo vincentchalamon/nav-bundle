@@ -19,6 +19,13 @@ namespace NavBundle\RequestBuilder;
 interface RequestBuilderInterface
 {
     /**
+     * Get the class name used for the request builder.
+     *
+     * @return string
+     */
+    public function getClassName();
+
+    /**
      * Specifies one or more restrictions to the request result.
      * Replaces any previously specified restrictions, if any.
      *
@@ -143,7 +150,7 @@ interface RequestBuilderInterface
      *
      * @param string|null $hydrator the hydrator to use
      *
-     * @return iterable the request result
+     * @return mixed the request result
      */
     public function getResult(string $hydrator = null);
 

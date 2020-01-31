@@ -48,6 +48,8 @@
     },
     "suggest": {
         "api-platform/core": "Add support for API Platform",
+        "easycorp/easyadmin-bundle": "Add support for EasyAdmin",
+        "pagerfanta/pagerfanta": "Add support for Pagerfanta",
         "sensio/framework-extra-bundle": "Add support for ParamConverter",
         "symfony/web-profiler-bundle": "Add support for the Web profiler"
     },

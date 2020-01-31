@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace NavBundle\DependencyInjection;
 
+use NavBundle\Connection\Connection;
+use NavBundle\EntityManager\EntityManager;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -31,7 +33,7 @@ final class Configuration implements ConfigurationInterface
             ->beforeNormalization()
                 ->ifTrue(static function ($v) { return \is_string($v['wsdl'] ?? null) || \is_string($v['url'] ?? null); })
                 ->then(static function ($v) {
-                    $debug = $v['enable_profiler'];
+                    $debug = $v['enable_profiler'] ?? false;
                     unset($v['enable_profiler']);
 
                     return [
@@ -49,6 +51,7 @@ final class Configuration implements ConfigurationInterface
                     ->arrayPrototype()
                         ->validate()
                             ->ifTrue(function ($v) {
+                                // TODO: Unable to fetch value while using environment variables.
                                 return \is_string($v['url'] ?? null) && !preg_match(self::URL_PATTERN, $v['url']);
                             })
                             ->thenInvalid('Malformed parameter "url".')
@@ -96,6 +99,11 @@ final class Configuration implements ConfigurationInterface
                                     ->end()
                                 ->end()
                             ->end()
+                            ->scalarNode('entity_manager_class')
+                                ->info('Entity manager class.')
+                                ->defaultValue(EntityManager::class)
+                                ->cannotBeEmpty()
+                            ->end()
                             ->scalarNode('driver')
                                 ->info('ClassMetadata driver.')
                                 ->defaultValue('nav.class_metadata.driver.annotation')
@@ -109,6 +117,11 @@ final class Configuration implements ConfigurationInterface
                             ->arrayNode('connection')
                                 ->addDefaultsIfNotSet()
                                 ->children()
+                                    ->scalarNode('class')
+                                        ->info('Connection class.')
+                                        ->defaultValue(Connection::class)
+                                        ->cannotBeEmpty()
+                                    ->end()
                                     ->scalarNode('username')
                                         ->info('Connection username.')
                                         ->cannotBeEmpty()

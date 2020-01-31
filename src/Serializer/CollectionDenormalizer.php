@@ -27,12 +27,13 @@ final class CollectionDenormalizer implements ContextAwareDenormalizerInterface,
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $type, $format = null, array $context = [])
+    public function denormalize($data, $type, $format = null, array $context = []): \Iterator
     {
+        $iterator = new \ArrayIterator();
         $data = $data['ReadMultiple_Result'][$context[ObjectDenormalizer::NAMESPACE]] ?? null;
 
         if (!$data) {
-            return null;
+            return $iterator;
         }
 
         if (!isset($data[0])) {
@@ -40,8 +41,10 @@ final class CollectionDenormalizer implements ContextAwareDenormalizerInterface,
         }
 
         foreach ($data as $key => $result) {
-            yield $this->denormalizer->denormalize($result, $type, $format, $context);
+            $iterator->append($this->denormalizer->denormalize($result, $type, $format, $context));
         }
+
+        return $iterator;
     }
 
     /**
@@ -49,7 +52,6 @@ final class CollectionDenormalizer implements ContextAwareDenormalizerInterface,
      */
     public function supportsDenormalization($data, $type, $format = null, array $context = []): bool
     {
-        return NavDecoder::FORMAT === $format
-            && \is_array($data) && isset($data['ReadMultiple_Result']);
+        return NavDecoder::FORMAT === $format && \is_array($data) && isset($data['ReadMultiple_Result']);
     }
 }

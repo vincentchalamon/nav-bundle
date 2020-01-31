@@ -82,9 +82,9 @@
                     <td>
                         <pre class="nav-container">{{ call.request }}</pre>
                         <div class="text-small font-normal">
-                            <a href="#" onclick="return toggle(this);" class="sf-toggle link-inverse" data-toggle-selector="#response-{{ i }}-{{ loop.index }}" data-toggle-alt-content="Hide response">View response</a>
+                            <a href="#" onclick="return toggle(this);" class="sf-toggle link-inverse" data-toggle-selector="#response-{{ loop.index }}" data-toggle-alt-content="Hide response">View response</a>
                         </div>
-                        <div id="response-{{ i }}-{{ loop.index }}" class="hidden">
+                        <div id="response-{{ loop.index }}" class="hidden">
                             <pre class="nav-container">{{ call.response }}</pre>
                         </div>
                     </td>

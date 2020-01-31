@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace NavBundle\PropertyInfo;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Persistence\Mapping\MappingException;
 use NavBundle\ClassMetadata\ClassMetadata;
 use NavBundle\ClassMetadata\ClassMetadataInterface;
 use NavBundle\Collection\ExtraLazyCollection;
@@ -77,8 +78,6 @@ final class NavExtractor implements PropertyListExtractorInterface, PropertyType
                 case Types::DATETIMEZ_IMMUTABLE:
                 case Types::TIME_IMMUTABLE:
                     return [new Type(Type::BUILTIN_TYPE_OBJECT, $nullable, 'DateTimeImmutable')];
-                case Types::DATE_INTERVAL:
-                    return [new Type(Type::BUILTIN_TYPE_OBJECT, $nullable, 'DateInterval')];
                 case Types::ARRAY:
                     return [new Type(Type::BUILTIN_TYPE_ARRAY, $nullable, null, true)];
                 default:
@@ -145,9 +144,13 @@ final class NavExtractor implements PropertyListExtractorInterface, PropertyType
         return false;
     }
 
-    private function getClassMetadata(string $class): ClassMetadataInterface
+    private function getClassMetadata(string $class): ?ClassMetadataInterface
     {
-        return $this->entityManager->getClassMetadata($class);
+        try {
+            return $this->entityManager->getClassMetadata($class);
+        } catch (MappingException $e) {
+            return null;
+        }
     }
 
     private function getPhpType(string $type): ?string
