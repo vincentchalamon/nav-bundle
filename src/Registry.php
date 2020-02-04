@@ -85,14 +85,12 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
      */
     public function getConnections(): array
     {
-        dump(__CLASS__.'::'.__FUNCTION__);
         $connections = [];
         /** @var EntityManagerInterface[] $managers */
         $managers = $this->getManagers();
         foreach ($managers as $manager) {
             foreach ($manager->getMetadataFactory()->getAllMetadata() as $classMetadata) {
-                dump($classMetadata->getName());
-//                $connections[$classMetadata->getName()] = $manager->getConnection($classMetadata->getName());
+                $connections[$classMetadata->getName()] = $manager->getConnection($classMetadata->getName());
             }
         }
 

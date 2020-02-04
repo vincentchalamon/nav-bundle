@@ -129,8 +129,8 @@ final class AnnotationDriver extends AbstractAnnotationDriver
                 switch (true) {
                     case $propertyAnnotation instanceof ManyToOne:
                         $mapping['nullable'] = $propertyAnnotation->nullable;
-                        if ($name = $propertyAnnotation->columnName) {
-                            $mapping['columnName'] = $name;
+                        if ($columnName = $propertyAnnotation->columnName) {
+                            $mapping['columnName'] = $columnName;
                         }
                         if ($inversedBy = $propertyAnnotation->inversedBy) {
                             $mapping['inversedBy'] = $inversedBy;
@@ -146,8 +146,8 @@ final class AnnotationDriver extends AbstractAnnotationDriver
                         break;
                     case $propertyAnnotation instanceof OneToOne:
                         $mapping['nullable'] = $propertyAnnotation->nullable;
-                        if ($name = $propertyAnnotation->columnName) {
-                            $mapping['columnName'] = $name;
+                        if ($columnName = $propertyAnnotation->columnName) {
+                            $mapping['columnName'] = $columnName;
                         }
                         if ($mappedBy = $propertyAnnotation->mappedBy) {
                             if (isset($mapping['columnName'])) {

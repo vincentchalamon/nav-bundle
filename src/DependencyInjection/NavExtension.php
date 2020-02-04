@@ -81,7 +81,7 @@ final class NavExtension extends Extension
             // Configure connection resolver
             $container
                 ->setDefinition("nav.connection_resolver.$name", new ChildDefinition('nav.connection_resolver.abstract'))
-                ->setPublic(false)
+                ->setPublic(true)
                 ->setArgument('$className', $options['connection']['class'])
                 ->setArgument('$wsdl', $options['wsdl'])
                 ->setArgument('$options', [
@@ -134,7 +134,7 @@ final class NavExtension extends Extension
             if ($config['enable_profiler']) {
                 $container
                     ->setDefinition("nav.connection_resolver.$name.traceable", new Definition(TraceableConnectionResolver::class))
-                    ->setDecoratedService("nav.connection_resolver.$name")
+                    ->setDecoratedService("nav.connection_resolver.$name", null, 100)
                     ->setArgument('$decorated', new Reference("nav.connection_resolver.$name.traceable.inner"))
                     ->setArgument('$stopwatch', new Reference('debug.stopwatch'));
             }

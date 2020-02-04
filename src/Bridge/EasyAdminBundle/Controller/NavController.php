@@ -158,7 +158,7 @@ class NavController extends EasyAdminController
      */
     protected function filterRequestBuilder(RequestBuilderInterface $requestBuilder): void
     {
-        if (!$requestData = $this->request->get('filters')) {
+        if (!$requestData = $this->request->query->get('filters')) {
             // Don't create the filters form if there is no filter applied
             return;
         }

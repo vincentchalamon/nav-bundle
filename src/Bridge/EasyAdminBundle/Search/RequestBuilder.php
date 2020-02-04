@@ -80,11 +80,6 @@ final class RequestBuilder
             throw new FieldNotFoundException("Field name expected, '$fieldName' is not a field nor an association.");
         }
 
-        if ($classMetadata->hasAssociation($fieldName)) {
-            // TODO: Support find by association
-            throw new \InvalidArgumentException('Find by association is not supported yet.');
-        }
-
         $requestBuilder->andWhere($fieldName, $searchQuery);
 
         if (!empty($navFilter)) {

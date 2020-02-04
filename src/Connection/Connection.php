@@ -87,7 +87,6 @@ class Connection extends SoapClient implements ConnectionInterface, WarmableInte
      */
     public function warmUp($cacheDir): void
     {
-        dump($this->wsdl);
         $this->fetchWSDL($this->wsdl, true);
     }
 

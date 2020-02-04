@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace NavBundle\RequestBuilder;
 
+use NavBundle\ClassMetadata\ClassMetadata;
 use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\Event\PostLoadEvent;
 use NavBundle\Exception\FieldNotFoundException;
@@ -108,9 +109,11 @@ final class RequestBuilder implements RequestBuilderInterface
      */
     public function loadById($identifier): ?object
     {
+        $classMetadata = $this->em->getClassMetadata($this->className);
+
         try {
             $response = $this->em->getConnection($this->className)->Read([
-                'No' => $identifier,
+                $classMetadata->getFieldColumnName($classMetadata->getIdentifier()) => $identifier,
             ]);
         } catch (\SoapFault $fault) {
             $this->em->getLogger()->critical($fault->getMessage());
@@ -199,19 +202,31 @@ final class RequestBuilder implements RequestBuilderInterface
             $criteria['bookmarkKey'] = $this->offset;
         }
 
+        /** @var ClassMetadata $classMetadata */
         $classMetadata = $this->em->getClassMetadata($this->className);
-        foreach ($this->filters as $field => $value) {
-            if ($classMetadata->hasField($field)) {
-                $value = $this->formatValue($classMetadata->getTypeOfField($field), $value);
-                $field = $classMetadata->getFieldColumnName($field);
-            } elseif ($classMetadata->hasAssociation($field)) {
-                throw new \InvalidArgumentException('Find by association is not supported yet.');
+        foreach ($this->filters as $fieldName => $value) {
+            if (!$classMetadata->hasField($fieldName) && !$classMetadata->hasAssociation($fieldName)) {
+                throw new FieldNotFoundException("Field name expected, '$fieldName' is not a field nor an association.");
+            }
+
+            if ($classMetadata->hasAssociation($fieldName)) {
+                if (!$classMetadata->isSingleValuedAssociation($fieldName)) {
+                    throw new \InvalidArgumentException('ToMany associations are not supported in RequestBuilder.');
+                }
+
+                if (is_object($value)) {
+                    $value = $classMetadata->reflFields[
+                        $this->em->getClassMetadata($classMetadata->getAssociationTargetClass($fieldName))->getIdentifier()
+                    ]->getValue($value);
+                }
+                $fieldName = $classMetadata->getSingleValuedAssociationColumnName($fieldName);
             } else {
-                throw new FieldNotFoundException("Field name expected, '$field' is not a field nor an association.");
+                $value = $this->formatValue($classMetadata->getTypeOfField($fieldName), $value);
+                $fieldName = $classMetadata->getFieldColumnName($fieldName);
             }
 
             $criteria['filter'][] = [
-                'Field' => $field,
+                'Field' => $fieldName,
                 'Criteria' => $value,
             ];
         }

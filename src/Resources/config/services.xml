@@ -94,11 +94,11 @@
         </service>
 
         <service id="nav.serializer.collection_denormalizer" class="NavBundle\Serializer\CollectionDenormalizer" public="false">
-            <tag name="serializer.normalizer" priority="-1"/>
+            <tag name="serializer.normalizer" priority="100"/>
         </service>
 
         <service id="nav.serializer.object_denormalizer" class="NavBundle\Serializer\ObjectDenormalizer" public="false">
-            <tag name="serializer.normalizer" priority="-1"/>
+            <tag name="serializer.normalizer" priority="100"/>
         </service>
 
         <service id="nav.serializer.entity_normalizer" class="NavBundle\Serializer\EntityNormalizer" public="false">
@@ -108,7 +108,7 @@
             <argument type="service" id="nav.serializer.name_converter.camel_case_to_nav"/>
             <argument type="service" id="property_info"/>
             <argument type="service" id="serializer.mapping.class_discriminator_resolver"/>
-            <tag name="serializer.normalizer" priority="-2"/>
+            <tag name="serializer.normalizer" priority="-1"/>
         </service>
     </services>
 </container>
