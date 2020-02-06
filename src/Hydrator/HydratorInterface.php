@@ -26,8 +26,6 @@ interface HydratorInterface
      * @param mixed                  $response      the connection response
      * @param ClassMetadataInterface $classMetadata the entity class metadata
      * @param array                  $context       the hydration context
-     *
-     * @return null|object|\Iterator
      */
     public function hydrateAll($response, ClassMetadataInterface $classMetadata, array $context = []);
 }

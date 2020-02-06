@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the NavBundle.
+ *
+ * (c) Vincent Chalamon <vincentchalamon@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
 namespace NavBundle\Bridge\EasyAdminBundle\Form\Filter\Type;
@@ -27,15 +36,15 @@ class DateTimeFilterType extends AbstractType implements FilterInterface
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('value2', FormTypeHelper::getTypeClass($options['value_type']), $options['value_type_options'] + [
-                'label' => false,
-            ]
+            'label' => false,
+        ]
         );
 
         $builder->addModelTransformer(new CallbackTransformer(
             static function ($data) {
                 return $data;
             },
-            static function ($data) use ($options) {
+            static function ($data) {
                 if (ComparisonType::NEQ === $data['comparison']) {
                     $data['comparison'] = '<>';
                 }
@@ -89,7 +98,7 @@ class DateTimeFilterType extends AbstractType implements FilterInterface
     /**
      * {@inheritdoc}
      */
-    public function filter(RequestBuilderInterface $requestBuilder, FormInterface $form, array $metadata)
+    public function filter(RequestBuilderInterface $requestBuilder, FormInterface $form, array $metadata): void
     {
         $property = $metadata['property'];
         $data = $form->getData();

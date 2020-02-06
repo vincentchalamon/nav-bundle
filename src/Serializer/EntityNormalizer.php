@@ -83,7 +83,7 @@ final class EntityNormalizer extends AbstractObjectNormalizer
             $method,
             array $parameters,
             &$initializer
-        ) use ($data, $type, $format, $context) {
+        ) use ($data, $type, $format, $context): bool {
             $initializer = null;
             $wrappedObject = parent::denormalize($data, $type, $format, $context);
 

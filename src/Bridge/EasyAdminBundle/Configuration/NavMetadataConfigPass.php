@@ -15,6 +15,7 @@ namespace NavBundle\Bridge\EasyAdminBundle\Configuration;
 
 use EasyCorp\Bundle\EasyAdminBundle\Configuration\ConfigPassInterface;
 use NavBundle\Bridge\EasyAdminBundle\Controller\NavController;
+use NavBundle\ClassMetadata\ClassMetadataInterface;
 use NavBundle\RegistryInterface;
 
 /**
@@ -40,12 +41,13 @@ final class NavMetadataConfigPass implements ConfigPassInterface
                 continue;
             }
 
+            /** @var ClassMetadataInterface $classMetadata */
             $classMetadata = $em->getClassMetadata($class);
             $entities[$name] = $backendConfig['entities'][$name] + [
-                    'primary_key_field_name' => $classMetadata->getIdentifier(),
-                    'properties' => [],
-                    'controller' => NavController::class,
-                ];
+                'primary_key_field_name' => $classMetadata->getIdentifier(),
+                'properties' => [],
+                'controller' => NavController::class,
+            ];
 
             if (empty($entities[$name]['templates']['paginator'])) {
                 $entities[$name]['templates']['paginator'] = '@Nav/EasyAdmin/paginator.html.twig';

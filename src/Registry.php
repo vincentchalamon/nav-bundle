@@ -20,7 +20,7 @@ use NavBundle\Exception\InvalidMethodCallException;
 use NavBundle\Exception\UnknownEntityNamespaceException;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use ProxyManager\Proxy\LazyLoadingInterface;
-use Psr\Container\ContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\CacheWarmer\WarmableInterface;
 
 /**
@@ -39,26 +39,6 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
         }
 
         parent::__construct('NAV', [], $managers, '', $defaultManagerName, LazyLoadingInterface::class);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getService($name)
-    {
-        return $this->container->get($name);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function resetService($name): void
-    {
-        if (!$this->container->initialized($name)) {
-            return;
-        }
-
-        // At this point, this method should not be called anywhere.
     }
 
     /**
@@ -101,8 +81,6 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
      * {@inheritdoc}
      *
      * @throws InvalidMethodCallException
-     *
-     * @return ConnectionInterface
      */
     public function getConnection($name = null): ConnectionInterface
     {
@@ -151,7 +129,7 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
         if (null !== $holderFactory) {
             foreach ($this->getManagers() as $manager) {
                 foreach ($manager->getMetadataFactory()->getAllMetadata() as $classMetadata) {
-                    $holderFactory->createProxy($classMetadata->getName(), function (): void {});
+                    $holderFactory->createProxy($classMetadata->getName(), static function (): void {});
                 }
             }
         }
@@ -160,5 +138,25 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
     public function isOptional(): bool
     {
         return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getService($name)
+    {
+        return $this->container->get($name);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function resetService($name): void
+    {
+        if (!$this->container->initialized($name)) {
+            return;
+        }
+
+        // At this point, this method should not be called anywhere.
     }
 }

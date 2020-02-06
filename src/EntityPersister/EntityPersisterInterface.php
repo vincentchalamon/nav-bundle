@@ -24,7 +24,7 @@ interface EntityPersisterInterface
      * @param int|null    $limit
      * @param string|null $offset
      *
-     * @return \Iterator
+     * @return \Iterator|array<object>
      */
     public function loadAll(array $criteria = [], $limit = null, $offset = null);
 

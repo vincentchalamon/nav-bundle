@@ -31,8 +31,8 @@ final class Configuration implements ConfigurationInterface
         $treeBuilder
             ->getRootNode()
             ->beforeNormalization()
-                ->ifTrue(static function ($v) { return \is_string($v['wsdl'] ?? null) || \is_string($v['url'] ?? null); })
-                ->then(static function ($v) {
+                ->ifTrue(static function ($v): bool { return \is_string($v['wsdl'] ?? null) || \is_string($v['url'] ?? null); })
+                ->then(static function ($v): array {
                     $debug = $v['enable_profiler'] ?? false;
                     unset($v['enable_profiler']);
 
@@ -57,10 +57,10 @@ final class Configuration implements ConfigurationInterface
                             ->thenInvalid('Malformed parameter "url".')
                         ->end()
                         ->beforeNormalization()
-                            ->ifTrue(static function ($v) {
+                            ->ifTrue(static function ($v): bool {
                                 return \is_string($v['url'] ?? null) && preg_match(self::URL_PATTERN, $v['url']);
                             })
-                            ->then(static function ($v) {
+                            ->then(static function ($v): array {
                                 preg_match(self::URL_PATTERN, $v['url'], $matches);
                                 $v['wsdl'] = $matches[1].'://'.$matches[4];
                                 $v['connection'] = [

@@ -23,12 +23,12 @@ parameters:
           count: 1
           path: src/EntityManager/EntityManager.php
 
-        - message: '#Parameter \#2 $eventArgs of method Doctrine\\Common\\EventManager::dispatchEvent\(\) expects Doctrine\\Common\\EventArgs|null, NavBundle\\Event\\EventInterface given\.#'
-          count: 1
-          path: src/Event/EventManager.php
-
         - message: '#Method NavBundle\\Bridge\\ApiPlatform\\DataPersister\\DataPersister::getManager\(\) should return NavBundle\\EntityManager\\EntityManagerInterface|null but returns Doctrine\\Persistence\\ObjectManager|null\.#'
           count: 1
           path: src/Bridge/ApiPlatform/DataPersister/DataPersister.php
 
-        - '#Return type \(string|null\) of method NavBundle\\ClassMetadata\\ClassMetadataInterface::getIdentifier\(\) should be compatible with return type \(array\) of method Doctrine\\Persistence\\Mapping\\ClassMetadata::getIdentifier\(\)#'
+        - message: '#Parameter \#1 \$bookmarkKey \(string\) of method NavBundle\\Bridge\\Pagerfanta\\Adapter\\NavAdapter::getSlice\(\) should be compatible with parameter \$offset \(int\) of method Pagerfanta\\Adapter\\AdapterInterface::getSlice\(\)#'
+          count: 1
+          path: src/Bridge/Pagerfanta/Adapter/NavAdapter.php
+
+        - '#Return type \(string\|null\) of method NavBundle\\ClassMetadata\\ClassMetadata(?:Interface)?::getIdentifier\(\) should be compatible with return type \(array\) of method Doctrine\\Persistence\\Mapping\\ClassMetadata::getIdentifier\(\)#'

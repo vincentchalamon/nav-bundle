@@ -19,7 +19,6 @@ use NavBundle\Event\PostLoadEvent;
 use NavBundle\Exception\FieldNotFoundException;
 use NavBundle\Hydrator\CountHydrator;
 use NavBundle\PropertyInfo\Types;
-use Symfony\Component\PropertyInfo\Type;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
@@ -69,9 +68,9 @@ final class RequestBuilder implements RequestBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function setBookmarkKey($firstResult)
+    public function setBookmarkKey($bookmarkKey)
     {
-        $this->offset = $firstResult;
+        $this->offset = $bookmarkKey;
 
         return $this;
     }
@@ -87,9 +86,9 @@ final class RequestBuilder implements RequestBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function setSize($maxResults)
+    public function setSize($size)
     {
-        $this->limit = $maxResults;
+        $this->limit = $size;
 
         return $this;
     }
@@ -214,7 +213,7 @@ final class RequestBuilder implements RequestBuilderInterface
                     throw new \InvalidArgumentException('ToMany associations are not supported in RequestBuilder.');
                 }
 
-                if (is_object($value)) {
+                if (\is_object($value)) {
                     $value = $classMetadata->reflFields[
                         $this->em->getClassMetadata($classMetadata->getAssociationTargetClass($fieldName))->getIdentifier()
                     ]->getValue($value);
@@ -234,11 +233,6 @@ final class RequestBuilder implements RequestBuilderInterface
         return $criteria;
     }
 
-    /**
-     * @param mixed $value
-     *
-     * @return string
-     */
     private function formatValue($type, $value): string
     {
         switch ($type) {
@@ -254,7 +248,7 @@ final class RequestBuilder implements RequestBuilderInterface
             case Types::TIME_IMMUTABLE:
                 return $value instanceof \DateTime ? $value->format('H:i:s') : $value;
             case Types::ARRAY:
-                return is_array($value) ? implode('|', array_map([$this, 'formatValue'], $value)) : $value;
+                return \is_array($value) ? implode('|', array_map([$this, 'formatValue'], $value)) : $value;
             default:
                 return $value;
         }

@@ -18,7 +18,6 @@ use NavBundle\EntityRepository\EntityRepository;
 use NavBundle\Exception\AssociationNotFoundException;
 use NavBundle\Exception\FieldNotFoundException;
 use NavBundle\Exception\InvalidMethodCallException;
-use ProxyManager\Proxy\LazyLoadingInterface;
 use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
 
 /**
@@ -331,8 +330,8 @@ final class ClassMetadata implements ClassMetadataInterface
         try {
             return $this->reflFields[$this->identifier]->getValue($object);
         } catch (\ErrorException $exception) {
-            /** @see https://github.com/Ocramius/ProxyManager/pull/299 */
-            return call_user_func([$object, 'get'.ucfirst($this->identifier)]);
+            /* @see https://github.com/Ocramius/ProxyManager/pull/299 */
+            return \call_user_func([$object, 'get'.ucfirst($this->identifier)]);
         }
     }
 
@@ -348,8 +347,8 @@ final class ClassMetadata implements ClassMetadataInterface
         try {
             return $this->reflFields[$this->key]->getValue($object);
         } catch (\ErrorException $exception) {
-            /** @see https://github.com/Ocramius/ProxyManager/pull/299 */
-            return call_user_func([$object, 'get'.ucfirst($this->key)]);
+            /* @see https://github.com/Ocramius/ProxyManager/pull/299 */
+            return \call_user_func([$object, 'get'.ucfirst($this->key)]);
         }
     }
 

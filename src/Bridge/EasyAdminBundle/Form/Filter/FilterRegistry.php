@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the NavBundle.
+ *
+ * (c) Vincent Chalamon <vincentchalamon@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
 namespace NavBundle\Bridge\EasyAdminBundle\Form\Filter;
@@ -18,9 +27,9 @@ final class FilterRegistry
      *
      * @param FormInterface $form The form instance
      *
-     * @return FilterInterface The resolved filter type
-     *
      * @throws RuntimeException if the filter type cannot be resolved
+     *
+     * @return FilterInterface The resolved filter type
      */
     public function resolveType(FormInterface $form): FilterInterface
     {
@@ -32,6 +41,7 @@ final class FilterRegistry
                 throw new RuntimeException(sprintf('Filter type "%s" must implement "%s".', \get_class($form->getConfig()->getType()->getInnerType()), FilterInterface::class));
             }
 
+            /** @var FilterInterface $filterType */
             $filterType = $resolvedFormType->getInnerType();
         }
 

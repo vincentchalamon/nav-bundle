@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the NavBundle.
+ *
+ * (c) Vincent Chalamon <vincentchalamon@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
 namespace NavBundle\Bridge\EasyAdminBundle\Search;
@@ -26,16 +35,16 @@ final class RequestBuilder
      * Creates the request builder used to get all the records displayed by the
      * "list" view.
      *
-     * @param array       $entityConfig
      * @param string|null $sortField
      * @param string|null $sortDirection
-     * @param array       $navFilter
      *
      * @return RequestBuilderInterface
      */
     public function createListRequestBuilder(array $entityConfig, $sortField = null, $sortDirection = null, array $navFilter = [])
     {
-        $requestBuilder = $this->registry->getManagerForClass($entityConfig['class'])->createRequestBuilder($entityConfig['class']);
+        /** @var EntityManagerInterface $em */
+        $em = $this->registry->getManagerForClass($entityConfig['class']);
+        $requestBuilder = $em->createRequestBuilder($entityConfig['class']);
 
         if (!empty($navFilter)) {
             foreach ($navFilter as $item => $value) {
@@ -50,27 +59,25 @@ final class RequestBuilder
      * Creates the request builder used to get the results of the search query
      * performed by the user in the "search" view.
      *
-     * @param array       $entityConfig
      * @param string      $searchQuery
      * @param string|null $sortField
      * @param string|null $sortDirection
-     * @param array       $navFilter
      *
      * @return RequestBuilderInterface
      */
     public function createSearchRequestBuilder(array $entityConfig, $searchQuery, $sortField = null, $sortDirection = null, array $navFilter = [])
     {
-        /* @var EntityManagerInterface $em */
+        /** @var EntityManagerInterface $em */
         $em = $this->registry->getManagerForClass($entityConfig['class']);
-        /* @var ClassMetadataInterface $classMetadata */
+        /** @var ClassMetadataInterface $classMetadata */
         $classMetadata = $em->getClassMetadata($entityConfig['class']);
-        /* @var RequestBuilderInterface $requestBuilder */
+        /** @var RequestBuilderInterface $requestBuilder */
         $requestBuilder = $em->createRequestBuilder($entityConfig['class']);
 
         $searchableFields = array_keys($entityConfig['search']['fields']);
-        if (1 < count($searchableFields)) {
+        if (1 < \count($searchableFields)) {
             throw new \InvalidArgumentException('Search on multiple fields is not supported.');
-        } elseif (0 === count($searchableFields)) {
+        } elseif (0 === \count($searchableFields)) {
             throw new \InvalidArgumentException('You must specify a search field.');
         }
 

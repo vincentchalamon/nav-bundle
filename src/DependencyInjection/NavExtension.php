@@ -53,7 +53,7 @@ final class NavExtension extends Extension
             ->registerForAutoconfiguration(HydratorInterface::class)
             ->addTag('nav.hydrator');
 
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
 
         if ($config['enable_profiler']) {
@@ -85,10 +85,10 @@ final class NavExtension extends Extension
                 ->setArgument('$className', $options['connection']['class'])
                 ->setArgument('$wsdl', $options['wsdl'])
                 ->setArgument('$options', [
-                        'user' => $options['connection']['username'],
-                        'password' => $options['connection']['password'],
-                        'cache_dir' => '%kernel.cache_dir%/nav/WSDL',
-                    ] + $options['soap_options']
+                    'user' => $options['connection']['username'],
+                    'password' => $options['connection']['password'],
+                    'cache_dir' => '%kernel.cache_dir%/nav/WSDL',
+                ] + $options['soap_options']
                 );
 
             // Configure driver

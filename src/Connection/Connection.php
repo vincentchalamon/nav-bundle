@@ -75,7 +75,7 @@ class Connection extends SoapClient implements ConnectionInterface, WarmableInte
      */
     public function hasFunction(string $function): bool
     {
-        return \in_array($function, array_map(static function (string $fct) {
+        return \in_array($function, array_map(static function (string $fct): string {
             return preg_replace('/^[^ ]+ (.*)\(.*\)$/', '$1', $fct);
         }, $this->__getFunctions()), true);
     }

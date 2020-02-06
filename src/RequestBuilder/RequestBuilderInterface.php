@@ -73,11 +73,11 @@ interface RequestBuilderInterface
      *        ->setBookmarkKey('id-of-last-result-read');
      * </code>
      *
-     * @param string|null $firstResult the id of the last result read
+     * @param string|null $bookmarkKey the id of the last result read
      *
      * @return self
      */
-    public function setBookmarkKey($firstResult);
+    public function setBookmarkKey($bookmarkKey);
 
     /**
      * Gets the id of the last result read (the "bookmarkKey").
@@ -96,11 +96,11 @@ interface RequestBuilderInterface
      *        ->setSize(10);
      * </code>
      *
-     * @param int|null $maxResults the maximum number of results to retrieve
+     * @param int|null $size the maximum number of results to retrieve
      *
      * @return self
      */
-    public function setSize($maxResults);
+    public function setSize($size);
 
     /**
      * Gets the maximum number of results the request object was set to retrieve (the "setSize").

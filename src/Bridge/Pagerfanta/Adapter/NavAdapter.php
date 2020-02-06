@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the NavBundle.
+ *
+ * (c) Vincent Chalamon <vincentchalamon@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
 namespace NavBundle\Bridge\Pagerfanta\Adapter;
@@ -7,7 +16,6 @@ namespace NavBundle\Bridge\Pagerfanta\Adapter;
 use NavBundle\ClassMetadata\ClassMetadataInterface;
 use NavBundle\RequestBuilder\RequestBuilderInterface;
 use Pagerfanta\Adapter\AdapterInterface;
-use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 /**
  * @author Vincent Chalamon <vincent@les-tilleuls.coop>
@@ -34,7 +42,12 @@ final class NavAdapter implements AdapterInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Returns an slice of the results.
+     *
+     * @param string $bookmarkKey the bookmarkKey
+     * @param int    $size        the size
+     *
+     * @return array|\Traversable|\Iterator the slice
      */
     public function getSlice($bookmarkKey, $size)
     {

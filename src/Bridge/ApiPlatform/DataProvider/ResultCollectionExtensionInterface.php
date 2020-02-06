@@ -28,7 +28,7 @@ interface ResultCollectionExtensionInterface extends CollectionExtensionInterfac
      * @param string|null             $operationName the operation name
      * @param array                   $context       the context
      *
-     * @return \Iterator
+     * @return \Iterator|array<object>
      */
     public function getResult(RequestBuilderInterface $builder, string $resourceClass, string $operationName = null, array $context = []);
 

@@ -37,8 +37,9 @@ final class EventManager extends DoctrineEventManager implements EventManagerInt
     /**
      * {@inheritdoc}
      */
-    public function dispatch(EventInterface $eventArgs): void
+    public function dispatch($eventArgs): void
     {
+        /** @var EventArgs|EventInterface $eventArgs */
         $eventName = $eventArgs->getName();
 
         // Call entity listeners
@@ -50,7 +51,6 @@ final class EventManager extends DoctrineEventManager implements EventManagerInt
         }
 
         // Call event listeners/subscribers
-        /* @var EventArgs $eventArgs */
         parent::dispatchEvent($eventName, $eventArgs);
     }
 }

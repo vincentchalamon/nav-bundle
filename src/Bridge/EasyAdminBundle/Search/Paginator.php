@@ -1,11 +1,21 @@
 <?php
 
+/*
+ * This file is part of the NavBundle.
+ *
+ * (c) Vincent Chalamon <vincentchalamon@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
 namespace NavBundle\Bridge\EasyAdminBundle\Search;
 
 use NavBundle\Bridge\Pagerfanta\Adapter\NavAdapter;
 use NavBundle\Bridge\Pagerfanta\NavPagerFanta;
+use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\RegistryInterface;
 use NavBundle\RequestBuilder\RequestBuilderInterface;
 use Pagerfanta\Pagerfanta;
@@ -27,19 +37,19 @@ final class Paginator
     /**
      * Creates a paginator for the given request builder.
      *
-     * @param RequestBuilderInterface $requestBuilder
-     * @param string                  $bookmarkKey
-     * @param int                     $size
+     * @param string $bookmarkKey
      *
      * @return Pagerfanta
      */
     public function createNavPaginator(RequestBuilderInterface $requestBuilder, string $bookmarkKey = null, int $size = self::MAX_ITEMS)
     {
         $className = $requestBuilder->getClassName();
+        /** @var EntityManagerInterface $em */
+        $em = $this->registry->getManagerForClass($className);
 
         $paginator = new NavPagerFanta(new NavAdapter(
             $requestBuilder,
-            $this->registry->getManagerForClass($className)->getClassMetadata($className)
+            $em->getClassMetadata($className)
         ));
         $paginator->setMaxPerPage($size);
         $paginator->setBookmarkKey($bookmarkKey);

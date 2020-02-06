@@ -19,8 +19,9 @@ use NavBundle\Bridge\EasyAdminBundle\Event\EasyAdminEvents as NavEasyAdminEvents
 use NavBundle\Bridge\EasyAdminBundle\Form\Filter\FilterRegistry;
 use NavBundle\Bridge\EasyAdminBundle\Search\Paginator;
 use NavBundle\Bridge\EasyAdminBundle\Search\RequestBuilder;
+use NavBundle\Bridge\Pagerfanta\Adapter\NavAdapter;
+use NavBundle\Bridge\Pagerfanta\NavPagerFanta;
 use NavBundle\RequestBuilder\RequestBuilderInterface;
-use Pagerfanta\Pagerfanta;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -218,7 +219,6 @@ class NavController extends EasyAdminController
      *
      * @param string $entityClass
      * @param string $searchQuery
-     * @param array $searchableFields
      *
      * @return RequestBuilderInterface The RequestBuilder instance
      */
@@ -230,14 +230,14 @@ class NavController extends EasyAdminController
     /**
      * Renders response for list action from a xhr request.
      *
-     * @param string $actionName The name of the current action (list, show, new, etc.)
+     * @param string $actionName   The name of the current action (list, show, new, etc.)
      * @param string $templatePath The path of the Twig template to render
-     * @param array $parameters The parameters passed to the template
-     *
-     * @return Response
+     * @param array  $parameters   The parameters passed to the template
      *
      * @throws \Throwable
      * @throws Error
+     *
+     * @return Response
      */
     protected function renderXHR($actionName, $templatePath, array $parameters = [])
     {
@@ -249,11 +249,13 @@ class NavController extends EasyAdminController
         unset($query['bookmarkKey']);
         $parts['query'] = http_build_query($query);
 
-        /** @var Pagerfanta $paginator */
+        /** @var NavPagerFanta $paginator */
         $paginator = $parameters['paginator'];
+        /** @var NavAdapter $adapter */
+        $adapter = $paginator->getAdapter();
         // bookmarkKey must not be included in the http_build_query because of its special characters.
         if ($paginator->hasNextPage()) {
-            $parts['query'].= '&bookmarkKey='.$paginator->getAdapter()->getBookmarkKey();
+            $parts['query'] .= '&bookmarkKey='.$adapter->getBookmarkKey();
             $data['nextUrl'] = $this->buildUrl($parts);
         } else {
             $data['nextUrl'] = '#';
@@ -264,15 +266,15 @@ class NavController extends EasyAdminController
 
     private function buildUrl(array $parts): string
     {
-        return (isset($parts['scheme']) ? "{$parts['scheme']}:" : '') .
-            ((isset($parts['user']) || isset($parts['host'])) ? '//' : '') .
-            (isset($parts['user']) ? "{$parts['user']}" : '') .
-            (isset($parts['pass']) ? ":{$parts['pass']}" : '') .
-            (isset($parts['user']) ? '@' : '') .
-            (isset($parts['host']) ? "{$parts['host']}" : '') .
-            (isset($parts['port']) ? ":{$parts['port']}" : '') .
-            (isset($parts['path']) ? "{$parts['path']}" : '') .
-            (isset($parts['query']) ? "?{$parts['query']}" : '') .
+        return (isset($parts['scheme']) ? "{$parts['scheme']}:" : '').
+            ((isset($parts['user']) || isset($parts['host'])) ? '//' : '').
+            (isset($parts['user']) ? "{$parts['user']}" : '').
+            (isset($parts['pass']) ? ":{$parts['pass']}" : '').
+            (isset($parts['user']) ? '@' : '').
+            (isset($parts['host']) ? "{$parts['host']}" : '').
+            (isset($parts['port']) ? ":{$parts['port']}" : '').
+            (isset($parts['path']) ? "{$parts['path']}" : '').
+            (isset($parts['query']) ? "?{$parts['query']}" : '').
             (isset($parts['fragment']) ? "#{$parts['fragment']}" : '');
     }
 }

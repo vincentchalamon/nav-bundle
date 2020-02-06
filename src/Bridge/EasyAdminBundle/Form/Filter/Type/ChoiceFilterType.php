@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the NavBundle.
+ *
+ * (c) Vincent Chalamon <vincentchalamon@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
 namespace NavBundle\Bridge\EasyAdminBundle\Form\Filter\Type;
@@ -74,7 +83,7 @@ class ChoiceFilterType extends AbstractType implements FilterInterface
     /**
      * {@inheritdoc}
      */
-    public function filter(RequestBuilderInterface $requestBuilder, FormInterface $form, array $metadata)
+    public function filter(RequestBuilderInterface $requestBuilder, FormInterface $form, array $metadata): void
     {
         $multiple = $form->get('value')->getConfig()->getOption('multiple');
         $values = $form->getData()['value'];
