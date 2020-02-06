@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace NavBundle\DependencyInjection;
 
-use ApiPlatform\Core\Metadata\Property\Factory\PropertyMetadataFactoryInterface;
-use EasyCorp\Bundle\EasyAdminBundle\Configuration\ConfigPassInterface;
+use ApiPlatform\Core\Metadata\Property\Factory\ExtractorPropertyMetadataFactory;
+use EasyCorp\Bundle\EasyAdminBundle\Configuration\MetadataConfigPass;
 use NavBundle\Debug\Connection\TraceableConnectionResolver;
 use NavBundle\EntityManager\EntityManager;
 use NavBundle\EntityManager\EntityManagerInterface;
@@ -60,7 +60,7 @@ final class NavExtension extends Extension
             $loader->load('debug.xml');
         }
 
-        if (interface_exists(PropertyMetadataFactoryInterface::class)) {
+        if (interface_exists(ExtractorPropertyMetadataFactory::class)) {
             $loader->load('api_platform.xml');
         }
 
@@ -68,7 +68,7 @@ final class NavExtension extends Extension
             $loader->load('sensio_framework_extra.xml');
         }
 
-        if (interface_exists(ConfigPassInterface::class)) {
+        if (interface_exists(MetadataConfigPass::class)) {
             $loader->load('easy_admin.xml');
         }
 
