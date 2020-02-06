@@ -25,7 +25,7 @@ use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * @author Vincent Chalamon <vincent@les-tilleuls.coop>
+ * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
 class ChoiceFilterType extends AbstractType implements FilterInterface
 {

@@ -32,8 +32,6 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: curl, dom, iconv, intl, json, libxml, mbstring, phar, soap, tokenizer, xdebug, xml, xmlwriter
-          coverage: xdebug
-          tools: php-cs-fixer:2.16.1, phpstan:0.12.8, phpunit:8.5.2
 
       - name: Get Composer Cache Directory
         id: composer-cache
@@ -55,11 +53,8 @@ jobs:
         run: composer update --no-progress --no-suggest --ansi --prefer-lowest
 
       - name: Run php-cs-fixer tests
-        run: php-cs-fixer fix --dry-run --diff
+        run: vendor/bin/php-cs-fixer fix --dry-run --diff
 
       - name: Run phpstan tests
         if: matrix.dependency == ''
-        run: phpstan analyze
-
-      - name: Run PHPUnit tests
-        run: phpunit --colors=always --testdox
+        run: vendor/bin/phpstan analyze

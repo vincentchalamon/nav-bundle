@@ -20,6 +20,13 @@
     <filter>
         <whitelist>
             <directory>src</directory>
+            <exclude>
+                <directory>src/Annotation</directory>
+                <directory>src/DependencyInjection</directory>
+                <directory>src/Event/*Event.php</directory>
+                <directory>src/Exception</directory>
+                <directory>src/Resources</directory>
+            </exclude>
         </whitelist>
     </filter>
 </phpunit>

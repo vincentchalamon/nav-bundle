@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace DocusignBundle\Tests;
+namespace NavBundle\Tests;
 
 use NavBundle\NavBundle;
 use Nyholm\BundleTest\BaseBundleTestCase;

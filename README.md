@@ -2,6 +2,7 @@
 
 [![GitHub CI](https://github.com/vincentchalamon/nav-bundle/workflows/CI/badge.svg)](https://github.com/vincentchalamon/nav-bundle/actions?query=workflow%3ACI)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/vincentchalamon/nav-bundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/vincentchalamon/nav-bundle/?branch=master)
+[![Build Status](https://scrutinizer-ci.com/g/vincentchalamon/nav-bundle/badges/build.png?b=master)](https://scrutinizer-ci.com/g/vincentchalamon/nav-bundle/build-status/master)
 [![Code Coverage](https://scrutinizer-ci.com/g/vincentchalamon/nav-bundle/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/vincentchalamon/nav-bundle/?branch=master)
 
 This Symfony Bundle is used to map objects with a Microsoft Dynamics NAV service.

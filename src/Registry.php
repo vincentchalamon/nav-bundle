@@ -46,11 +46,10 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
      */
     public function getAliasNamespace($alias): string
     {
-        foreach (array_keys($this->getManagers()) as $name) {
+        /** @var EntityManagerInterface[] $managers */
+        $managers = $this->getManagers();
+        foreach ($managers as $manager) {
             try {
-                /** @var EntityManagerInterface $manager */
-                $manager = $this->getManager($name);
-
                 return $manager->getEntityNamespace($alias);
             } catch (\InvalidArgumentException $e) {
                 // Ignore and continue.
@@ -70,7 +69,8 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
         $managers = $this->getManagers();
         foreach ($managers as $manager) {
             foreach ($manager->getMetadataFactory()->getAllMetadata() as $classMetadata) {
-                $connections[$classMetadata->getName()] = $manager->getConnection($classMetadata->getName());
+                $name = $classMetadata->getName();
+                $connections[$name] = $manager->getConnection($name);
             }
         }
 

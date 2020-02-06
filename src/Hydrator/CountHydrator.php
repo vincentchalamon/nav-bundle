@@ -25,10 +25,14 @@ final class CountHydrator implements HydratorInterface
      */
     public function hydrateAll($response, ClassMetadataInterface $classMetadata, array $context = []): int
     {
-        if (!isset($response->ReadMultiple_Result->{$classMetadata->getNamespace()})) {
+        $namespace = $classMetadata->getNamespace();
+
+        if (!isset($response->ReadMultiple_Result->$namespace)) {
             return 0;
         }
 
-        return \count($response->ReadMultiple_Result->{$classMetadata->getNamespace()});
+        $data = $response->ReadMultiple_Result->$namespace;
+
+        return is_countable($data) ? \count($data) : 1;
     }
 }

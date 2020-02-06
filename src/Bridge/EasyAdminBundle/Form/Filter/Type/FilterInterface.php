@@ -17,7 +17,7 @@ use NavBundle\RequestBuilder\RequestBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 
 /**
- * @author Vincent Chalamon <vincent@les-tilleuls.coop>
+ * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
 interface FilterInterface
 {

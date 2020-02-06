@@ -19,7 +19,7 @@ use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
- * @author Vincent Chalamon <vincent@les-tilleuls.coop>
+ * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
 final class RequestPostInitializeListener
 {

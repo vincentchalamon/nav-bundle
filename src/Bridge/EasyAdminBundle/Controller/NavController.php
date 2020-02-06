@@ -22,6 +22,7 @@ use NavBundle\Bridge\EasyAdminBundle\Search\RequestBuilder;
 use NavBundle\Bridge\Pagerfanta\Adapter\NavAdapter;
 use NavBundle\Bridge\Pagerfanta\NavPagerFanta;
 use NavBundle\RequestBuilder\RequestBuilderInterface;
+use NavBundle\Util\UrlUtils;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -256,25 +257,11 @@ class NavController extends EasyAdminController
         // bookmarkKey must not be included in the http_build_query because of its special characters.
         if ($paginator->hasNextPage()) {
             $parts['query'] .= '&bookmarkKey='.$adapter->getBookmarkKey();
-            $data['nextUrl'] = $this->buildUrl($parts);
+            $data['nextUrl'] = UrlUtils::build($parts);
         } else {
             $data['nextUrl'] = '#';
         }
 
         return new JsonResponse($data);
-    }
-
-    private function buildUrl(array $parts): string
-    {
-        return (isset($parts['scheme']) ? "{$parts['scheme']}:" : '').
-            ((isset($parts['user']) || isset($parts['host'])) ? '//' : '').
-            (isset($parts['user']) ? "{$parts['user']}" : '').
-            (isset($parts['pass']) ? ":{$parts['pass']}" : '').
-            (isset($parts['user']) ? '@' : '').
-            (isset($parts['host']) ? "{$parts['host']}" : '').
-            (isset($parts['port']) ? ":{$parts['port']}" : '').
-            (isset($parts['path']) ? "{$parts['path']}" : '').
-            (isset($parts['query']) ? "?{$parts['query']}" : '').
-            (isset($parts['fragment']) ? "#{$parts['fragment']}" : '');
     }
 }

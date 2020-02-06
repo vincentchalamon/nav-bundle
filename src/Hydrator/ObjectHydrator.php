@@ -39,7 +39,6 @@ final class ObjectHydrator implements HydratorInterface
         return $this->serializer->deserialize($response, $classMetadata->getName(), NavDecoder::FORMAT, $context + [
             ObjectDenormalizer::NAMESPACE => $classMetadata->getNamespace(),
             EntityNormalizer::ENABLE_MAX_DEPTH => true,
-        ]
-        );
+        ]);
     }
 }
