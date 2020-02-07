@@ -15,6 +15,7 @@ namespace NavBundle\Tests\Serializer\NameConverter;
 
 use NavBundle\ClassMetadata\ClassMetadataInterface;
 use NavBundle\EntityManager\EntityManagerInterface;
+use NavBundle\Exception\AssociationNotFoundException;
 use NavBundle\Exception\FieldNotFoundException;
 use NavBundle\RegistryInterface;
 use NavBundle\Serializer\NameConverter\CamelCaseToNavNameConverter;
@@ -117,6 +118,16 @@ final class CamelCaseToNavNameConverterTest extends TestCase
         $this->managerMock->getClassMetadata(\stdClass::class)->willReturn($this->classMetadataMock)->shouldBeCalledOnce();
         $this->classMetadataMock->retrieveField('Column_Name')->willThrow(FieldNotFoundException::class)->shouldBeCalledOnce();
         $this->classMetadataMock->retrieveSingleValuedAssociation('Column_Name')->willReturn('columnName')->shouldBeCalledOnce();
+
+        $this->assertEquals('columnName', $this->nameConverter->denormalize('Column_Name', \stdClass::class));
+    }
+
+    public function testItDenormalizesColumnName(): void
+    {
+        $this->registryMock->getManagerForClass(\stdClass::class)->willReturn($this->managerMock)->shouldBeCalledOnce();
+        $this->managerMock->getClassMetadata(\stdClass::class)->willReturn($this->classMetadataMock)->shouldBeCalledOnce();
+        $this->classMetadataMock->retrieveField('Column_Name')->willThrow(FieldNotFoundException::class)->shouldBeCalledOnce();
+        $this->classMetadataMock->retrieveSingleValuedAssociation('Column_Name')->willThrow(AssociationNotFoundException::class)->shouldBeCalledOnce();
 
         $this->assertEquals('columnName', $this->nameConverter->denormalize('Column_Name', \stdClass::class));
     }

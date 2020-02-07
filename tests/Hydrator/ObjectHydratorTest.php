@@ -23,7 +23,7 @@ use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
- * @author Vincent Chalamon <vincent@les-tilleuls.coop>
+ * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
 final class ObjectHydratorTest extends TestCase
 {

@@ -106,6 +106,8 @@ final class ClassMetadata implements ClassMetadataInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @codeCoverageIgnore
      */
     public function getName()
     {
@@ -114,6 +116,8 @@ final class ClassMetadata implements ClassMetadataInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @codeCoverageIgnore
      */
     public function getReflectionClass()
     {
@@ -354,6 +358,8 @@ final class ClassMetadata implements ClassMetadataInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @codeCoverageIgnore
      */
     public function getEntityRepositoryClass()
     {
@@ -362,6 +368,8 @@ final class ClassMetadata implements ClassMetadataInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @codeCoverageIgnore
      */
     public function setEntityRepositoryClass(string $repositoryClass): void
     {
@@ -420,7 +428,7 @@ final class ClassMetadata implements ClassMetadataInterface
      */
     public function initializeReflection(ReflectionService $reflService): void
     {
-        $this->reflClass = $reflService->getClass($this->getName());
+        $this->reflClass = $reflService->getClass($this->name);
     }
 
     /**
@@ -428,19 +436,21 @@ final class ClassMetadata implements ClassMetadataInterface
      */
     public function wakeupReflection(ReflectionService $reflService): void
     {
-        $this->reflClass = $reflService->getClass($this->getName());
+        $this->reflClass = $reflService->getClass($this->name);
 
         foreach ($this->fieldMappings as $field => $mapping) {
-            $this->reflFields[$field] = $reflService->getAccessibleProperty($this->getName(), $field);
+            $this->reflFields[$field] = $reflService->getAccessibleProperty($this->name, $field);
         }
 
         foreach ($this->associationMappings as $field => $mapping) {
-            $this->reflFields[$field] = $reflService->getAccessibleProperty($this->getName(), $field);
+            $this->reflFields[$field] = $reflService->getAccessibleProperty($this->name, $field);
         }
     }
 
     /**
      * {@inheritdoc}
+     *
+     * @codeCoverageIgnore
      */
     public function getNamespace()
     {
@@ -449,6 +459,8 @@ final class ClassMetadata implements ClassMetadataInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @codeCoverageIgnore
      */
     public function setNamespace($namespace): void
     {
@@ -457,6 +469,8 @@ final class ClassMetadata implements ClassMetadataInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @codeCoverageIgnore
      */
     public function setEntityListeners($entityListeners): void
     {
@@ -465,6 +479,8 @@ final class ClassMetadata implements ClassMetadataInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @codeCoverageIgnore
      */
     public function getEntityListeners()
     {
@@ -475,6 +491,8 @@ final class ClassMetadata implements ClassMetadataInterface
      * {@inheritdoc}
      *
      * @return string|null
+     *
+     * @codeCoverageIgnore
      */
     public function getIdentifier()
     {
@@ -483,6 +501,8 @@ final class ClassMetadata implements ClassMetadataInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @codeCoverageIgnore
      */
     public function setIdentifier($identifier): void
     {
@@ -491,6 +511,8 @@ final class ClassMetadata implements ClassMetadataInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @codeCoverageIgnore
      */
     public function getKey()
     {
@@ -499,6 +521,8 @@ final class ClassMetadata implements ClassMetadataInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @codeCoverageIgnore
      */
     public function setKey($key): void
     {

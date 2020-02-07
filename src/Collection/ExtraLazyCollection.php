@@ -37,6 +37,8 @@ final class ExtraLazyCollection extends LazyCollection
                 )->count();
         }
 
+        // @codeCoverageIgnoreStart
         return parent::count();
+        // @codeCoverageIgnoreEnd
     }
 }
