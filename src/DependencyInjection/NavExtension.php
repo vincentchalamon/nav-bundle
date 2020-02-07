@@ -35,6 +35,8 @@ use Symfony\Component\DependencyInjection\Reference;
 
 final class NavExtension extends Extension
 {
+    private const URL_PATTERN = '#^(https?)://([^:]+):([^@]+)@(.*)$#';
+
     /**
      * {@inheritdoc}
      */
@@ -60,7 +62,7 @@ final class NavExtension extends Extension
             $loader->load('debug.xml');
         }
 
-        if (interface_exists(ExtractorPropertyMetadataFactory::class)) {
+        if (class_exists(ExtractorPropertyMetadataFactory::class)) {
             $loader->load('api_platform.xml');
         }
 
@@ -68,7 +70,7 @@ final class NavExtension extends Extension
             $loader->load('sensio_framework_extra.xml');
         }
 
-        if (interface_exists(MetadataConfigPass::class)) {
+        if (class_exists(MetadataConfigPass::class)) {
             $loader->load('easy_admin.xml');
         }
 
@@ -76,6 +78,23 @@ final class NavExtension extends Extension
         foreach ($config['managers'] as $name => $options) {
             if (!$container->hasDefinition($options['driver'])) {
                 throw new DriverNotFoundException();
+            }
+
+            // Parse url
+            if (!empty($options['url'])) {
+                $options['url'] = $container->resolveEnvPlaceholders($options['url'], true);
+                if (!preg_match(self::URL_PATTERN, $options['url'], $matches)) {
+                    throw new \InvalidArgumentException('Malformed parameter "url".');
+                }
+
+                $options['wsdl'] = $matches[1].'://'.$matches[4];
+                $options['connection']['username'] = $matches[2];
+                $options['connection']['password'] = $matches[3];
+                unset($options['url']);
+            } else {
+                $options['wsdl'] = $container->resolveEnvPlaceholders($options['wsdl'], true);
+                $options['connection']['username'] = $container->resolveEnvPlaceholders($options['connection']['username'], true);
+                $options['connection']['password'] = $container->resolveEnvPlaceholders($options['connection']['password'], true);
             }
 
             // Configure connection resolver

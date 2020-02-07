@@ -9,10 +9,8 @@ This Symfony Bundle is used to map objects with a Microsoft Dynamics NAV service
 
 ## Requirements
 
-- php ^7.2
-- curl php extension
-- dom php extension
-- soap php extension
+- PHP ^7.2
+- PHP extensions: curl, dom, soap
 
 ## Installation
 
@@ -24,7 +22,7 @@ composer req vincentchalamon/nav-bundle
 
 ```yaml
 nav:
-    url: '%env(resolve:NAV_URL)%' # i.e.: https://user:pass@www.example.com/NAV_WS/
+    url: '%env(NAV_URL)%' # i.e.: https://user:pass@www.example.com/NAV_WS/
     paths:
         App:
             path: '%kernel.project_dir%/src/Entity'
@@ -39,15 +37,16 @@ nav:
     foo:
         wsdl: '%env(NAV_WSDL)%'
         connection:
+            class: App\Connection\CustomConnectionClass
             username: '%env(NAV_USERNAME)%'
             password: '%env(NAV_PASSWORD)%'
         paths:
             Foo:
                 path: '%kernel.project_dir%/src/Entity/Foo'
                 namespace: 'App/Entity/Foo'
+        entity_manager_class: App\EntityManager\CustomEntityManager
         driver: nav.class_metadata.driver.annotation
         name_converter: nav.serializer.name_converter.camel_case_to_nav
-        default_hydrator: nav.hydrator.serializer
         soap_options:
             soap_version: 1
             connection_timeout: 120
@@ -55,16 +54,17 @@ nav:
             trace: '%kernel.debug%'
     bar:
         wsdl: '%env(ANOTHER_WSDL)%'
+        connection:
+            class: App\Connection\CustomConnectionClass
+            username: '%env(ANOTHER_USERNAME)%'
+            password: '%env(ANOTHER_PASSWORD)%'
         paths:
             Bar:
                 path: '%kernel.project_dir%/src/Entity/Bar'
                 namespace: 'App/Entity/Bar'
-        connection:
-            username: '%env(ANOTHER_USERNAME)%'
-            password: '%env(ANOTHER_PASSWORD)%'
+        entity_manager_class: App\EntityManager\CustomEntityManager
         driver: app.class_metadata.custom
         name_converter: nav.serializer.name_converter.camel_case_to_nav
-        default_hydrator: app.hydrator.customer
         soap_options:
             soap_version: 1
             connection_timeout: 120
@@ -105,6 +105,11 @@ final class Contact
      * @Nav\Column(type="date", nullable=true)
      */
     public $date;
+
+    /**
+     * @Nav\ManyToOne(targetClass=Foo::class)
+     */
+    public $foo;
 }
 ```
 

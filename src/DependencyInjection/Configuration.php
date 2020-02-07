@@ -23,8 +23,6 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  */
 final class Configuration implements ConfigurationInterface
 {
-    private const URL_PATTERN = '#^(https?)://([^:]+):([^@]+)@(.*)$#';
-
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('nav');
@@ -51,26 +49,9 @@ final class Configuration implements ConfigurationInterface
                     ->arrayPrototype()
                         ->validate()
                             ->ifTrue(function ($v) {
-                                // TODO: Unable to fetch value while using environment variables.
-                                return \is_string($v['url'] ?? null) && !preg_match(self::URL_PATTERN, $v['url']);
+                                return !\is_string($v['url'] ?? null) && !\is_string($v['wsdl'] ?? null);
                             })
-                            ->thenInvalid('Malformed parameter "url".')
-                        ->end()
-                        ->beforeNormalization()
-                            ->ifTrue(static function ($v): bool {
-                                return \is_string($v['url'] ?? null) && preg_match(self::URL_PATTERN, $v['url']);
-                            })
-                            ->then(static function ($v): array {
-                                preg_match(self::URL_PATTERN, $v['url'], $matches);
-                                $v['wsdl'] = $matches[1].'://'.$matches[4];
-                                $v['connection'] = [
-                                    'username' => $matches[2],
-                                    'password' => $matches[3],
-                                ];
-                                unset($v['url']);
-
-                                return $v;
-                            })
+                            ->thenInvalid('You must provide a "url" or "wsdl" option.')
                         ->end()
                         ->children()
                             ->scalarNode('url')
