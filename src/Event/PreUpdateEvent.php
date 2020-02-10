@@ -18,7 +18,7 @@ use Doctrine\Persistence\Event\PreUpdateEventArgs;
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-final class PreUpdateEvent extends PreUpdateEventArgs implements EventInterface
+/*final */class PreUpdateEvent extends PreUpdateEventArgs implements EventInterface
 {
     /**
      * {@inheritdoc}

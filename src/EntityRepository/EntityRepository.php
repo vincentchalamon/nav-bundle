@@ -59,9 +59,9 @@ class EntityRepository implements ObjectRepository
     /**
      * {@inheritdoc}
      */
-    public function findOneBy(array $criteria, array $orderBy = null): ?object
+    public function findOneBy(array $criteria): ?object
     {
-        return $this->getEntityPersister()->load($criteria, $orderBy);
+        return $this->getEntityPersister()->load($criteria);
     }
 
     /**
@@ -72,6 +72,9 @@ class EntityRepository implements ObjectRepository
         return $this->className;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function createRequestBuilder(): RequestBuilderInterface
     {
         return $this->em->createRequestBuilder($this->className);

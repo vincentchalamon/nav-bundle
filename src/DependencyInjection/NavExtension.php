@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace NavBundle\DependencyInjection;
 
-use ApiPlatform\Core\Metadata\Property\Factory\ExtractorPropertyMetadataFactory;
-use EasyCorp\Bundle\EasyAdminBundle\Configuration\MetadataConfigPass;
+use ApiPlatform\Core\Bridge\Symfony\Bundle\ApiPlatformBundle;
+use EasyCorp\Bundle\EasyAdminBundle\EasyAdminBundle;
 use NavBundle\Debug\Connection\TraceableConnectionResolver;
 use NavBundle\EntityManager\EntityManager;
 use NavBundle\EntityManager\EntityManagerInterface;
@@ -23,7 +23,7 @@ use NavBundle\Event\EventSubscriberInterface;
 use NavBundle\Exception\DriverNotFoundException;
 use NavBundle\Hydrator\HydratorInterface;
 use NavBundle\PropertyInfo\NavExtractor;
-use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
+use Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ChildDefinition;
@@ -62,15 +62,16 @@ final class NavExtension extends Extension
             $loader->load('debug.xml');
         }
 
-        if (class_exists(ExtractorPropertyMetadataFactory::class)) {
+        $bundles = $container->getParameter('kernel.bundles');
+        if (\in_array(ApiPlatformBundle::class, $bundles, true)) {
             $loader->load('api_platform.xml');
         }
 
-        if (interface_exists(ParamConverterInterface::class)) {
+        if (\in_array(SensioFrameworkExtraBundle::class, $bundles, true)) {
             $loader->load('sensio_framework_extra.xml');
         }
 
-        if (class_exists(MetadataConfigPass::class)) {
+        if (\in_array(EasyAdminBundle::class, $bundles, true)) {
             $loader->load('easy_admin.xml');
         }
 

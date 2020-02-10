@@ -88,6 +88,7 @@ final class Kernel extends BaseKernel
             'mapping' => [
                 'paths' => ['%kernel.project_dir%/TestBundle/Entity'],
             ],
+            'doctrine' => false,
         ]);
 
         $c->loadFromExtension('nav', [

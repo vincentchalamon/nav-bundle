@@ -81,6 +81,8 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
      * {@inheritdoc}
      *
      * @throws InvalidMethodCallException
+     *
+     * @codeCoverageIgnore
      */
     public function getConnection($name = null): ConnectionInterface
     {
@@ -93,6 +95,8 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
      * @throws InvalidMethodCallException
      *
      * @return string[]
+     *
+     * @codeCoverageIgnore
      */
     public function getConnectionNames()
     {
@@ -105,6 +109,8 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
      * @throws InvalidMethodCallException
      *
      * @return string
+     *
+     * @codeCoverageIgnore
      */
     public function getDefaultConnectionName()
     {
@@ -150,6 +156,8 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
 
     /**
      * {@inheritdoc}
+     *
+     * @codeCoverageIgnore
      */
     protected function resetService($name): void
     {

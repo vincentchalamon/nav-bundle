@@ -32,7 +32,7 @@ final class EntityPersister implements EntityPersisterInterface
     /**
      * {@inheritdoc}
      */
-    public function load(array $criteria, array $orderBy = null): ?object
+    public function load(array $criteria): ?object
     {
         foreach ($this->loadAll($criteria, 1) as $object) {
             return $object;

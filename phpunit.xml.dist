@@ -19,13 +19,13 @@
 
     <filter>
         <whitelist>
-            <directory>src</directory>
+            <directory suffix=".php">src</directory>
             <exclude>
-                <directory>src/Annotation</directory>
-                <directory>src/DependencyInjection</directory>
-                <directory>src/Event/*Event.php</directory>
-                <directory>src/Exception</directory>
-                <directory>src/Resources</directory>
+                <directory suffix=".php">src/Annotation</directory>
+                <directory suffix=".php">src/DependencyInjection</directory>
+                <directory suffix=".php">src/Exception</directory>
+                <directory suffix=".php">src/Resources</directory>
+                <directory suffix="Event.php">src/Event</directory>
             </exclude>
         </whitelist>
     </filter>

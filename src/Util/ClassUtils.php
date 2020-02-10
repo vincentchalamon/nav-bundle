@@ -37,9 +37,11 @@ final class ClassUtils
             return $className;
         }
 
+        // @codeCoverageIgnoreStart
         if (false !== $positionCg) {
             return substr($className, $positionCg + 8);
         }
+        // @codeCoverageIgnoreEnd
 
         $className = ltrim($className, '\\');
 

@@ -31,10 +31,9 @@ interface EntityPersisterInterface
     /**
      * Loads an entity by a list of field criteria.
      *
-     * @param array      $criteria the criteria by which to load the entity
-     * @param array|null $orderBy  criteria to order by
+     * @param array $criteria the criteria by which to load the entity
      *
      * @return object|null
      */
-    public function load(array $criteria, array $orderBy = null);
+    public function load(array $criteria);
 }
