@@ -35,8 +35,6 @@ use Symfony\Component\DependencyInjection\Reference;
 
 final class NavExtension extends Extension
 {
-    private const URL_PATTERN = '#^(https?)://([^:]+):([^@]+)@(.*)$#';
-
     /**
      * {@inheritdoc}
      */
@@ -81,32 +79,13 @@ final class NavExtension extends Extension
                 throw new DriverNotFoundException();
             }
 
-            // Parse url
-            if (!empty($options['url'])) {
-                $options['url'] = $container->resolveEnvPlaceholders($options['url'], true);
-                if (!preg_match(self::URL_PATTERN, $options['url'], $matches)) {
-                    throw new \InvalidArgumentException('Malformed parameter "url".');
-                }
-
-                $options['wsdl'] = $matches[1].'://'.$matches[4];
-                $options['connection']['username'] = $matches[2];
-                $options['connection']['password'] = $matches[3];
-                unset($options['url']);
-            } else {
-                $options['wsdl'] = $container->resolveEnvPlaceholders($options['wsdl'], true);
-                $options['connection']['username'] = $container->resolveEnvPlaceholders($options['connection']['username'], true);
-                $options['connection']['password'] = $container->resolveEnvPlaceholders($options['connection']['password'], true);
-            }
-
             // Configure connection resolver
             $container
                 ->setDefinition("nav.connection_resolver.$name", new ChildDefinition('nav.connection_resolver.abstract'))
                 ->setPublic(true)
-                ->setArgument('$className', $options['connection']['class'])
-                ->setArgument('$wsdl', $options['wsdl'])
+                ->setArgument('$className', $options['connection_class'])
+                ->setArgument('$url', $options['url'])
                 ->setArgument('$options', [
-                    'user' => $options['connection']['username'],
-                    'password' => $options['connection']['password'],
                     'cache_dir' => '%kernel.cache_dir%/nav/WSDL',
                 ] + $options['soap_options']
                 );

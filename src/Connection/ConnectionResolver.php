@@ -18,15 +18,25 @@ namespace NavBundle\Connection;
  */
 final class ConnectionResolver implements ConnectionResolverInterface
 {
+    private const URL_PATTERN = '#^(https?)://([^:]+):([^@]+)@(.*)$#';
+
     private $className;
     private $wsdl;
     private $options;
     private $connections = [];
 
-    public function __construct(string $className, string $wsdl, array $options)
+    public function __construct(string $className, string $url, array $options)
     {
         $this->className = $className;
-        $this->wsdl = $wsdl;
+
+        if (!preg_match(self::URL_PATTERN, $url, $matches)) {
+            throw new \InvalidArgumentException('Malformed parameter "url".');
+        }
+
+        $this->wsdl = $matches[1].'://'.$matches[4];
+        $options['user'] = $matches[2];
+        $options['password'] = $matches[3];
+
         $this->options = $options;
     }
 
