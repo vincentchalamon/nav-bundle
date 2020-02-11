@@ -101,7 +101,7 @@ class NavController extends EasyAdminController
             $this->entity['list']['max_results'],
             $this->request->query->get('sortField'),
             $this->request->query->get('sortDirection'),
-            $this->entity['search']['nav_filter'] ?? [],
+            $this->entity['list']['nav_filter'] ?? [],
             $this->request->query->get('bookmarkKey')
         );
         $fields = $this->entity['list']['fields'];
