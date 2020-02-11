@@ -87,7 +87,7 @@ final class RequestBuilder
             throw new FieldNotFoundException("Field name expected, '$fieldName' is not a field nor an association.");
         }
 
-        $requestBuilder->andWhere($fieldName, $searchQuery);
+        $requestBuilder->andWhere($fieldName, "*$searchQuery*");
 
         if (!empty($navFilter)) {
             foreach ($navFilter as $item => $value) {
