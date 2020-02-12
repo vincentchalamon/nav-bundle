@@ -17,6 +17,7 @@ use NavBundle\ClassMetadata\ClassMetadataInterface;
 use NavBundle\Exception\AssociationNotFoundException;
 use NavBundle\Exception\FieldNotFoundException;
 use NavBundle\RegistryInterface;
+use NavBundle\Util\ClassUtils;
 use Symfony\Component\Serializer\NameConverter\AdvancedNameConverterInterface;
 use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
 
@@ -40,6 +41,8 @@ final class CamelCaseToNavNameConverter extends CamelCaseToSnakeCaseNameConverte
     public function normalize($propertyName, string $class = null, string $format = null, array $context = [])
     {
         if ($class) {
+            $class = ClassUtils::getRealClass($class);
+
             /** @var ClassMetadataInterface $classMetadata */
             $classMetadata = $this->registry->getManagerForClass($class)->getClassMetadata($class);
 
@@ -62,6 +65,8 @@ final class CamelCaseToNavNameConverter extends CamelCaseToSnakeCaseNameConverte
     public function denormalize($propertyName, string $class = null, string $format = null, array $context = [])
     {
         if ($class) {
+            $class = ClassUtils::getRealClass($class);
+
             /** @var ClassMetadataInterface $classMetadata */
             $classMetadata = $this->registry->getManagerForClass($class)->getClassMetadata($class);
 

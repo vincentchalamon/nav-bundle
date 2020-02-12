@@ -53,17 +53,20 @@ final class TraceableConnection implements ConnectionInterface, WarmableInterfac
         $eventName = "$functionName($this->namespace)";
 
         $this->stopwatch->start($eventName, 'nav');
-        $response = \call_user_func_array([$this->decorated, $functionName], $arguments);
-        $periods = $this->stopwatch->stop($eventName)->getPeriods();
+        try {
+            return \call_user_func_array([$this->decorated, $functionName], $arguments);
+        } catch (\SoapFault $fault) {
+            throw $fault;
+        } finally {
+            $periods = $this->stopwatch->stop($eventName)->getPeriods();
 
-        $this->calls[] = [
-            'duration' => end($periods)->getDuration(),
-            'memory' => end($periods)->getMemory(),
-            'request' => $this->format($this->decorated->__getLastRequest()),
-            'response' => $this->format($this->decorated->__getLastResponse()),
-        ];
-
-        return $response;
+            $this->calls[] = [
+                'duration' => end($periods)->getDuration(),
+                'memory' => end($periods)->getMemory(),
+                'request' => $this->format($this->decorated->__getLastRequest()),
+                'response' => $this->format($this->decorated->__getLastResponse()),
+            ];
+        }
     }
 
     public function getDuration(): float

@@ -108,26 +108,23 @@ final class EntityNormalizer extends AbstractObjectNormalizer
                 switch ($classMetadata->getAssociationFetchMode($associationName)) {
                     case ClassMetadata::FETCH_EAGER:
                         $targetClass = $classMetadata->getAssociationTargetClass($associationName);
-                        $classMetadata->reflFields[$associationName]->setValue(
-                            $wrappedObject,
-                            $this->registry->getManagerForClass($targetClass)->getRepository($targetClass)->findBy([
-                                $classMetadata->getAssociationMappedByTargetField($associationName) => $classMetadata->getIdentifierValue($wrappedObject),
-                            ])
-                        );
+                        $value = $this->registry->getManagerForClass($targetClass)->getRepository($targetClass)->findBy([
+                            $classMetadata->getAssociationMappedByTargetField($associationName) => $classMetadata->getIdentifierValue($wrappedObject),
+                        ]);
                         break;
                     case ClassMetadata::FETCH_EXTRA_LAZY:
-                        $classMetadata->reflFields[$associationName]->setValue(
-                            $wrappedObject,
-                            new ExtraLazyCollection($this->registry, $value ?: new ArrayCollection(), $associationName, $wrappedObject)
-                        );
+                        $value = new ExtraLazyCollection($this->registry, $value ?: new ArrayCollection(), $associationName, $wrappedObject);
                         break;
                     default:
                     case ClassMetadata::FETCH_LAZY:
-                        $classMetadata->reflFields[$associationName]->setValue(
-                            $wrappedObject,
-                            new LazyCollection($this->registry, $value ?: new ArrayCollection(), $associationName, $wrappedObject)
-                        );
+                        $value = new LazyCollection($this->registry, $value ?: new ArrayCollection(), $associationName, $wrappedObject);
                         break;
+                }
+                try {
+                    $classMetadata->reflFields[$associationName]->setValue($wrappedObject, $value);
+                } catch (\ErrorException $exception) {
+                    /* @see https://github.com/Ocramius/ProxyManager/pull/299 */
+                    \call_user_func([$wrappedObject, 'set'.ucfirst($associationName)], $value);
                 }
             }
             $manager->getUnitOfWork()->addToIdentityMap($wrappedObject);
@@ -193,7 +190,12 @@ final class EntityNormalizer extends AbstractObjectNormalizer
         $className = ClassUtils::getRealClass($object);
         /** @var ClassMetadata $classMetadata */
         $classMetadata = $this->registry->getManagerForClass($className)->getClassMetadata($className);
-        $classMetadata->reflFields[$attribute]->setValue($object, $value);
+        try {
+            $classMetadata->reflFields[$attribute]->setValue($object, $value);
+        } catch (\ErrorException $exception) {
+            /* @see https://github.com/Ocramius/ProxyManager/pull/299 */
+            \call_user_func([$object, 'set'.ucfirst($attribute)], $value);
+        }
     }
 
     protected function isAllowedAttribute($classOrObject, $attribute, $format = null, array $context = [])

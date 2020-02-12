@@ -223,10 +223,11 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
                 throw $fault;
             }
 
+            $id = $classMetadata->getIdentifierValue($obj);
             unset(
-                $this->identityMap[$className][$classMetadata->getIdentifierValue($obj)],
+                $this->identityMap[$className][$id],
                 $this->entitiesScheduledForDeletion[$oid],
-                $this->originalEntityData[$oid]
+                $this->originalEntityData[$className][$id]
             );
 
             $this->em->getEventManager()->dispatch(new PostRemoveEvent($obj, $this->em));
@@ -278,14 +279,14 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
         $this->identityMap[$className][$classMetadata->getIdentifierValue($object)] = $object;
 
-        $oid = spl_object_hash($object);
-        $this->originalEntityData[$oid] = [];
+        $id = $classMetadata->getIdentifierValue($object);
+        $this->originalEntityData[$className][$id] = [];
         foreach ($classMetadata->reflFields as $fieldName => $refProp) {
             try {
-                $this->originalEntityData[$oid][$fieldName] = $refProp->getValue($object);
+                $this->originalEntityData[$className][$id][$fieldName] = $refProp->getValue($object);
             } catch (\ErrorException $exception) {
                 /* @see https://github.com/Ocramius/ProxyManager/pull/299 */
-                $this->originalEntityData[$oid][$fieldName] = \call_user_func([$object, 'get'.ucfirst($fieldName)]);
+                $this->originalEntityData[$className][$id][$fieldName] = \call_user_func([$object, 'get'.ucfirst($fieldName)]);
             }
         }
     }
@@ -324,7 +325,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
             }
         }
 
-        $originalData = $this->originalEntityData[$oid];
+        $originalData = $this->originalEntityData[$className][$classMetadata->getIdentifierValue($object)];
         $changeSet = [];
         foreach ($actualData as $propName => $actualValue) {
             $orgValue = $originalData[$propName] ?? null;
