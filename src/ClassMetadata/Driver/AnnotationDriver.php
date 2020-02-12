@@ -62,6 +62,9 @@ final class AnnotationDriver extends AbstractAnnotationDriver
         if ($repositoryClass = $classAnnotation->repositoryClass) {
             $classMetadata->setEntityRepositoryClass($repositoryClass);
         }
+        if ($connectionClass = $classAnnotation->connectionClass) {
+            $classMetadata->setConnectionClass($connectionClass);
+        }
 
         // Evaluate EntityListeners annotation
         /** @var EntityListeners|null $entityListenersAnnotation */

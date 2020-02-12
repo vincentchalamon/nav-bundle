@@ -34,6 +34,18 @@ interface ClassMetadataInterface extends DoctrineClassMetadataInterface
     public function setEntityRepositoryClass(string $repositoryClass): void;
 
     /**
+     * Get the connection class configured for the entity.
+     *
+     * @return string
+     */
+    public function getConnectionClass();
+
+    /**
+     * Set the entity custom connection class.
+     */
+    public function setConnectionClass(string $connectionClass): void;
+
+    /**
      * Adds a mapped field to the class.
      *
      * @param array $mapping the field mapping

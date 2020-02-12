@@ -23,13 +23,10 @@ final class ConnectionResolverTest extends TestCase
 {
     public function testItResolvesConnection(): void
     {
-        $resolver = new ConnectionResolver(\stdClass::class, 'https://www.example.com', [
-            'user' => 'user',
-            'password' => 'user',
-        ]);
-        $connection = $resolver->resolve('FOO');
+        $resolver = new ConnectionResolver('https://user:password@www.example.com', []);
+        $connection = $resolver->resolve(\stdClass::class, 'FOO');
 
         $this->assertInstanceOf(\stdClass::class, $connection);
-        $this->assertSame($connection, $resolver->resolve('FOO'));
+        $this->assertSame($connection, $resolver->resolve(\stdClass::class, 'FOO'));
     }
 }

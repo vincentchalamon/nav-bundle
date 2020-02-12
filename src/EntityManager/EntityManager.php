@@ -279,7 +279,9 @@ class EntityManager implements EntityManagerInterface
      */
     public function getConnection($className): ConnectionInterface
     {
-        return $this->connectionResolver->resolve($this->getClassMetadata($className)->getNamespace());
+        $classMetadata = $this->getClassMetadata($className);
+
+        return $this->connectionResolver->resolve($classMetadata->getConnectionClass(), $classMetadata->getNamespace());
     }
 
     /**

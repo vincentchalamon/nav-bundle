@@ -83,7 +83,6 @@ final class NavExtension extends Extension
             $container
                 ->setDefinition("nav.connection_resolver.$name", new ChildDefinition('nav.connection_resolver.abstract'))
                 ->setPublic(true)
-                ->setArgument('$className', $options['connection_class'])
                 ->setArgument('$url', $options['url'])
                 ->setArgument('$options', [
                     'cache_dir' => '%kernel.cache_dir%/nav/WSDL',

@@ -35,7 +35,7 @@ final class TraceableConnectionResolver implements ConnectionResolverInterface
     /**
      * {@inheritdoc}
      */
-    public function resolve($namespace): ConnectionInterface
+    public function resolve($className, $namespace): ConnectionInterface
     {
         if (isset($this->connections[$namespace])) {
             return $this->connections[$namespace];
@@ -43,7 +43,7 @@ final class TraceableConnectionResolver implements ConnectionResolverInterface
 
         $eventName = "fetchWSDL($namespace)";
         $this->stopwatch->start($eventName, 'nav');
-        $parentConnection = $this->decorated->resolve($namespace);
+        $parentConnection = $this->decorated->resolve($className, $namespace);
         $this->stopwatch->stop($eventName);
 
         return $this->connections[$namespace] = new TraceableConnection($parentConnection, $this->stopwatch, $namespace);

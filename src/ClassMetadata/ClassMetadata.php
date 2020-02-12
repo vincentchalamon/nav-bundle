@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace NavBundle\ClassMetadata;
 
 use Doctrine\Persistence\Mapping\ReflectionService;
+use NavBundle\Connection\Connection;
 use NavBundle\EntityRepository\EntityRepository;
 use NavBundle\Exception\AssociationNotFoundException;
 use NavBundle\Exception\FieldNotFoundException;
@@ -67,6 +68,7 @@ final class ClassMetadata implements ClassMetadataInterface
     public const FETCH_EXTRA_LAZY = 'extra_lazy';
 
     private $repositoryClass = EntityRepository::class;
+    private $connectionClass = Connection::class;
     private $namespace;
     private $fieldMappings = [];
     private $associationMappings = [];
@@ -374,6 +376,26 @@ final class ClassMetadata implements ClassMetadataInterface
     public function setEntityRepositoryClass(string $repositoryClass): void
     {
         $this->repositoryClass = $repositoryClass;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @codeCoverageIgnore
+     */
+    public function getConnectionClass()
+    {
+        return $this->connectionClass;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @codeCoverageIgnore
+     */
+    public function setConnectionClass(string $connectionClass): void
+    {
+        $this->connectionClass = $connectionClass;
     }
 
     /**

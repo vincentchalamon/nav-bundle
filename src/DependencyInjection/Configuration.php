@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace NavBundle\DependencyInjection;
 
-use NavBundle\Connection\Connection;
 use NavBundle\EntityManager\EntityManager;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -74,11 +73,6 @@ final class Configuration implements ConfigurationInterface
                             ->scalarNode('entity_manager_class')
                                 ->info('Entity manager class.')
                                 ->defaultValue(EntityManager::class)
-                                ->cannotBeEmpty()
-                            ->end()
-                            ->scalarNode('connection_class')
-                                ->info('Connection class.')
-                                ->defaultValue(Connection::class)
                                 ->cannotBeEmpty()
                             ->end()
                             ->scalarNode('driver')
