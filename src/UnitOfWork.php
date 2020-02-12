@@ -281,7 +281,12 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
         $oid = spl_object_hash($object);
         $this->originalEntityData[$oid] = [];
         foreach ($classMetadata->reflFields as $fieldName => $refProp) {
-            $this->originalEntityData[$oid][$fieldName] = $refProp->getValue($object);
+            try {
+                $this->originalEntityData[$oid][$fieldName] = $refProp->getValue($object);
+            } catch (\ErrorException $exception) {
+                /* @see https://github.com/Ocramius/ProxyManager/pull/299 */
+                $this->originalEntityData[$oid][$fieldName] = \call_user_func([$object, 'get'.ucfirst($fieldName)]);
+            }
         }
     }
 
@@ -310,7 +315,12 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
         $actualData = [];
         foreach ($classMetadata->reflFields as $fieldName => $refProp) {
             if (!$classMetadata->isIdentifier($fieldName) && !$classMetadata->isCollectionValuedAssociation($fieldName)) {
-                $actualData[$fieldName] = $refProp->getValue($object);
+                try {
+                    $actualData[$fieldName] = $refProp->getValue($object);
+                } catch (\ErrorException $exception) {
+                    /* @see https://github.com/Ocramius/ProxyManager/pull/299 */
+                    $actualData[$fieldName] = \call_user_func([$object, 'get'.ucfirst($fieldName)]);
+                }
             }
         }
 

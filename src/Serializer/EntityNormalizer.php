@@ -98,7 +98,12 @@ final class EntityNormalizer extends AbstractObjectNormalizer
                     continue;
                 }
 
-                $value = $classMetadata->reflFields[$associationName]->getValue($wrappedObject);
+                try {
+                    $value = $classMetadata->reflFields[$associationName]->getValue($wrappedObject);
+                } catch (\ErrorException $exception) {
+                    /* @see https://github.com/Ocramius/ProxyManager/pull/299 */
+                    $value = \call_user_func([$wrappedObject, 'get'.ucfirst($associationName)]);
+                }
 
                 switch ($classMetadata->getAssociationFetchMode($associationName)) {
                     case ClassMetadata::FETCH_EAGER:
@@ -172,7 +177,12 @@ final class EntityNormalizer extends AbstractObjectNormalizer
         /** @var ClassMetadata $classMetadata */
         $classMetadata = $this->registry->getManagerForClass($className)->getClassMetadata($className);
 
-        return $classMetadata->reflFields[$attribute]->getValue($object);
+        try {
+            return $classMetadata->reflFields[$attribute]->getValue($object);
+        } catch (\ErrorException $exception) {
+            /* @see https://github.com/Ocramius/ProxyManager/pull/299 */
+            return \call_user_func([$object, 'get'.ucfirst($attribute)]);
+        }
     }
 
     /**

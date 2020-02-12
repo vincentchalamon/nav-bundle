@@ -214,9 +214,13 @@ final class RequestBuilder implements RequestBuilderInterface
                 }
 
                 if (\is_object($value)) {
-                    $value = $classMetadata->reflFields[
-                        $this->em->getClassMetadata($classMetadata->getAssociationTargetClass($fieldName))->getIdentifier()
-                    ]->getValue($value);
+                    $identifier = $this->em->getClassMetadata($classMetadata->getAssociationTargetClass($fieldName))->getIdentifier();
+                    try {
+                        $value = $classMetadata->reflFields[$identifier]->getValue($value);
+                    } catch (\ErrorException $exception) {
+                        /* @see https://github.com/Ocramius/ProxyManager/pull/299 */
+                        $value = \call_user_func([$value, 'get'.ucfirst($identifier)]);
+                    }
                 }
                 $fieldName = $classMetadata->getSingleValuedAssociationColumnName($fieldName);
             } else {
