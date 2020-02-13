@@ -23,10 +23,10 @@ interface CollectionExtensionInterface
     /**
      * Change request builder before retrieving a collection of entities.
      *
-     * @param RequestBuilderInterface $builder       the request builder
-     * @param string                  $resourceClass the entity class
-     * @param string|null             $operationName the operation name
-     * @param array                   $context       the context
+     * @param RequestBuilderInterface $requestBuilder the request builder
+     * @param string                  $resourceClass  the entity class
+     * @param string|null             $operationName  the operation name
+     * @param array                   $context        the context
      */
-    public function applyToCollection(RequestBuilderInterface $builder, string $resourceClass, string $operationName = null, array $context = []): void;
+    public function applyToCollection(RequestBuilderInterface $requestBuilder, string $resourceClass, string $operationName = null, array $context = []): void;
 }

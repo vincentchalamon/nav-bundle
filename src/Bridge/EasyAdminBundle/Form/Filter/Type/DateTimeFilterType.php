@@ -33,14 +33,14 @@ class DateTimeFilterType extends AbstractType implements FilterInterface
     /**
      * {@inheritdoc}
      */
-    public function buildForm(FormBuilderInterface $builder, array $options): void
+    public function buildForm(FormBuilderInterface $formBuilder, array $options): void
     {
-        $builder->add('value2', FormTypeHelper::getTypeClass($options['value_type']), $options['value_type_options'] + [
+        $formBuilder->add('value2', FormTypeHelper::getTypeClass($options['value_type']), $options['value_type_options'] + [
             'label' => false,
         ]
         );
 
-        $builder->addModelTransformer(new CallbackTransformer(
+        $formBuilder->addModelTransformer(new CallbackTransformer(
             static function ($data) {
                 return $data;
             },

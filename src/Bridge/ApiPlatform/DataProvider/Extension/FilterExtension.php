@@ -37,7 +37,7 @@ final class FilterExtension implements CollectionExtensionInterface
     /**
      * {@inheritdoc}
      */
-    public function applyToCollection(RequestBuilderInterface $builder, string $resourceClass, string $operationName = null, array $context = []): void
+    public function applyToCollection(RequestBuilderInterface $requestBuilder, string $resourceClass, string $operationName = null, array $context = []): void
     {
         try {
             $resourceFilters = $this->resourceMetadataFactory
@@ -54,7 +54,7 @@ final class FilterExtension implements CollectionExtensionInterface
             }
 
             $context['filters'] = $context['filters'] ?? [];
-            $filter->apply($builder, $resourceClass, $operationName, $context);
+            $filter->apply($requestBuilder, $resourceClass, $operationName, $context);
         }
     }
 }

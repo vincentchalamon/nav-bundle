@@ -32,9 +32,9 @@ class ChoiceFilterType extends AbstractType implements FilterInterface
     /**
      * {@inheritdoc}
      */
-    public function buildForm(FormBuilderInterface $builder, array $options): void
+    public function buildForm(FormBuilderInterface $formBuilder, array $options): void
     {
-        $builder->addModelTransformer(new CallbackTransformer(
+        $formBuilder->addModelTransformer(new CallbackTransformer(
             static function ($data) {
                 return $data;
             },

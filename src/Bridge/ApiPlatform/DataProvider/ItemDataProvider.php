@@ -42,13 +42,13 @@ final class ItemDataProvider implements ItemDataProviderInterface, RestrictedDat
     {
         /** @var EntityManagerInterface $manager */
         $manager = $this->registry->getManagerForClass($resourceClass);
-        $builder = $manager->createRequestBuilder($resourceClass);
-        $builder->where($manager->getClassMetadata($resourceClass)->getIdentifier(), $identifier);
+        $requestBuilder = $manager->createRequestBuilder($resourceClass);
+        $requestBuilder->where($manager->getClassMetadata($resourceClass)->getIdentifier(), $identifier);
         foreach ($this->extensions as $extension) {
-            $extension->applyToItem($builder, $resourceClass, $identifier, $operationName, $context);
+            $extension->applyToItem($requestBuilder, $resourceClass, $identifier, $operationName, $context);
         }
 
-        return $builder->getOneOrNullResult();
+        return $requestBuilder->getOneOrNullResult();
     }
 
     /**

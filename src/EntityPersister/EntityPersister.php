@@ -46,20 +46,20 @@ final class EntityPersister implements EntityPersisterInterface
      */
     public function loadAll(array $criteria = [], $limit = null, $offset = null): \Iterator
     {
-        $builder = $this->em->createRequestBuilder($this->className);
+        $requestBuilder = $this->em->createRequestBuilder($this->className);
 
         foreach ($criteria as $key => $value) {
-            $builder->andWhere($key, $value);
+            $requestBuilder->andWhere($key, $value);
         }
 
         if (null !== $limit) {
-            $builder->setSize($limit);
+            $requestBuilder->setSize($limit);
         }
 
         if (null !== $offset) {
-            $builder->setBookmarkKey($offset);
+            $requestBuilder->setBookmarkKey($offset);
         }
 
-        return $builder->getResult();
+        return $requestBuilder->getResult();
     }
 }

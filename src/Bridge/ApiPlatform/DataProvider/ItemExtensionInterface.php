@@ -23,11 +23,11 @@ interface ItemExtensionInterface
     /**
      * Change request builder before retrieving an entity.
      *
-     * @param RequestBuilderInterface $builder       the request builder
-     * @param string                  $resourceClass the entity class
-     * @param string                  $identifier    the entity identifier
-     * @param string|null             $operationName the operation name
-     * @param array                   $context       the context
+     * @param RequestBuilderInterface $requestBuilder the request builder
+     * @param string                  $resourceClass  the entity class
+     * @param string                  $identifier     the entity identifier
+     * @param string|null             $operationName  the operation name
+     * @param array                   $context        the context
      */
-    public function applyToItem(RequestBuilderInterface $builder, string $resourceClass, string $identifier, string $operationName = null, array $context = []): void;
+    public function applyToItem(RequestBuilderInterface $requestBuilder, string $resourceClass, string $identifier, string $operationName = null, array $context = []): void;
 }

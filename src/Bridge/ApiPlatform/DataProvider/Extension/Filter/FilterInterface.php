@@ -13,20 +13,21 @@ declare(strict_types=1);
 
 namespace NavBundle\Bridge\ApiPlatform\DataProvider\Extension\Filter;
 
+use ApiPlatform\Core\Api\FilterInterface as ApiFilterInterface;
 use NavBundle\RequestBuilder\RequestBuilderInterface;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-interface FilterInterface
+interface FilterInterface extends ApiFilterInterface
 {
     /**
      * Apply filter on collection request builder.
      *
-     * @param RequestBuilderInterface $builder       the request builder
-     * @param string                  $resourceClass the entity resource class
-     * @param string|null             $operationName the operation name
-     * @param array                   $context       the context
+     * @param RequestBuilderInterface $requestBuilder the request builder
+     * @param string                  $resourceClass  the entity resource class
+     * @param string|null             $operationName  the operation name
+     * @param array                   $context        the context
      */
-    public function apply(RequestBuilderInterface $builder, string $resourceClass, string $operationName = null, array $context = []): void;
+    public function apply(RequestBuilderInterface $requestBuilder, string $resourceClass, string $operationName = null, array $context = []): void;
 }
