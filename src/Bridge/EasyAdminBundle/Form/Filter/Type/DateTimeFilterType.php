@@ -37,14 +37,13 @@ class DateTimeFilterType extends AbstractType implements FilterInterface
     {
         $formBuilder->add('value2', FormTypeHelper::getTypeClass($options['value_type']), $options['value_type_options'] + [
             'label' => false,
-        ]
-        );
+        ]);
 
         $formBuilder->addModelTransformer(new CallbackTransformer(
             static function ($data) {
                 return $data;
             },
-            static function ($data) {
+            static function (array $data): array {
                 if (ComparisonType::NEQ === $data['comparison']) {
                     $data['comparison'] = '<>';
                 }

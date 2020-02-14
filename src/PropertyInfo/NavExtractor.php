@@ -42,7 +42,7 @@ final class NavExtractor implements PropertyListExtractorInterface, PropertyType
     /**
      * {@inheritdoc}
      */
-    public function getProperties($class, array $context = [])
+    public function getProperties($class, array $context = []): ?array
     {
         if (null === $classMetadata = $this->getClassMetadata($class)) {
             return null;
@@ -54,7 +54,7 @@ final class NavExtractor implements PropertyListExtractorInterface, PropertyType
     /**
      * {@inheritdoc}
      */
-    public function getTypes($class, $property, array $context = [])
+    public function getTypes($class, $property, array $context = []): ?array
     {
         if (
             null === ($classMetadata = $this->getClassMetadata($class))
@@ -127,7 +127,7 @@ final class NavExtractor implements PropertyListExtractorInterface, PropertyType
     /**
      * {@inheritdoc}
      */
-    public function isReadable($class, $property, array $context = [])
+    public function isReadable($class, $property, array $context = []): ?bool
     {
         return null;
     }
@@ -135,7 +135,7 @@ final class NavExtractor implements PropertyListExtractorInterface, PropertyType
     /**
      * {@inheritdoc}
      */
-    public function isWritable($class, $property, array $context = [])
+    public function isWritable($class, $property, array $context = []): ?bool
     {
         if (null === ($classMetadata = $this->getClassMetadata($class)) || $classMetadata->getIdentifier() !== $property) {
             return null;

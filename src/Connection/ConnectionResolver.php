@@ -39,10 +39,8 @@ final class ConnectionResolver implements ConnectionResolverInterface
 
     /**
      * {@inheritdoc}
-     *
-     * @throws \SoapFault
      */
-    public function resolve($className, $namespace): object
+    public function resolve(string $className, string $namespace): ConnectionInterface
     {
         if (isset($this->connections[$namespace])) {
             return $this->connections[$namespace];

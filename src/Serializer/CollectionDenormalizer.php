@@ -27,7 +27,7 @@ final class CollectionDenormalizer implements ContextAwareDenormalizerInterface,
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $type, $format = null, array $context = []): \Iterator
+    public function denormalize($data, $type, $format = null, array $context = []): \Traversable
     {
         $iterator = new \ArrayIterator();
         $data = $data['ReadMultiple_Result'][$context[ObjectDenormalizer::NAMESPACE]] ?? null;

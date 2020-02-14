@@ -30,7 +30,7 @@ final class ContactRepository extends ServiceEntityRepository
     /**
      * {@inheritdoc}
      */
-    public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): iterable
+    public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): \Traversable
     {
         return parent::findBy($criteria + ['type' => 'Person'], $orderBy, $limit, $offset);
     }
@@ -38,7 +38,7 @@ final class ContactRepository extends ServiceEntityRepository
     /**
      * {@inheritdoc}
      */
-    public function findAll(): iterable
+    public function findAll(): \Traversable
     {
         return $this->findBy(['type' => 'Person']);
     }

@@ -18,7 +18,6 @@ use NavBundle\Bridge\Pagerfanta\NavPagerFanta;
 use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\RegistryInterface;
 use NavBundle\RequestBuilder\RequestBuilderInterface;
-use Pagerfanta\Pagerfanta;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
@@ -38,10 +37,8 @@ final class Paginator
      * Creates a paginator for the given request builder.
      *
      * @param string $bookmarkKey
-     *
-     * @return Pagerfanta
      */
-    public function createNavPaginator(RequestBuilderInterface $requestBuilder, string $bookmarkKey = null, int $size = self::MAX_ITEMS)
+    public function createNavPaginator(RequestBuilderInterface $requestBuilder, string $bookmarkKey = null, int $size = self::MAX_ITEMS): NavPagerfanta
     {
         $className = $requestBuilder->getClassName();
         /** @var EntityManagerInterface $em */

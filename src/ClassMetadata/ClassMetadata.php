@@ -111,7 +111,7 @@ final class ClassMetadata implements ClassMetadataInterface
      *
      * @codeCoverageIgnore
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -121,7 +121,7 @@ final class ClassMetadata implements ClassMetadataInterface
      *
      * @codeCoverageIgnore
      */
-    public function getReflectionClass()
+    public function getReflectionClass(): \ReflectionClass
     {
         return $this->reflClass;
     }
@@ -129,7 +129,7 @@ final class ClassMetadata implements ClassMetadataInterface
     /**
      * {@inheritdoc}
      */
-    public function isIdentifier($fieldName)
+    public function isIdentifier($fieldName): bool
     {
         return $this->identifier && $this->identifier === $fieldName;
     }
@@ -137,7 +137,7 @@ final class ClassMetadata implements ClassMetadataInterface
     /**
      * {@inheritdoc}
      */
-    public function hasField($fieldName)
+    public function hasField($fieldName): bool
     {
         return isset($this->fieldMappings[$fieldName]);
     }
@@ -145,7 +145,7 @@ final class ClassMetadata implements ClassMetadataInterface
     /**
      * {@inheritdoc}
      */
-    public function hasAssociation($fieldName)
+    public function hasAssociation($fieldName): bool
     {
         return isset($this->associationMappings[$fieldName]);
     }
@@ -153,7 +153,7 @@ final class ClassMetadata implements ClassMetadataInterface
     /**
      * {@inheritdoc}
      */
-    public function isSingleValuedAssociation($fieldName)
+    public function isSingleValuedAssociation($fieldName): bool
     {
         return isset($this->associationMappings[$fieldName]) && ($this->associationMappings[$fieldName]['type'] & self::TO_ONE);
     }
@@ -161,7 +161,7 @@ final class ClassMetadata implements ClassMetadataInterface
     /**
      * {@inheritdoc}
      */
-    public function isCollectionValuedAssociation($fieldName)
+    public function isCollectionValuedAssociation($fieldName): bool
     {
         return isset($this->associationMappings[$fieldName]) && ($this->associationMappings[$fieldName]['type'] & self::TO_MANY);
     }
@@ -169,7 +169,7 @@ final class ClassMetadata implements ClassMetadataInterface
     /**
      * {@inheritdoc}
      */
-    public function getFieldNames()
+    public function getFieldNames(): array
     {
         return array_keys($this->fieldMappings);
     }
@@ -177,7 +177,7 @@ final class ClassMetadata implements ClassMetadataInterface
     /**
      * {@inheritdoc}
      */
-    public function getFieldColumnName($fieldName)
+    public function getFieldColumnName($fieldName): string
     {
         if (!isset($this->fieldMappings[$fieldName])) {
             throw new FieldNotFoundException("Field name expected, '$fieldName' is not a field.");
@@ -189,7 +189,7 @@ final class ClassMetadata implements ClassMetadataInterface
     /**
      * {@inheritdoc}
      */
-    public function retrieveField($columnName)
+    public function retrieveField($columnName): string
     {
         foreach ($this->fieldMappings as $fieldName => $fieldMapping) {
             if ($columnName === $fieldMapping['columnName']) {
@@ -203,7 +203,7 @@ final class ClassMetadata implements ClassMetadataInterface
     /**
      * {@inheritdoc}
      */
-    public function retrieveSingleValuedAssociation($columnName)
+    public function retrieveSingleValuedAssociation($columnName): string
     {
         foreach ($this->associationMappings as $associationName => $associationMapping) {
             if ($this->isSingleValuedAssociation($associationName) && $columnName === $associationMapping['columnName']) {
@@ -217,7 +217,7 @@ final class ClassMetadata implements ClassMetadataInterface
     /**
      * {@inheritdoc}
      */
-    public function getIdentifierFieldNames()
+    public function getIdentifierFieldNames(): array
     {
         return [$this->identifier];
     }
@@ -225,7 +225,7 @@ final class ClassMetadata implements ClassMetadataInterface
     /**
      * {@inheritdoc}
      */
-    public function getAssociationNames()
+    public function getAssociationNames(): array
     {
         return array_keys($this->associationMappings);
     }
@@ -233,7 +233,7 @@ final class ClassMetadata implements ClassMetadataInterface
     /**
      * {@inheritdoc}
      */
-    public function getTypeOfField($fieldName)
+    public function getTypeOfField($fieldName): string
     {
         if (!isset($this->fieldMappings[$fieldName])) {
             throw new FieldNotFoundException("Field name expected, '$fieldName' is not a field.");
@@ -245,7 +245,7 @@ final class ClassMetadata implements ClassMetadataInterface
     /**
      * {@inheritdoc}
      */
-    public function isNullable($fieldName)
+    public function isNullable($fieldName): bool
     {
         if (isset($this->fieldMappings[$fieldName])) {
             return $this->fieldMappings[$fieldName]['nullable'];
@@ -261,7 +261,7 @@ final class ClassMetadata implements ClassMetadataInterface
     /**
      * {@inheritdoc}
      */
-    public function getAssociationTargetClass($assocName)
+    public function getAssociationTargetClass($assocName): string
     {
         if (!isset($this->associationMappings[$assocName])) {
             throw new AssociationNotFoundException("Association name expected, '$assocName' is not an association.");
@@ -297,7 +297,7 @@ final class ClassMetadata implements ClassMetadataInterface
     /**
      * {@inheritdoc}
      */
-    public function isAssociationInverseSide($assocName)
+    public function isAssociationInverseSide($assocName): bool
     {
         return isset($this->associationMappings[$assocName]) && !$this->associationMappings[$assocName]['isOwningSide'];
     }
@@ -305,7 +305,7 @@ final class ClassMetadata implements ClassMetadataInterface
     /**
      * {@inheritdoc}
      */
-    public function getAssociationMappedByTargetField($assocName)
+    public function getAssociationMappedByTargetField($assocName): string
     {
         if (!isset($this->associationMappings[$assocName])) {
             throw new AssociationNotFoundException("Association name expected, '$assocName' is not an association.");
@@ -316,10 +316,8 @@ final class ClassMetadata implements ClassMetadataInterface
 
     /**
      * {@inheritdoc}
-     *
-     * @return array
      */
-    public function getIdentifierValues($object)
+    public function getIdentifierValues($object): array
     {
         throw new InvalidMethodCallException('Method getIdentifierValues() must not be called from ClassMetadata. You should invoke getIdentifierValue($object).');
     }
@@ -327,7 +325,7 @@ final class ClassMetadata implements ClassMetadataInterface
     /**
      * {@inheritdoc}
      */
-    public function getIdentifierValue($object)
+    public function getIdentifierValue($object): ?string
     {
         if (!$this->identifier) {
             return null;
@@ -344,7 +342,7 @@ final class ClassMetadata implements ClassMetadataInterface
     /**
      * {@inheritdoc}
      */
-    public function getKeyValue($object)
+    public function getKeyValue($object): ?string
     {
         if (!$this->key) {
             return null;
@@ -363,7 +361,7 @@ final class ClassMetadata implements ClassMetadataInterface
      *
      * @codeCoverageIgnore
      */
-    public function getEntityRepositoryClass()
+    public function getEntityRepositoryClass(): string
     {
         return $this->repositoryClass;
     }
@@ -383,7 +381,7 @@ final class ClassMetadata implements ClassMetadataInterface
      *
      * @codeCoverageIgnore
      */
-    public function getConnectionClass()
+    public function getConnectionClass(): string
     {
         return $this->connectionClass;
     }
@@ -474,7 +472,7 @@ final class ClassMetadata implements ClassMetadataInterface
      *
      * @codeCoverageIgnore
      */
-    public function getNamespace()
+    public function getNamespace(): string
     {
         return $this->namespace;
     }
@@ -484,7 +482,7 @@ final class ClassMetadata implements ClassMetadataInterface
      *
      * @codeCoverageIgnore
      */
-    public function setNamespace($namespace): void
+    public function setNamespace(string $namespace): void
     {
         $this->namespace = $namespace;
     }
@@ -494,7 +492,7 @@ final class ClassMetadata implements ClassMetadataInterface
      *
      * @codeCoverageIgnore
      */
-    public function setEntityListeners($entityListeners): void
+    public function setEntityListeners(array $entityListeners): void
     {
         $this->entityListeners = $entityListeners;
     }
@@ -504,7 +502,7 @@ final class ClassMetadata implements ClassMetadataInterface
      *
      * @codeCoverageIgnore
      */
-    public function getEntityListeners()
+    public function getEntityListeners(): array
     {
         return $this->entityListeners;
     }
@@ -512,11 +510,9 @@ final class ClassMetadata implements ClassMetadataInterface
     /**
      * {@inheritdoc}
      *
-     * @return string|null
-     *
      * @codeCoverageIgnore
      */
-    public function getIdentifier()
+    public function getIdentifier(): ?string
     {
         return $this->identifier;
     }
@@ -526,7 +522,7 @@ final class ClassMetadata implements ClassMetadataInterface
      *
      * @codeCoverageIgnore
      */
-    public function setIdentifier($identifier): void
+    public function setIdentifier(string $identifier): void
     {
         $this->identifier = $identifier;
     }
@@ -536,7 +532,7 @@ final class ClassMetadata implements ClassMetadataInterface
      *
      * @codeCoverageIgnore
      */
-    public function getKey()
+    public function getKey(): ?string
     {
         return $this->key;
     }
@@ -546,7 +542,7 @@ final class ClassMetadata implements ClassMetadataInterface
      *
      * @codeCoverageIgnore
      */
-    public function setKey($key): void
+    public function setKey(string $key): void
     {
         $this->key = $key;
     }

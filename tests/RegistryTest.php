@@ -99,7 +99,7 @@ final class RegistryTest extends TestCase
         $this->managerMock->getMetadataFactory()->willReturn($this->metadataFactoryMock)->shouldBeCalledTimes(4);
         $this->metadataFactoryMock->getAllMetadata()->willReturn([$this->classMetadataMock])->shouldBeCalledTimes(4);
         $this->classMetadataMock->getName()->willReturn('App\Entity\Foo', 'App\Entity\Bar', 'App\Entity\Foo', 'App\Entity\Bar')->shouldBeCalledTimes(4);
-        $warmableMock = $this->prophesize(WarmableInterface::class);
+        $warmableMock = $this->prophesize(ConnectionInterface::class)->willImplement(WarmableInterface::class);
         $this->managerMock->getConnection('App\Entity\Foo')->willReturn($warmableMock->reveal())->shouldBeCalledOnce();
         $this->managerMock->getConnection('App\Entity\Bar')->willReturn($warmableMock->reveal())->shouldBeCalledOnce();
         $warmableMock->warmUp('/tmp')->shouldBeCalledTimes(2);

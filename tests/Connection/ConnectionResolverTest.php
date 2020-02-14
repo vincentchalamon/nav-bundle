@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace NavBundle\Tests\Connection;
 
+use NavBundle\Connection\ConnectionInterface;
 use NavBundle\Connection\ConnectionResolver;
 use PHPUnit\Framework\TestCase;
 
@@ -23,10 +24,12 @@ final class ConnectionResolverTest extends TestCase
 {
     public function testItResolvesConnection(): void
     {
-        $resolver = new ConnectionResolver('https://user:password@www.example.com', []);
-        $connection = $resolver->resolve(\stdClass::class, 'FOO');
+        $connectionClass = \get_class($this->prophesize(ConnectionInterface::class)->reveal());
 
-        $this->assertInstanceOf(\stdClass::class, $connection);
-        $this->assertSame($connection, $resolver->resolve(\stdClass::class, 'FOO'));
+        $resolver = new ConnectionResolver('https://user:password@www.example.com', []);
+        $connection = $resolver->resolve($connectionClass, 'FOO');
+
+        $this->assertInstanceOf($connectionClass, $connection);
+        $this->assertSame($connection, $resolver->resolve($connectionClass, 'FOO'));
     }
 }

@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace NavBundle\Bridge\FrameworkExtraBundle\Request;
 
 use NavBundle\RegistryInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter as SensioParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter as Configuration;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -33,10 +33,8 @@ final class ParamConverter implements ParamConverterInterface
 
     /**
      * {@inheritdoc}
-     *
-     * @throws NotFoundHttpException
      */
-    public function apply(Request $request, SensioParamConverter $configuration): bool
+    public function apply(Request $request, Configuration $configuration): bool
     {
         $className = $configuration->getClass();
         $entityManager = $this->registry->getManagerForClass($className);
@@ -57,7 +55,7 @@ final class ParamConverter implements ParamConverterInterface
     /**
      * {@inheritdoc}
      */
-    public function supports(SensioParamConverter $configuration): bool
+    public function supports(Configuration $configuration): bool
     {
         $class = $configuration->getClass();
 

@@ -26,5 +26,5 @@ interface ConnectionResolverInterface
      *
      * @return ConnectionInterface a connection
      */
-    public function resolve($className, $namespace);
+    public function resolve(string $className, string $namespace): ConnectionInterface;
 }

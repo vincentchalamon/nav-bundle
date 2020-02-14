@@ -35,7 +35,7 @@ final class TraceableConnectionResolver implements ConnectionResolverInterface
     /**
      * {@inheritdoc}
      */
-    public function resolve($className, $namespace): ConnectionInterface
+    public function resolve(string $className, string $namespace): ConnectionInterface
     {
         if (isset($this->connections[$namespace])) {
             return $this->connections[$namespace];

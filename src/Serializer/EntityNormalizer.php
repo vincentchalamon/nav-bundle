@@ -56,7 +56,7 @@ final class EntityNormalizer extends AbstractObjectNormalizer
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $type, $format = null, array $context = [])
+    public function denormalize($data, $type, $format = null, array $context = []): LazyLoadingInterface
     {
         if (\is_string($data) && class_exists($type) && ($manager = $this->registry->getManagerForClass($type))) {
             return $this->holderFactory->createProxy($type, function (
@@ -146,7 +146,7 @@ final class EntityNormalizer extends AbstractObjectNormalizer
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null)
+    public function supportsNormalization($data, $format = null): bool
     {
         return parent::supportsNormalization($data, $format)
             && NavDecoder::FORMAT === $format
@@ -156,7 +156,7 @@ final class EntityNormalizer extends AbstractObjectNormalizer
     /**
      * {@inheritdoc}
      */
-    protected function extractAttributes($object, $format = null, array $context = [])
+    protected function extractAttributes($object, $format = null, array $context = []): array
     {
         $className = ClassUtils::getRealClass($object);
         $classMetadata = $this->registry->getManagerForClass($className)->getClassMetadata($className);
@@ -198,7 +198,10 @@ final class EntityNormalizer extends AbstractObjectNormalizer
         }
     }
 
-    protected function isAllowedAttribute($classOrObject, $attribute, $format = null, array $context = [])
+    /**
+     * {@inheritdoc}
+     */
+    protected function isAllowedAttribute($classOrObject, $attribute, $format = null, array $context = []): bool
     {
         $className = ClassUtils::getRealClass($classOrObject);
 

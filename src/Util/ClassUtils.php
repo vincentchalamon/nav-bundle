@@ -23,9 +23,9 @@ final class ClassUtils
      *
      * @param string|object $className
      *
-     * @return string
+     * @return string the real class name
      */
-    public static function getRealClass($className)
+    public static function getRealClass($className): string
     {
         if (\is_object($className)) {
             $className = \get_class($className);

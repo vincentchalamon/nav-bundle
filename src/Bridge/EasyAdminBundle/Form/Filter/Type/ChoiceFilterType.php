@@ -38,7 +38,7 @@ class ChoiceFilterType extends AbstractType implements FilterInterface
             static function ($data) {
                 return $data;
             },
-            static function ($data) {
+            static function (array $data): array {
                 if (ComparisonType::NEQ === $data['comparison']) {
                     $data['comparison'] = '<>';
                 }
@@ -90,7 +90,7 @@ class ChoiceFilterType extends AbstractType implements FilterInterface
         $comparison = $form->getData()['comparison'];
 
         if (ComparisonType::EQ !== $comparison) {
-            $values = array_map(function ($value) use ($comparison) {
+            $values = array_map(function (string $value) use ($comparison): string {
                 return "$comparison$value";
             }, $values);
         }

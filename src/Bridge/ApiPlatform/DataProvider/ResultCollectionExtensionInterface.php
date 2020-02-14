@@ -28,9 +28,9 @@ interface ResultCollectionExtensionInterface extends CollectionExtensionInterfac
      * @param string|null             $operationName  the operation name
      * @param array                   $context        the context
      *
-     * @return \Iterator|array<object>
+     * @return \Traversable the request builder result
      */
-    public function getResult(RequestBuilderInterface $requestBuilder, string $resourceClass, string $operationName = null, array $context = []);
+    public function getResult(RequestBuilderInterface $requestBuilder, string $resourceClass, string $operationName = null, array $context = []): \Traversable;
 
     /**
      * Checks whether this extension is supported.
@@ -39,7 +39,7 @@ interface ResultCollectionExtensionInterface extends CollectionExtensionInterfac
      * @param string|null $operationName the operation name
      * @param array       $context       the context
      *
-     * @return bool
+     * @return bool TRUE if it supports result, FALSE otherwise
      */
-    public function supportsResult(string $resourceClass, string $operationName = null, array $context = []);
+    public function supportsResult(string $resourceClass, string $operationName = null, array $context = []): bool;
 }

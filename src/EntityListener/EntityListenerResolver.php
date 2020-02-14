@@ -30,7 +30,7 @@ final class EntityListenerResolver implements EntityListenerResolverInterface
     /**
      * {@inheritdoc}
      */
-    public function resolve($className): object
+    public function resolve(string $className): object
     {
         if (isset($this->entityListeners[$className = trim($className, '\\')])) {
             return $this->entityListeners[$className];

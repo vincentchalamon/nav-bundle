@@ -23,11 +23,12 @@ use NavBundle\RegistryInterface;
 class ServiceEntityRepository extends EntityRepository implements ServiceEntityRepositoryInterface
 {
     /**
-     * @param string $className The class name of the entity this repository manages
+     * @param RegistryInterface $registry  The registry
+     * @param string            $className The class name of the entity this repository manages
      *
      * @throws EntityManagerNotFoundException
      */
-    public function __construct(RegistryInterface $registry, $className)
+    public function __construct(RegistryInterface $registry, string $className)
     {
         /** @var EntityManagerInterface $manager */
         $manager = $registry->getManagerForClass($className);

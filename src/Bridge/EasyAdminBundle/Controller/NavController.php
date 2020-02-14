@@ -25,14 +25,15 @@ use NavBundle\RequestBuilder\RequestBuilderInterface;
 use NavBundle\Util\UrlUtils;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
-use Twig\Error\Error;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
 class NavController extends EasyAdminController
 {
+    /**
+     * {@inheritdoc}
+     */
     public static function getSubscribedServices(): array
     {
         return array_merge(parent::getSubscribedServices(), [
@@ -124,9 +125,9 @@ class NavController extends EasyAdminController
     /**
      * {@inheritdoc}
      */
-    protected function findAll($entityClass, $page = 1, $maxPerPage = Paginator::MAX_ITEMS, $sortField = null, $sortDirection = null, $navFilter = null, $bookmarkKey = null)
+    protected function findAll($entityClass, $page = 1, $maxPerPage = Paginator::MAX_ITEMS, $sortField = null, $sortDirection = null, $navFilter = null, $bookmarkKey = null): NavPagerfanta
     {
-        $requestBuilder = $this->executeDynamicMethod('create<EntityName>ListRequestBuilder', [$entityClass, $sortDirection, $sortField, $navFilter]);
+        $requestBuilder = $this->executeDynamicMethod('create<EntityName>ListRequestBuilder', [$entityClass, $navFilter]);
 
         $this->filterRequestBuilder($requestBuilder);
 
@@ -140,9 +141,9 @@ class NavController extends EasyAdminController
     /**
      * {@inheritdoc}
      */
-    protected function findBy($entityClass, $searchQuery, array $searchableFields, $page = 1, $maxPerPage = Paginator::MAX_ITEMS, $sortField = null, $sortDirection = null, $navFilter = null, $bookmarkKey = null)
+    protected function findBy($entityClass, $searchQuery, array $searchableFields, $page = 1, $maxPerPage = Paginator::MAX_ITEMS, $sortField = null, $sortDirection = null, $navFilter = null, $bookmarkKey = null): NavPagerfanta
     {
-        $requestBuilder = $this->executeDynamicMethod('create<EntityName>SearchRequestBuilder', [$entityClass, $searchQuery, $searchableFields, $sortField, $sortDirection, $navFilter]);
+        $requestBuilder = $this->executeDynamicMethod('create<EntityName>SearchRequestBuilder', [$entityClass, $searchQuery, $searchableFields, $navFilter]);
 
         $this->filterRequestBuilder($requestBuilder);
 
@@ -203,44 +204,17 @@ class NavController extends EasyAdminController
         $this->request->attributes->set('easyadmin', $easyadmin);
     }
 
-    /**
-     * Creates RequestBuilder instance for all the records.
-     *
-     * @param string $entityClass
-     *
-     * @return RequestBuilderInterface The RequestBuilder instance
-     */
-    protected function createListRequestBuilder($entityClass, $sortDirection, $sortField = null, array $navFilter = [])
+    protected function createListRequestBuilder(string $entityClass, array $navFilter = []): RequestBuilderInterface
     {
-        return $this->get(RequestBuilder::class)->createListRequestBuilder($this->entity, $sortField, $sortDirection, $navFilter);
+        return $this->get(RequestBuilder::class)->createListRequestBuilder($this->entity, $navFilter);
     }
 
-    /**
-     * Creates RequestBuilder instance for search query.
-     *
-     * @param string $entityClass
-     * @param string $searchQuery
-     *
-     * @return RequestBuilderInterface The RequestBuilder instance
-     */
-    protected function createSearchRequestBuilder($entityClass, $searchQuery, array $searchableFields, $sortField = null, $sortDirection = null, array $navFilter = [])
+    protected function createSearchRequestBuilder(string $entityClass, string $searchQuery, array $searchableFields, array $navFilter = []): RequestBuilderInterface
     {
-        return $this->get(RequestBuilder::class)->createSearchRequestBuilder($this->entity, $searchQuery, $sortField, $sortDirection, $navFilter);
+        return $this->get(RequestBuilder::class)->createSearchRequestBuilder($this->entity, $searchQuery, $navFilter);
     }
 
-    /**
-     * Renders response for list action from a xhr request.
-     *
-     * @param string $actionName   The name of the current action (list, show, new, etc.)
-     * @param string $templatePath The path of the Twig template to render
-     * @param array  $parameters   The parameters passed to the template
-     *
-     * @throws \Throwable
-     * @throws Error
-     *
-     * @return Response
-     */
-    protected function renderXHR($actionName, $templatePath, array $parameters = [])
+    protected function renderXHR(string $actionName, string $templatePath, array $parameters = []): JsonResponse
     {
         // renderView MUST be called first, otherwise the bookmarkKey is not generated.
         $data = ['html' => $this->renderView($templatePath, $parameters)];

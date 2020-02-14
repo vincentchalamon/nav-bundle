@@ -23,25 +23,25 @@ interface ClassMetadataInterface extends DoctrineClassMetadataInterface
 {
     /**
      * Get the repository class configured for the entity.
-     *
-     * @return string
      */
-    public function getEntityRepositoryClass();
+    public function getEntityRepositoryClass(): string;
 
     /**
      * Set the entity custom repository class.
+     *
+     * @param string $repositoryClass the repository class
      */
     public function setEntityRepositoryClass(string $repositoryClass): void;
 
     /**
      * Get the connection class configured for the entity.
-     *
-     * @return string
      */
-    public function getConnectionClass();
+    public function getConnectionClass(): string;
 
     /**
      * Set the entity custom connection class.
+     *
+     * @param string $connectionClass the connection class
      */
     public function setConnectionClass(string $connectionClass): void;
 
@@ -89,10 +89,8 @@ interface ClassMetadataInterface extends DoctrineClassMetadataInterface
 
     /**
      * Get the entity NAV namespace.
-     *
-     * @return string
      */
-    public function getNamespace();
+    public function getNamespace(): string;
 
     /**
      * Set the entity NAV namespace.
@@ -113,7 +111,7 @@ interface ClassMetadataInterface extends DoctrineClassMetadataInterface
      *
      * @return string[] an array of entity listeners
      */
-    public function getEntityListeners();
+    public function getEntityListeners(): array;
 
     /**
      * Gets the identifier value.
@@ -122,7 +120,7 @@ interface ClassMetadataInterface extends DoctrineClassMetadataInterface
      *
      * @return string|null the identifier value
      */
-    public function getIdentifierValue($object);
+    public function getIdentifierValue($object): ?string;
 
     /**
      * Gets the key value.
@@ -131,14 +129,14 @@ interface ClassMetadataInterface extends DoctrineClassMetadataInterface
      *
      * @return string|null the identifier value
      */
-    public function getKeyValue($object);
+    public function getKeyValue($object): ?string;
 
     /**
      * Gets the mapped identifier field name.
      *
      * @return string|null the identifier field name
      */
-    public function getIdentifier();
+    public function getIdentifier(): ?string;
 
     /**
      * INTERNAL:
@@ -153,7 +151,7 @@ interface ClassMetadataInterface extends DoctrineClassMetadataInterface
      *
      * @return string|null the key field name
      */
-    public function getKey();
+    public function getKey(): ?string;
 
     /**
      * INTERNAL:
@@ -168,52 +166,52 @@ interface ClassMetadataInterface extends DoctrineClassMetadataInterface
      *
      * @param string $fieldName the field name
      *
-     * @return string
+     * @return string the column name
      */
-    public function getFieldColumnName(string $fieldName);
+    public function getFieldColumnName(string $fieldName): string;
 
     /**
      * Gets the field name for the column.
      *
      * @param string $columnName the column name
      *
-     * @return string
+     * @return string the field name
      */
-    public function retrieveField(string $columnName);
+    public function retrieveField(string $columnName): string;
 
     /**
      * Gets the single valued association name for the column.
      *
      * @param string $columnName the column name
      *
-     * @return string
+     * @return string the association name
      */
-    public function retrieveSingleValuedAssociation(string $columnName);
+    public function retrieveSingleValuedAssociation(string $columnName): string;
 
     /**
      * Checks whether the field is nullable.
      *
      * @param string $fieldName the field name
      *
-     * @return bool
+     * @return bool TRUE if nullable, FALSE otherwise
      */
-    public function isNullable(string $fieldName);
+    public function isNullable(string $fieldName): bool;
 
     /**
      * Gets the association fetch mode.
      *
      * @param string $assocName the association name
      *
-     * @return string
+     * @return string the fetch mode
      */
-    public function getAssociationFetchMode(string $assocName);
+    public function getAssociationFetchMode(string $assocName): string;
 
     /**
      * Gets the association column name.
      *
      * @param string $assocName the association name
      *
-     * @return string
+     * @return string the column name
      */
-    public function getSingleValuedAssociationColumnName(string $assocName);
+    public function getSingleValuedAssociationColumnName(string $assocName): string;
 }

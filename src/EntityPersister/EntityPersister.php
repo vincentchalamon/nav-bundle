@@ -44,7 +44,7 @@ final class EntityPersister implements EntityPersisterInterface
     /**
      * {@inheritdoc}
      */
-    public function loadAll(array $criteria = [], $limit = null, $offset = null): \Iterator
+    public function loadAll(array $criteria = [], int $limit = null, string $offset = null): \Traversable
     {
         $requestBuilder = $this->em->createRequestBuilder($this->className);
 

@@ -20,7 +20,7 @@ use Pagerfanta\Adapter\AdapterInterface;
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-final class NavAdapter implements AdapterInterface
+class NavAdapter implements AdapterInterface
 {
     private $requestBuilder;
     private $classMetadata;
@@ -47,19 +47,20 @@ final class NavAdapter implements AdapterInterface
      * @param string $bookmarkKey the bookmarkKey
      * @param int    $size        the size
      *
-     * @return array|\Traversable|\Iterator the slice
+     * @return \Traversable the slice
      */
-    public function getSlice($bookmarkKey, $size)
+    public function getSlice($bookmarkKey, $size): \Traversable
     {
         $this->bookmarkKey = null;
 
         /** @var \ArrayIterator $iterator */
-        $iterator = (clone $this->requestBuilder)
+        $iterator = $this->requestBuilder
+            ->copy()
             ->setBookmarkKey($bookmarkKey)
             ->setSize($size)
             ->getResult();
 
-        $count = iterator_count($iterator);
+        $count = $iterator->count();
         if ($size === $count) {
             // There is potentially a next page
             $iterator->seek($count - 1);

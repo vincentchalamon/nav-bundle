@@ -67,6 +67,8 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
      * Gets the EntityPersister for an entity.
      *
      * @param string $className the name of the entity
+     *
+     * @return EntityPersisterInterface the entity persister
      */
     public function getEntityPersister(string $className): EntityPersisterInterface
     {
@@ -238,6 +240,8 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
      * Checks whether an entity is scheduled for insertion.
      *
      * @param object $object the entity to check
+     *
+     * @return bool TRUE if the object is scheduled for insert, FALSE otherwise
      */
     public function isScheduledForInsert(object $object): bool
     {
@@ -248,6 +252,8 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
      * Checks whether an entity is registered as removed/deleted.
      *
      * @param object $object the entity to check
+     *
+     * @return bool TRUE if the object is scheduled for delete, FALSE otherwise
      */
     public function isScheduledForDelete(object $object): bool
     {
@@ -258,6 +264,8 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
      * Checks whether an entity is registered in the identity map of this UnitOfWork.
      *
      * @param object $object the entity to check
+     *
+     * @return bool TRUE if the object is in the identity map, FALSE otherwise
      */
     public function isInIdentityMap(object $object): bool
     {

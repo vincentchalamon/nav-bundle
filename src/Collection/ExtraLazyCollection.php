@@ -23,7 +23,7 @@ final class ExtraLazyCollection extends LazyCollection
     /**
      * {@inheritdoc}
      */
-    public function count()
+    public function count(): int
     {
         if (!$this->isInitialized()) {
             $ownerClassName = ClassUtils::getRealClass($this->owner);

@@ -23,21 +23,21 @@ interface EventInterface
     /**
      * Retrieves the associated object.
      *
-     * @return object
+     * @return object the event object
      */
     public function getObject();
 
     /**
      * Gets the even name.
      *
-     * @return string
+     * @return string the event name
      */
     public function getName();
 
     /**
      * Retrieves the associated EntityManager.
      *
-     * @return EntityManagerInterface
+     * @return EntityManagerInterface the object manager
      */
     public function getObjectManager();
 }

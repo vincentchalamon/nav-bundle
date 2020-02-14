@@ -23,7 +23,7 @@ use Doctrine\Persistence\Event\LifecycleEventArgs;
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getName(): string
     {
         return 'postUpdate';
     }

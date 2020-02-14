@@ -36,29 +36,27 @@ final class RequestPostInitializeListener
 
     public function initializeRequest(GenericEvent $event): void
     {
-        $className = $event->getArgument('entity')['class'];
-        if (!$this->registry->getManagerForClass($className)) {
+        $entity = $event->getArgument('entity');
+        $className = $entity['class'];
+        $em = $this->registry->getManagerForClass($className);
+        if (!$em) {
             $this->decorated->initializeRequest($event);
 
             return;
         }
 
-        $request = null;
-        if (null !== $this->requestStack) {
-            $request = $this->requestStack->getCurrentRequest();
-        }
-
+        $request = $this->requestStack->getCurrentRequest();
         if (null === $request) {
             return;
         }
 
         $item = null;
         if ($id = $request->query->get('id')) {
-            $item = $this->registry->getManagerForClass($className)->getRepository($className)->find($id);
+            $item = $em->getRepository($className)->find($id);
         }
 
         $request->attributes->set('easyadmin', [
-            'entity' => $entity = $event->getArgument('entity'),
+            'entity' => $entity,
             'view' => $request->query->get('action', 'list'),
             'item' => $item,
         ]);

@@ -21,19 +21,20 @@ interface EntityPersisterInterface
     /**
      * Loads a list of entities by a list of field criteria.
      *
-     * @param int|null    $limit
-     * @param string|null $offset
+     * @param array  $criteria the criteria by which to load the entity
+     * @param int    $limit    the request limit
+     * @param string $offset   the request offset
      *
-     * @return \Iterator|array<object>
+     * @return \Traversable|array<object>
      */
-    public function loadAll(array $criteria = [], $limit = null, $offset = null);
+    public function loadAll(array $criteria = [], int $limit = null, string $offset = null);
 
     /**
      * Loads an entity by a list of field criteria.
      *
      * @param array $criteria the criteria by which to load the entity
      *
-     * @return object|null
+     * @return object|null the loaded object, or null if it doesn't exist
      */
-    public function load(array $criteria);
+    public function load(array $criteria): ?object;
 }

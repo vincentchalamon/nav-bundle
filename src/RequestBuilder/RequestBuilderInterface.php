@@ -21,9 +21,16 @@ interface RequestBuilderInterface
     /**
      * Get the class name used for the request builder.
      *
-     * @return string
+     * @return string the class name
      */
-    public function getClassName();
+    public function getClassName(): string;
+
+    /**
+     * Get a copy of the request builder.
+     *
+     * @return self Creates a clone of the current request builder
+     */
+    public function copy(): self;
 
     /**
      * Specifies one or more restrictions to the request result.
@@ -39,9 +46,9 @@ interface RequestBuilderInterface
      * @param string $field     the restriction field
      * @param string $predicate the restriction predicate
      *
-     * @return self
+     * @return self the request builder
      */
-    public function where($field, $predicate);
+    public function where($field, $predicate): self;
 
     /**
      * Adds one or more restrictions to the request results, forming a logical
@@ -58,11 +65,11 @@ interface RequestBuilderInterface
      * @param string $field     the restriction field
      * @param string $predicate the request predicate
      *
-     * @return self
+     * @return self the request builder
      *
      * @see where()
      */
-    public function andWhere($field, $predicate);
+    public function andWhere($field, $predicate): self;
 
     /**
      * Sets the id of the last result read (the "bookmarkKey").
@@ -75,9 +82,9 @@ interface RequestBuilderInterface
      *
      * @param string|null $bookmarkKey the id of the last result read
      *
-     * @return self
+     * @return self the request builder
      */
-    public function setBookmarkKey($bookmarkKey);
+    public function setBookmarkKey($bookmarkKey): self;
 
     /**
      * Gets the id of the last result read (the "bookmarkKey").
@@ -85,7 +92,7 @@ interface RequestBuilderInterface
      *
      * @return string|null the id of the last result read
      */
-    public function getBookmarkKey();
+    public function getBookmarkKey(): ?string;
 
     /**
      * Sets the maximum number of results to retrieve (the "setSize").
@@ -98,9 +105,9 @@ interface RequestBuilderInterface
      *
      * @param int|null $size the maximum number of results to retrieve
      *
-     * @return self
+     * @return self the request builder
      */
-    public function setSize($size);
+    public function setSize($size): self;
 
     /**
      * Gets the maximum number of results the request object was set to retrieve (the "setSize").
@@ -108,7 +115,7 @@ interface RequestBuilderInterface
      *
      * @return int|null maximum number of results
      */
-    public function getSize();
+    public function getSize(): ?int;
 
     /**
      * Find an object by its identifier.
@@ -122,7 +129,7 @@ interface RequestBuilderInterface
      *
      * @return object|null the request result
      */
-    public function loadById($identifier);
+    public function loadById($identifier): ?object;
 
     /**
      * Executes the request and returns the single result.
@@ -137,7 +144,7 @@ interface RequestBuilderInterface
      *
      * @return object|null the request result
      */
-    public function getOneOrNullResult(string $hydrator = null);
+    public function getOneOrNullResult(string $hydrator = null): ?object;
 
     /**
      * Executes the request and returns the result.
@@ -165,5 +172,5 @@ interface RequestBuilderInterface
      *
      * @return int the request number of results
      */
-    public function count();
+    public function count(): int;
 }

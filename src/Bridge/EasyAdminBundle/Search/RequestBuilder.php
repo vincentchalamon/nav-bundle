@@ -31,16 +31,7 @@ final class RequestBuilder
         $this->registry = $registry;
     }
 
-    /**
-     * Creates the request builder used to get all the records displayed by the
-     * "list" view.
-     *
-     * @param string|null $sortField
-     * @param string|null $sortDirection
-     *
-     * @return RequestBuilderInterface
-     */
-    public function createListRequestBuilder(array $entityConfig, $sortField = null, $sortDirection = null, array $navFilter = [])
+    public function createListRequestBuilder(array $entityConfig, array $navFilter = []): RequestBuilderInterface
     {
         /** @var EntityManagerInterface $em */
         $em = $this->registry->getManagerForClass($entityConfig['class']);
@@ -55,17 +46,7 @@ final class RequestBuilder
         return $requestBuilder;
     }
 
-    /**
-     * Creates the request builder used to get the results of the search query
-     * performed by the user in the "search" view.
-     *
-     * @param string      $searchQuery
-     * @param string|null $sortField
-     * @param string|null $sortDirection
-     *
-     * @return RequestBuilderInterface
-     */
-    public function createSearchRequestBuilder(array $entityConfig, $searchQuery, $sortField = null, $sortDirection = null, array $navFilter = [])
+    public function createSearchRequestBuilder(array $entityConfig, $searchQuery, array $navFilter = []): RequestBuilderInterface
     {
         /** @var EntityManagerInterface $em */
         $em = $this->registry->getManagerForClass($entityConfig['class']);

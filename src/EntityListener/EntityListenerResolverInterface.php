@@ -27,5 +27,5 @@ interface EntityListenerResolverInterface
      *
      * @return object an entity listener
      */
-    public function resolve($className);
+    public function resolve(string $className): object;
 }

@@ -40,7 +40,15 @@ final class RequestBuilder implements RequestBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function getClassName()
+    public function copy(): RequestBuilderInterface
+    {
+        return clone $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassName(): string
     {
         return $this->className;
     }
@@ -48,7 +56,7 @@ final class RequestBuilder implements RequestBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function where($field, $predicate)
+    public function where($field, $predicate): RequestBuilderInterface
     {
         $this->filters = [];
 
@@ -58,7 +66,7 @@ final class RequestBuilder implements RequestBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function andWhere($field, $predicate)
+    public function andWhere($field, $predicate): RequestBuilderInterface
     {
         $this->filters[$field] = $predicate;
 
@@ -68,7 +76,7 @@ final class RequestBuilder implements RequestBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function setBookmarkKey($bookmarkKey)
+    public function setBookmarkKey($bookmarkKey): RequestBuilderInterface
     {
         $this->offset = $bookmarkKey;
 
@@ -78,7 +86,7 @@ final class RequestBuilder implements RequestBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function getBookmarkKey()
+    public function getBookmarkKey(): ?string
     {
         return $this->offset;
     }
@@ -86,7 +94,7 @@ final class RequestBuilder implements RequestBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function setSize($size)
+    public function setSize($size): RequestBuilderInterface
     {
         $this->limit = $size;
 
@@ -96,7 +104,7 @@ final class RequestBuilder implements RequestBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function getSize()
+    public function getSize(): ?int
     {
         return $this->limit;
     }
@@ -153,7 +161,7 @@ final class RequestBuilder implements RequestBuilderInterface
      *
      * @throws \SoapFault
      */
-    public function count()
+    public function count(): int
     {
         return $this->getResult(CountHydrator::class);
     }
@@ -223,7 +231,7 @@ final class RequestBuilder implements RequestBuilderInterface
                     }
                 }
                 $fieldName = $classMetadata->getSingleValuedAssociationColumnName($fieldName);
-            } else {
+            } elseif (null !== $value) {
                 $value = $this->formatValue($classMetadata->getTypeOfField($fieldName), $value);
                 $fieldName = $classMetadata->getFieldColumnName($fieldName);
             }
@@ -237,7 +245,7 @@ final class RequestBuilder implements RequestBuilderInterface
         return $criteria;
     }
 
-    private function formatValue($type, $value): string
+    private function formatValue(string $type, $value): string
     {
         switch ($type) {
             case Types::DATE:

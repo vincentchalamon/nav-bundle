@@ -34,14 +34,14 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @return EventManagerInterface the event manager
      */
-    public function getEventManager();
+    public function getEventManager(): EventManagerInterface;
 
     /**
      * Gets the UnitOfWork used by the EntityManager.
      *
      * @return UnitOfWork the unit of work
      */
-    public function getUnitOfWork();
+    public function getUnitOfWork(): UnitOfWork;
 
     /**
      * Gets the RequestBuilder used by the EntityManager.
@@ -50,7 +50,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @return RequestBuilderInterface the request builder
      */
-    public function createRequestBuilder($className);
+    public function createRequestBuilder(string $className): RequestBuilderInterface;
 
     /**
      * Returns the ClassMetadata descriptor for a class.
@@ -78,7 +78,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @return ConnectionInterface the connection object
      */
-    public function getConnection($className);
+    public function getConnection($className): ConnectionInterface;
 
     /**
      * Resolves a registered namespace alias to the full namespace.
@@ -91,31 +91,23 @@ interface EntityManagerInterface extends ObjectManager
 
     /**
      * Get the MappingDriver.
-     *
-     * @return MappingDriver
      */
-    public function getMappingDriver();
+    public function getMappingDriver(): MappingDriver;
 
     /**
      * Get the NameConverter.
-     *
-     * @return NameConverterInterface
      */
-    public function getNameConverter();
+    public function getNameConverter(): NameConverterInterface;
 
     /**
      * Get the Hydrator.
      *
      * @param string|null $hydrator the hydrator class name
-     *
-     * @return HydratorInterface
      */
-    public function getHydrator(string $hydrator = null);
+    public function getHydrator(string $hydrator = null): HydratorInterface;
 
     /**
      * Get the logger.
-     *
-     * @return LoggerInterface
      */
-    public function getLogger();
+    public function getLogger(): LoggerInterface;
 }

@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace NavBundle\ClassMetadata;
 
 use Doctrine\Persistence\Mapping\AbstractClassMetadataFactory;
+use Doctrine\Persistence\Mapping\ClassMetadata as DoctrineClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\ReflectionService;
 use NavBundle\EntityManager\EntityManagerInterface;
@@ -85,10 +86,8 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
 
     /**
      * {@inheritdoc}
-     *
-     * @param ClassMetadataInterface $classMetadata
      */
-    protected function isEntity($classMetadata): bool
+    protected function isEntity(DoctrineClassMetadata $classMetadata): bool
     {
         return true;
     }
@@ -96,7 +95,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * {@inheritdoc}
      *
-     * @param ClassMetadataInterface $classMetadata
+     * @param DoctrineClassMetadata $classMetadata
      */
     protected function doLoadMetadata($classMetadata, $parent, $rootEntityFound, array $nonSuperclassParents): void
     {
@@ -106,7 +105,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * {@inheritdoc}
      */
-    protected function newClassMetadataInstance($className): ClassMetadataInterface
+    protected function newClassMetadataInstance($className): DoctrineClassMetadata
     {
         return new ClassMetadata($className, $this->em->getNameConverter());
     }

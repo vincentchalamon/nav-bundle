@@ -89,7 +89,7 @@ class EntityManager implements EntityManagerInterface
         $this->classMetadataFactory->setEntityManager($this);
     }
 
-    public function setEntityRepositoryFactory($entityRepositoryFactory): void
+    public function setEntityRepositoryFactory(EntityRepositoryFactoryInterface $entityRepositoryFactory): void
     {
         $this->entityRepositoryFactory = $entityRepositoryFactory;
     }

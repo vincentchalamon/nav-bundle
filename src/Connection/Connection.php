@@ -68,11 +68,6 @@ class Connection extends SoapClient implements ConnectionInterface, WarmableInte
         }
     }
 
-    /**
-     * Check if client has function allowed.
-     *
-     * @return bool TRUE if the function is allowed, otherwise FALSE
-     */
     public function hasFunction(string $function): bool
     {
         return \in_array($function, array_map(static function (string $fct): string {
@@ -99,7 +94,7 @@ class Connection extends SoapClient implements ConnectionInterface, WarmableInte
      *
      * @throws \SoapFault
      */
-    protected function fetchWSDL(string $wsdl, bool $force = false)
+    protected function fetchWSDL(string $wsdl, bool $force = false): string
     {
         if (empty($wsdl) || file_exists($wsdl)) {
             return $wsdl;
@@ -130,7 +125,7 @@ class Connection extends SoapClient implements ConnectionInterface, WarmableInte
     /**
      * {@inheritdoc}
      */
-    protected function buildHeaders($action)
+    protected function buildHeaders($action): array
     {
         if (empty($action)) {
             return [

@@ -59,8 +59,10 @@ final class EntityRepositoryFactory implements EntityRepositoryFactoryInterface
      *
      * @param EntityManagerInterface $entityManager the manager instance
      * @param string                 $className     the name of the entity
+     *
+     * @return ObjectRepository the repository
      */
-    private function createRepository(EntityManagerInterface $entityManager, $className): ObjectRepository
+    private function createRepository(EntityManagerInterface $entityManager, string $className): ObjectRepository
     {
         $repositoryClassName = $entityManager->getClassMetadata($className)->getEntityRepositoryClass();
 

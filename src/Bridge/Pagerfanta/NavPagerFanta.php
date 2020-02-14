@@ -36,7 +36,7 @@ final class NavPagerFanta extends Pagerfanta
     /**
      * {@inheritdoc}
      */
-    public function getCurrentPageResults()
+    public function getCurrentPageResults(): \Traversable
     {
         return $this->getAdapter()->getSlice($this->bookmarkKey, $this->getMaxPerPage());
     }
@@ -44,7 +44,7 @@ final class NavPagerFanta extends Pagerfanta
     /**
      * {@inheritdoc}
      */
-    public function hasNextPage()
+    public function hasNextPage(): bool
     {
         /** @var NavAdapter $adapter */
         $adapter = $this->getAdapter();
@@ -52,6 +52,9 @@ final class NavPagerFanta extends Pagerfanta
         return null !== $adapter->getBookmarkKey();
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function setBookmarkKey(?string $bookmarkKey): void
     {
         $this->bookmarkKey = $bookmarkKey;

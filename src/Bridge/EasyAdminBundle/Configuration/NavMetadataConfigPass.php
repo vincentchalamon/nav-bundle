@@ -32,7 +32,10 @@ final class NavMetadataConfigPass implements ConfigPassInterface
         $this->registry = $registry;
     }
 
-    public function process(array $backendConfig)
+    /**
+     * {@inheritdoc}
+     */
+    public function process(array $backendConfig): array
     {
         $entities = [];
         foreach ($backendConfig['entities'] as $name => $options) {

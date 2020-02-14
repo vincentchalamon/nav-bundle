@@ -28,7 +28,9 @@ final class Configuration implements ConfigurationInterface
         $treeBuilder
             ->getRootNode()
             ->beforeNormalization()
-                ->ifTrue(static function ($v): bool { return \is_string($v['url'] ?? null); })
+                ->ifTrue(static function ($v): bool {
+                    return \is_string($v['url'] ?? null);
+                })
                 ->then(static function ($v): array {
                     $debug = $v['enable_profiler'] ?? false;
                     unset($v['enable_profiler']);
