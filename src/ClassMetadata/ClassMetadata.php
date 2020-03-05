@@ -15,11 +15,11 @@ namespace NavBundle\ClassMetadata;
 
 use Doctrine\Persistence\Mapping\ReflectionService;
 use NavBundle\Connection\Connection;
+use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\EntityRepository\EntityRepository;
 use NavBundle\Exception\AssociationNotFoundException;
 use NavBundle\Exception\FieldNotFoundException;
 use NavBundle\Exception\InvalidMethodCallException;
-use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
@@ -73,7 +73,7 @@ final class ClassMetadata implements ClassMetadataInterface
     private $fieldMappings = [];
     private $associationMappings = [];
     private $name;
-    private $nameConverter;
+    private $em;
 
     /**
      * @var string|null
@@ -100,10 +100,10 @@ final class ClassMetadata implements ClassMetadataInterface
      */
     private $entityListeners = [];
 
-    public function __construct(string $name, NameConverterInterface $nameConverter)
+    public function __construct(string $name, EntityManagerInterface $em)
     {
         $this->name = $name;
-        $this->nameConverter = $nameConverter;
+        $this->em = $em;
     }
 
     /**
@@ -331,12 +331,8 @@ final class ClassMetadata implements ClassMetadataInterface
             return null;
         }
 
-        try {
-            return $this->reflFields[$this->identifier]->getValue($object);
-        } catch (\ErrorException $exception) {
-            /* @see https://github.com/Ocramius/ProxyManager/pull/299 */
-            return \call_user_func([$object, 'get'.ucfirst($this->identifier)]);
-        }
+        /* @see https://github.com/Ocramius/ProxyManager/pull/299 */
+        return $this->em->getPropertyAccessor()->getValue($object, $this->identifier);
     }
 
     /**
@@ -348,12 +344,8 @@ final class ClassMetadata implements ClassMetadataInterface
             return null;
         }
 
-        try {
-            return $this->reflFields[$this->key]->getValue($object);
-        } catch (\ErrorException $exception) {
-            /* @see https://github.com/Ocramius/ProxyManager/pull/299 */
-            return \call_user_func([$object, 'get'.ucfirst($this->key)]);
-        }
+        /* @see https://github.com/Ocramius/ProxyManager/pull/299 */
+        return $this->em->getPropertyAccessor()->getValue($object, $this->key);
     }
 
     /**
@@ -402,7 +394,7 @@ final class ClassMetadata implements ClassMetadataInterface
     public function mapField(array $mapping): void
     {
         if (!isset($mapping['columnName'])) {
-            $mapping['columnName'] = $this->nameConverter->normalize($mapping['fieldName']);
+            $mapping['columnName'] = $this->em->getNameConverter()->normalize($mapping['fieldName']);
         }
         $this->fieldMappings[$mapping['fieldName']] = $mapping;
     }
@@ -414,7 +406,7 @@ final class ClassMetadata implements ClassMetadataInterface
     {
         $mapping['isOwningSide'] = isset($mapping['mappedBy']) ? false : true;
         if ($mapping['isOwningSide'] && !isset($mapping['columnName'])) {
-            $mapping['columnName'] = $this->nameConverter->normalize($mapping['fieldName'].'No');
+            $mapping['columnName'] = $this->em->getNameConverter()->normalize($mapping['fieldName'].'No');
         }
         $mapping['type'] = self::ONE_TO_ONE;
         $this->associationMappings[$mapping['fieldName']] = $mapping;
@@ -426,7 +418,7 @@ final class ClassMetadata implements ClassMetadataInterface
     public function mapManyToOne(array $mapping): void
     {
         if (!isset($mapping['columnName'])) {
-            $mapping['columnName'] = $this->nameConverter->normalize($mapping['fieldName'].'No');
+            $mapping['columnName'] = $this->em->getNameConverter()->normalize($mapping['fieldName'].'No');
         }
         $mapping['isOwningSide'] = true;
         $mapping['type'] = self::MANY_TO_ONE;

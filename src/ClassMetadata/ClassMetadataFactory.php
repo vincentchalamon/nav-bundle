@@ -107,6 +107,6 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function newClassMetadataInstance($className): DoctrineClassMetadata
     {
-        return new ClassMetadata($className, $this->em->getNameConverter());
+        return new ClassMetadata($className, $this->em);
     }
 }
