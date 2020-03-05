@@ -37,6 +37,7 @@ use ProxyManager\Proxy\LazyLoadingInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -48,6 +49,7 @@ class EntityManager implements EntityManagerInterface
 {
     protected $logger;
     protected $eventManager;
+    protected $propertyAccessor;
     protected $connectionResolver;
     protected $mappingDriver;
     protected $nameConverter;
@@ -69,6 +71,7 @@ class EntityManager implements EntityManagerInterface
         ?LoggerInterface $logger,
         EventManagerInterface $eventManager,
         NormalizerInterface $normalizer,
+        PropertyAccessorInterface $propertyAccessor,
         ContainerInterface $hydrators,
         ConnectionResolverInterface $connectionResolver,
         MappingDriverInterface $mappingDriver,
@@ -77,6 +80,7 @@ class EntityManager implements EntityManagerInterface
     ) {
         $this->logger = $logger ?: new NullLogger();
         $this->eventManager = $eventManager;
+        $this->propertyAccessor = $propertyAccessor;
         $this->hydrators = $hydrators;
         $this->connectionResolver = $connectionResolver;
         $this->mappingDriver = $mappingDriver;
@@ -100,6 +104,14 @@ class EntityManager implements EntityManagerInterface
     public function getEventManager(): EventManagerInterface
     {
         return $this->eventManager;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPropertyAccessor(): PropertyAccessorInterface
+    {
+        return $this->propertyAccessor;
     }
 
     /**

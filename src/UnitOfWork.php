@@ -289,13 +289,9 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
         $id = $classMetadata->getIdentifierValue($object);
         $this->originalEntityData[$className][$id] = [];
-        foreach ($classMetadata->reflFields as $fieldName => $refProp) {
-            try {
-                $this->originalEntityData[$className][$id][$fieldName] = $refProp->getValue($object);
-            } catch (\ErrorException $exception) {
-                /* @see https://github.com/Ocramius/ProxyManager/pull/299 */
-                $this->originalEntityData[$className][$id][$fieldName] = \call_user_func([$object, 'get'.ucfirst($fieldName)]);
-            }
+        foreach (array_keys($classMetadata->reflFields) as $fieldName) {
+            /* @see https://github.com/Ocramius/ProxyManager/pull/299 */
+            $this->originalEntityData[$className][$id][$fieldName] = $this->em->getPropertyAccessor()->getValue($object, $fieldName);
         }
     }
 
@@ -322,14 +318,10 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
         $classMetadata = $this->em->getClassMetadata($className);
 
         $actualData = [];
-        foreach ($classMetadata->reflFields as $fieldName => $refProp) {
+        foreach (array_keys($classMetadata->reflFields) as $fieldName) {
             if (!$classMetadata->isIdentifier($fieldName) && !$classMetadata->isCollectionValuedAssociation($fieldName)) {
-                try {
-                    $actualData[$fieldName] = $refProp->getValue($object);
-                } catch (\ErrorException $exception) {
-                    /* @see https://github.com/Ocramius/ProxyManager/pull/299 */
-                    $actualData[$fieldName] = \call_user_func([$object, 'get'.ucfirst($fieldName)]);
-                }
+                /* @see https://github.com/Ocramius/ProxyManager/pull/299 */
+                $actualData[$fieldName] = $this->em->getPropertyAccessor()->getValue($object, $fieldName);
             }
         }
 
