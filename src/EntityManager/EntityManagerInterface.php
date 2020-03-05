@@ -22,6 +22,7 @@ use NavBundle\Hydrator\HydratorInterface;
 use NavBundle\RequestBuilder\RequestBuilderInterface;
 use NavBundle\UnitOfWork;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
 
 /**
@@ -30,11 +31,18 @@ use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
 interface EntityManagerInterface extends ObjectManager
 {
     /**
-     * Gets the EventManageg used by the EntityManager.
+     * Gets the EventManager used by the EntityManager.
      *
      * @return EventManagerInterface the event manager
      */
     public function getEventManager(): EventManagerInterface;
+
+    /**
+     * Gets the PropertyAccessor used by the EntityManager.
+     *
+     * @return PropertyAccessorInterface the property accessor
+     */
+    public function getPropertyAccessor(): PropertyAccessorInterface;
 
     /**
      * Gets the UnitOfWork used by the EntityManager.

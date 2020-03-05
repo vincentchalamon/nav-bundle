@@ -98,12 +98,8 @@ final class EntityNormalizer extends AbstractObjectNormalizer
                     continue;
                 }
 
-                try {
-                    $value = $classMetadata->reflFields[$associationName]->getValue($wrappedObject);
-                } catch (\ErrorException $exception) {
-                    /* @see https://github.com/Ocramius/ProxyManager/pull/299 */
-                    $value = \call_user_func([$wrappedObject, 'get'.ucfirst($associationName)]);
-                }
+                /* @see https://github.com/Ocramius/ProxyManager/pull/299 */
+                $value = $manager->getPropertyAccessor()->getValue($wrappedObject, $associationName);
 
                 switch ($classMetadata->getAssociationFetchMode($associationName)) {
                     case ClassMetadata::FETCH_EAGER:
@@ -120,12 +116,9 @@ final class EntityNormalizer extends AbstractObjectNormalizer
                         $value = new LazyCollection($this->registry, $value ?: new ArrayCollection(), $associationName, $wrappedObject);
                         break;
                 }
-                try {
-                    $classMetadata->reflFields[$associationName]->setValue($wrappedObject, $value);
-                } catch (\ErrorException $exception) {
-                    /* @see https://github.com/Ocramius/ProxyManager/pull/299 */
-                    \call_user_func([$wrappedObject, 'set'.ucfirst($associationName)], $value);
-                }
+
+                /* @see https://github.com/Ocramius/ProxyManager/pull/299 */
+                $manager->getPropertyAccessor()->setValue($wrappedObject, $associationName, $value);
             }
             $manager->getUnitOfWork()->addToIdentityMap($wrappedObject);
 
@@ -171,15 +164,13 @@ final class EntityNormalizer extends AbstractObjectNormalizer
     protected function getAttributeValue($object, $attribute, $format = null, array $context = [])
     {
         $className = ClassUtils::getRealClass($object);
+        /** @var EntityManagerInterface $manager */
+        $manager = $this->registry->getManagerForClass($className);
         /** @var ClassMetadata $classMetadata */
-        $classMetadata = $this->registry->getManagerForClass($className)->getClassMetadata($className);
+        $classMetadata = $manager->getClassMetadata($className);
 
-        try {
-            return $classMetadata->reflFields[$attribute]->getValue($object);
-        } catch (\ErrorException $exception) {
-            /* @see https://github.com/Ocramius/ProxyManager/pull/299 */
-            return \call_user_func([$object, 'get'.ucfirst($attribute)]);
-        }
+        /* @see https://github.com/Ocramius/ProxyManager/pull/299 */
+        return $manager->getPropertyAccessor()->getValue($object, $attribute);
     }
 
     /**
@@ -188,14 +179,13 @@ final class EntityNormalizer extends AbstractObjectNormalizer
     protected function setAttributeValue($object, $attribute, $value, $format = null, array $context = []): void
     {
         $className = ClassUtils::getRealClass($object);
+        /** @var EntityManagerInterface $manager */
+        $manager = $this->registry->getManagerForClass($className);
         /** @var ClassMetadata $classMetadata */
-        $classMetadata = $this->registry->getManagerForClass($className)->getClassMetadata($className);
-        try {
-            $classMetadata->reflFields[$attribute]->setValue($object, $value);
-        } catch (\ErrorException $exception) {
-            /* @see https://github.com/Ocramius/ProxyManager/pull/299 */
-            \call_user_func([$object, 'set'.ucfirst($attribute)], $value);
-        }
+        $classMetadata = $manager->getClassMetadata($className);
+
+        /* @see https://github.com/Ocramius/ProxyManager/pull/299 */
+        $manager->getPropertyAccessor()->setValue($object, $attribute, $value);
     }
 
     /**

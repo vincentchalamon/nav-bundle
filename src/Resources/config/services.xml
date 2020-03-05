@@ -36,6 +36,7 @@
             <argument type="service" id="logger" on-invalid="null"/>
             <argument type="service" id="nav.event_manager"/>
             <argument type="service" id="serializer"/>
+            <argument type="service" id="property_accessor"/>
             <argument type="tagged_locator" tag="nav.hydrator"/>
             <argument/> <!-- connection resolver -->
             <argument/> <!-- mappingDriver -->
