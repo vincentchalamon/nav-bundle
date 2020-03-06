@@ -19,6 +19,9 @@ jobs:
           - '7.2'
           - '7.3'
           - '7.4'
+        include:
+          - php: '7.4'
+            coverage: true
         dependency:
           - ''
           - 'lowest'
@@ -58,3 +61,14 @@ jobs:
       - name: Run phpstan tests
         if: matrix.dependency == ''
         run: vendor/bin/phpstan analyze
+
+      - name: Run phpunit tests
+        run: vendor/bin/phpunit --coverage-clover clover.xml
+
+      - name: Upload report to Coveralls
+        env:
+          COVERALLS_REPO_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        if: matrix.coverage && matrix.dependency == ''
+        run: |
+          composer require --dev --prefer-dist --no-progress --no-suggest --ansi cedx/coveralls
+          vendor/bin/coveralls clover.xml
