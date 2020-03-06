@@ -47,7 +47,7 @@ final class NavPagerFantaTest extends TestCase
 
     public function testItGetsCurrentPageResults(): void
     {
-        $data = $this->prophesize(\Traversable::class);
+        $data = $this->prophesize(\Iterator::class);
         $this->adapterMock->getSlice(null, 10)->willReturn($data)->shouldBeCalledOnce();
 
         $this->assertSame($data->reveal(), $this->pager->getCurrentPageResults());
