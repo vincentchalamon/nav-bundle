@@ -80,6 +80,7 @@ class Contact
     /**
      * @var Intervention[]|Collection
      *
+     * TODO Set ApiSubresource
      * @Nav\OneToMany(targetClass=Intervention::class, mappedBy="contact", fetch="extra_lazy")
      */
     public $interventions;
