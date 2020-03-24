@@ -27,7 +27,7 @@ final class NavDecoder implements DecoderInterface
      */
     public function decode($data, $format, array $context = []): array
     {
-        return $this->objectToArray($data);
+        return $this->objectToArray(unserialize($data));
     }
 
     /**

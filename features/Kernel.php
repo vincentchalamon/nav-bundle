@@ -59,9 +59,8 @@ final class Kernel extends BaseKernel
 
     protected function configureRoutes(RouteCollectionBuilder $routes): void
     {
-        $routes->import('@TwigBundle/Resources/config/routing/errors.xml', '/_error');
-        $routes->import('@TestBundle/Controller', null, 'annotation');
-        $routes->import('.', null, 'api_platform');
+        $routes->import('@TestBundle/Controller', '', 'annotation');
+        $routes->import('.', '', 'api_platform');
         if ($this->isDebug()) {
             $routes->import('@WebProfilerBundle/Resources/config/routing/wdt.xml', '/_wdt');
             $routes->import('@WebProfilerBundle/Resources/config/routing/profiler.xml', '/_profiler');

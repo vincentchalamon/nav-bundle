@@ -36,7 +36,7 @@ final class ObjectHydrator implements HydratorInterface
      */
     public function hydrateAll($response, ClassMetadataInterface $classMetadata, array $context = [])
     {
-        return $this->serializer->deserialize($response, $classMetadata->getName(), NavDecoder::FORMAT, $context + [
+        return $this->serializer->deserialize(serialize($response), $classMetadata->getName(), NavDecoder::FORMAT, $context + [
             ObjectDenormalizer::NAMESPACE => $classMetadata->getNamespace(),
             EntityNormalizer::ENABLE_MAX_DEPTH => true,
         ]);
