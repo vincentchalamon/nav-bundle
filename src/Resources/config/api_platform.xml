@@ -26,10 +26,36 @@
             <tag name="api_platform.collection_data_provider" priority="-1"/>
         </service>
 
+        <service id="nav.api_platform.pagination" class="NavBundle\Bridge\ApiPlatform\DataProvider\Pagination" public="false">
+            <argument type="service" id="api_platform.pagination"/>
+        </service>
+
+        <service id="nav.api_platform.extension.pagination" class="NavBundle\Bridge\ApiPlatform\DataProvider\Extension\PaginationExtension" public="false">
+            <argument type="service" id="nav.registry"/>
+            <argument type="service" id="nav.api_platform.pagination"/>
+            <tag name="nav.api_platform.collection_extension" priority="-1"/>
+        </service>
+
         <service id="nav.api_platform.extension.filter" class="NavBundle\Bridge\ApiPlatform\DataProvider\Extension\FilterExtension" public="false">
             <argument type="service" id="api_platform.metadata.resource.metadata_factory"/>
-            <argument type="tagged_locator" tag="nav.api_platform.filter"/>
+            <argument type="service" id="api_platform.filter_locator"/>
             <tag name="nav.api_platform.collection_extension"/>
         </service>
+
+        <service id="nav.api_platform.abstract_filter" class="NavBundle\Bridge\ApiPlatform\DataProvider\Extension\Filter\AbstractFilter" public="false" abstract="true">
+            <argument type="service" id="nav.registry" />
+            <argument type="service" id="api_platform.iri_converter" />
+            <argument type="service" id="api_platform.identifiers_extractor" />
+            <argument type="service" id="api_platform.name_converter" on-invalid="ignore" />
+        </service>
+
+        <service id="nav.api_platform.filter.search" class="NavBundle\Bridge\ApiPlatform\DataProvider\Extension\Filter\SearchFilter" public="false" abstract="true" parent="nav.api_platform.abstract_filter"/>
+        <service id="NavBundle\Bridge\ApiPlatform\DataProvider\Extension\Filter\SearchFilter" alias="nav.api_platform.filter.search" />
+
+        <service id="nav.api_platform.filter.range" class="NavBundle\Bridge\ApiPlatform\DataProvider\Extension\Filter\RangeFilter" public="false" abstract="true" parent="nav.api_platform.abstract_filter"/>
+        <service id="NavBundle\Bridge\ApiPlatform\DataProvider\Extension\Filter\RangeFilter" alias="nav.api_platform.filter.range" />
+
+        <service id="nav.api_platform.filter.interval" class="NavBundle\Bridge\ApiPlatform\DataProvider\Extension\Filter\IntervalFilter" public="false" abstract="true" parent="nav.api_platform.abstract_filter"/>
+        <service id="NavBundle\Bridge\ApiPlatform\DataProvider\Extension\Filter\IntervalFilter" alias="nav.api_platform.filter.interval" />
     </services>
 </container>

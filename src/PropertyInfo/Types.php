@@ -30,8 +30,8 @@ final class Types
     public const SMALLINT = 'smallint';
     public const INT = 'int';
     public const INTEGER = 'integer';
-    public const FLOAT = 'float';
     public const BIGINT = 'bigint';
+    public const FLOAT = 'float';
     public const STRING = 'string';
     public const TEXT = 'text';
     public const GUID = 'guid';

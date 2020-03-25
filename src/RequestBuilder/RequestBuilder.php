@@ -170,6 +170,8 @@ final class RequestBuilder implements RequestBuilderInterface
      * {@inheritdoc}
      *
      * @throws \SoapFault
+     *
+     * @return \Iterator|int
      */
     public function getResult(string $hydrator = null)
     {

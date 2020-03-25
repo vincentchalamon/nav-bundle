@@ -46,12 +46,12 @@ final class NavDecoderTest extends TestCase
                     'lorem' => 'ipsum',
                 ],
             ],
-        ], $this->decoder->decode((object) [
+        ], $this->decoder->decode(serialize((object) [
             'foo' => [
                 'bar' => (object) [
                     'lorem' => 'ipsum',
                 ],
             ],
-        ], NavDecoder::FORMAT));
+        ]), NavDecoder::FORMAT));
     }
 }

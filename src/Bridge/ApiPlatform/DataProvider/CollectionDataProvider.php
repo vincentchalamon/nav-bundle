@@ -44,9 +44,6 @@ final class CollectionDataProvider implements ContextAwareCollectionDataProvider
         $manager = $this->registry->getManagerForClass($resourceClass);
         $requestBuilder = $manager->createRequestBuilder($resourceClass);
 
-        // TODO: Temporary set limit, waiting for PaginationExtension.
-        $requestBuilder->setSize(10);
-
         foreach ($this->extensions as $extension) {
             $extension->applyToCollection($requestBuilder, $resourceClass, $operationName, $context);
 
