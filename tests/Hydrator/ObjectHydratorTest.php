@@ -51,7 +51,7 @@ final class ObjectHydratorTest extends TestCase
     {
         $this->classMetadataMock->getName()->willReturn('App\Entity\Foo')->shouldBeCalledOnce();
         $this->classMetadataMock->getNamespace()->willReturn('FOO')->shouldBeCalledOnce();
-        $this->serializerMock->deserialize((object) [], 'App\Entity\Foo', NavDecoder::FORMAT, [
+        $this->serializerMock->deserialize(serialize((object) []), 'App\Entity\Foo', NavDecoder::FORMAT, [
             ObjectDenormalizer::NAMESPACE => 'FOO',
             EntityNormalizer::ENABLE_MAX_DEPTH => true,
         ])->willReturn(new \stdClass())->shouldBeCalledOnce();

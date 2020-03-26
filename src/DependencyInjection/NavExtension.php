@@ -16,7 +16,6 @@ namespace NavBundle\DependencyInjection;
 use ApiPlatform\Core\Bridge\Symfony\Bundle\ApiPlatformBundle;
 use EasyCorp\Bundle\EasyAdminBundle\EasyAdminBundle;
 use NavBundle\Bridge\ApiPlatform\DataProvider\CollectionExtensionInterface;
-use NavBundle\Bridge\ApiPlatform\DataProvider\Extension\Filter\FilterInterface;
 use NavBundle\Bridge\ApiPlatform\DataProvider\ItemExtensionInterface;
 use NavBundle\Debug\Connection\TraceableConnectionResolver;
 use NavBundle\EntityManager\EntityManager;
@@ -46,6 +45,13 @@ final class NavExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
+        $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('services.xml');
+
+        if ($config['enable_profiler']) {
+            $loader->load('debug.xml');
+        }
+
         $container
             ->registerForAutoconfiguration(ServiceEntityRepositoryInterface::class)
             ->addTag('nav.entity_repository');
@@ -55,13 +61,6 @@ final class NavExtension extends Extension
         $container
             ->registerForAutoconfiguration(HydratorInterface::class)
             ->addTag('nav.hydrator');
-
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('services.xml');
-
-        if ($config['enable_profiler']) {
-            $loader->load('debug.xml');
-        }
 
         $bundles = $container->getParameter('kernel.bundles');
         if (\in_array(ApiPlatformBundle::class, $bundles, true)) {
@@ -73,9 +72,6 @@ final class NavExtension extends Extension
             $container
                 ->registerForAutoconfiguration(CollectionExtensionInterface::class)
                 ->addTag('nav.api_platform.collection_extension');
-            $container
-                ->registerForAutoconfiguration(FilterInterface::class)
-                ->addTag('nav.api_platform.filter');
         }
 
         if (\in_array(SensioFrameworkExtraBundle::class, $bundles, true)) {

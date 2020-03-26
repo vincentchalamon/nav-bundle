@@ -88,6 +88,11 @@ final class Kernel extends BaseKernel
                 'paths' => ['%kernel.project_dir%/TestBundle/Entity'],
             ],
             'doctrine' => false,
+            'collection' => [
+                'pagination' => [
+                    'client_items_per_page' => true,
+                ],
+            ],
         ]);
 
         $c->loadFromExtension('nav', [
