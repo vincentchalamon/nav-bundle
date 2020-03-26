@@ -47,7 +47,12 @@ final class EntityNormalizer extends AbstractObjectNormalizer
         callable $objectClassResolver = null,
         array $defaultContext = []
     ) {
-        parent::__construct($classMetadataFactory, $nameConverter, $propertyTypeExtractor, $classDiscriminatorResolver, $objectClassResolver, $defaultContext);
+        if (class_exists(ClassDiscriminatorResolverInterface::class)) {
+            parent::__construct($classMetadataFactory, $nameConverter, $propertyTypeExtractor, $classDiscriminatorResolver, $objectClassResolver, $defaultContext);
+        } else {
+            // Symfony < 4.0
+            parent::__construct($classMetadataFactory, $nameConverter, $propertyTypeExtractor);
+        }
 
         $this->registry = $registry;
         $this->holderFactory = $holderFactory;

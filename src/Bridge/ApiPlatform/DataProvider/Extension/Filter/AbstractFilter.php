@@ -23,7 +23,7 @@ use NavBundle\RequestBuilder\RequestBuilderInterface;
 use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
 
 /**
- * @author Vincent Chalamon <vincent@les-tilleuls.coop>
+ * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
 abstract class AbstractFilter implements FilterInterface
 {

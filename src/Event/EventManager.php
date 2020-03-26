@@ -26,12 +26,9 @@ final class EventManager extends DoctrineEventManager implements EventManagerInt
 {
     private $entityListenerResolver;
 
-    public function __construct(EntityListenerResolverInterface $entityListenerResolver, iterable $eventSubscribers)
+    public function __construct(EntityListenerResolverInterface $entityListenerResolver)
     {
         $this->entityListenerResolver = $entityListenerResolver;
-        foreach ($eventSubscribers as $eventSubscriber) {
-            $this->addEventSubscriber($eventSubscriber);
-        }
     }
 
     /**

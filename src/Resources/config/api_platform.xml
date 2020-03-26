@@ -27,7 +27,10 @@
         </service>
 
         <service id="nav.api_platform.pagination" class="NavBundle\Bridge\ApiPlatform\DataProvider\Pagination" public="false">
-            <argument type="service" id="api_platform.pagination"/>
+            <argument type="service" id="api_platform.metadata.resource.metadata_factory" />
+            <argument type="service" id="api_platform.pagination" on-invalid="ignore"/>
+            <argument>%api_platform.collection.pagination%</argument>
+            <argument>%api_platform.graphql.collection.pagination%</argument>
         </service>
 
         <service id="nav.api_platform.extension.pagination" class="NavBundle\Bridge\ApiPlatform\DataProvider\Extension\PaginationExtension" public="false">

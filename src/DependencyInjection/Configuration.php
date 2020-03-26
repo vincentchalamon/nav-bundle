@@ -24,22 +24,29 @@ final class Configuration implements ConfigurationInterface
 {
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder('nav');
-        $treeBuilder
-            ->getRootNode()
-            ->beforeNormalization()
-                ->ifTrue(static function ($v): bool {
-                    return \is_string($v['url'] ?? null);
-                })
-                ->then(static function ($v): array {
-                    $debug = $v['enable_profiler'] ?? false;
-                    unset($v['enable_profiler']);
+        if (method_exists(TreeBuilder::class, 'getRootNode')) {
+            // Symfony >= 4.0
+            $treeBuilder = new TreeBuilder('nav');
+            $rootNode = $treeBuilder->getRootNode();
+        } else {
+            // Symfony < 4.0
+            $treeBuilder = new TreeBuilder();
+            $rootNode = $treeBuilder->root('nav');
+        }
 
-                    return [
-                        'enable_profiler' => $debug,
-                        'managers' => ['default' => $v],
-                    ];
-                })
+        $rootNode->beforeNormalization()
+            ->ifTrue(static function ($v): bool {
+                return \is_string($v['url'] ?? null);
+            })
+            ->then(static function ($v): array {
+                $debug = $v['enable_profiler'] ?? false;
+                unset($v['enable_profiler']);
+
+                return [
+                    'enable_profiler' => $debug,
+                    'managers' => ['default' => $v],
+                ];
+            })
             ->end()
             ->children()
                 ->booleanNode('enable_profiler')

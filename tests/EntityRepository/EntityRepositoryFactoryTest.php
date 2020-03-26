@@ -19,10 +19,12 @@ use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\EntityRepository\EntityRepository;
 use NavBundle\EntityRepository\EntityRepositoryFactory;
 use PHPUnit\Framework\TestCase;
+use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
+use Psr\Container\ContainerInterface;
 
 /**
- * @author Vincent Chalamon <vincent@les-tilleuls.coop>
+ * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
 final class EntityRepositoryFactoryTest extends TestCase
 {
@@ -43,19 +45,27 @@ final class EntityRepositoryFactoryTest extends TestCase
      */
     private $classMetadataMock;
 
+    /**
+     * @var ObjectProphecy|ContainerInterface
+     */
+    private $containerMock;
+
     protected function setUp(): void
     {
         $this->repositoryMock = $this->prophesize(ObjectRepository::class);
         $this->managerMock = $this->prophesize(EntityManagerInterface::class);
         $this->classMetadataMock = $this->prophesize(ClassMetadataInterface::class);
+        $this->containerMock = $this->prophesize(ContainerInterface::class);
 
-        $this->factory = new EntityRepositoryFactory([$this->repositoryMock->reveal()]);
+        $this->factory = new EntityRepositoryFactory($this->containerMock->reveal());
     }
 
     public function testItGetsRepositoryFromConstructorArguments(): void
     {
         $this->managerMock->getClassMetadata(\stdClass::class)->willReturn($this->classMetadataMock)->shouldBeCalledOnce();
         $this->classMetadataMock->getEntityRepositoryClass()->willReturn(\get_class($this->repositoryMock->reveal()))->shouldBeCalledOnce();
+        $this->containerMock->has(Argument::any())->willReturn(true)->shouldBeCalledOnce();
+        $this->containerMock->get(Argument::any())->willReturn($this->repositoryMock->reveal())->shouldBeCalledOnce();
         $this->classMetadataMock->getName()->shouldNotBeCalled();
 
         $this->assertSame($this->repositoryMock->reveal(), $this->factory->getRepository($this->managerMock->reveal(), \stdClass::class));
@@ -65,6 +75,8 @@ final class EntityRepositoryFactoryTest extends TestCase
     {
         $this->managerMock->getClassMetadata(\stdClass::class)->willReturn($this->classMetadataMock)->shouldBeCalled();
         $this->classMetadataMock->getEntityRepositoryClass()->willReturn(EntityRepository::class)->shouldBeCalled();
+        $this->containerMock->has(Argument::any())->willReturn(false)->shouldBeCalled();
+        $this->containerMock->get(Argument::any())->willReturn($this->repositoryMock->reveal())->shouldNotBeCalled();
         $this->classMetadataMock->getName()->willReturn(\stdClass::class)->shouldBeCalled();
 
         $repository = $this->factory->getRepository($this->managerMock->reveal(), \stdClass::class);

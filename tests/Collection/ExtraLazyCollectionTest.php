@@ -23,7 +23,7 @@ use NavBundle\RequestBuilder\RequestBuilderInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @author Vincent Chalamon <vincent@les-tilleuls.coop>
+ * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
 final class ExtraLazyCollectionTest extends TestCase
 {

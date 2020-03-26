@@ -14,24 +14,25 @@ declare(strict_types=1);
 namespace NavBundle\Bridge\ApiPlatform\DataProvider;
 
 use ApiPlatform\Core\DataProvider\Pagination as ApiPlatformPagination;
+use ApiPlatform\Core\Metadata\Resource\Factory\ResourceMetadataFactoryInterface;
 
 /**
  * Pagination configuration decorated from ApiPlatform\Core\DataProvider\Pagination.
  *
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
+ * @author Baptiste Meyer <baptiste.meyer@gmail.com>
  */
-final class Pagination
+final class Pagination extends AbstractPagination
 {
     private $pagination;
-    private $options;
 
-    public function __construct(ApiPlatformPagination $pagination, array $options = [])
+    public function __construct(ResourceMetadataFactoryInterface $resourceMetadataFactory, ApiPlatformPagination $pagination = null, array $options = [], array $graphQlOptions = [])
     {
-        $this->pagination = $pagination;
-        $this->options = array_merge([
+        parent::__construct($resourceMetadataFactory, array_merge([
             'page_default' => null,
-            'page_parameter_name' => 'page',
-        ], $options);
+        ], $options), $graphQlOptions);
+
+        $this->pagination = $pagination;
     }
 
     /**
@@ -39,7 +40,11 @@ final class Pagination
      */
     public function isGraphQlEnabled(?string $resourceClass = null, ?string $operationName = null, array $context = []): bool
     {
-        return $this->pagination->isGraphQlEnabled($resourceClass, $operationName, $context);
+        if ($this->pagination) {
+            return $this->pagination->isGraphQlEnabled($resourceClass, $operationName, $context);
+        }
+
+        return parent::isGraphQlEnabled($resourceClass, $operationName, $context);
     }
 
     /**
@@ -47,7 +52,11 @@ final class Pagination
      */
     public function isEnabled(string $resourceClass = null, string $operationName = null, array $context = []): bool
     {
-        return $this->pagination->isEnabled($resourceClass, $operationName, $context);
+        if ($this->pagination) {
+            return $this->pagination->isEnabled($resourceClass, $operationName, $context);
+        }
+
+        return parent::isEnabled($resourceClass, $operationName, $context);
     }
 
     public function getBookmarkKey(array $context = []): ?string
@@ -63,6 +72,10 @@ final class Pagination
      */
     public function getLimit(string $resourceClass = null, string $operationName = null, array $context = []): int
     {
-        return $this->pagination->getLimit($resourceClass, $operationName, $context);
+        if ($this->pagination) {
+            return $this->pagination->getLimit($resourceClass, $operationName, $context);
+        }
+
+        return parent::getLimit($resourceClass, $operationName, $context);
     }
 }

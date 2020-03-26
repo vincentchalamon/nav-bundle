@@ -16,10 +16,10 @@ jobs:
       # https://github.community/t5/GitHub-Actions/GitHub-Actions-Matrix-options-dont-work-as-documented/m-p/29558
       matrix:
         php:
-          - '7.2'
           - '7.3'
           - '7.4'
         symfony:
+          - '3.4.*'
           - '4.4.*'
           - '5.0.*'
         include:
@@ -67,7 +67,7 @@ jobs:
         run: vendor/bin/php-cs-fixer fix --dry-run --diff
 
       - name: Run phpstan tests
-        if: matrix.dependency == ''
+        if: matrix.dependency == '' && matrix.symfony != '3.4.*'
         run: vendor/bin/phpstan analyze
 
       - name: Run phpunit tests
@@ -78,5 +78,5 @@ jobs:
           COVERALLS_REPO_TOKEN: ${{secrets.GITHUB_TOKEN}}
         if: matrix.coverage && matrix.dependency == ''
         run: |
-          composer require --dev --prefer-dist --no-progress --no-suggest --ansi --prefer-stable cedx/coveralls
-          vendor/bin/coveralls clover.xml
+          composer global require --prefer-dist --no-progress --no-suggest --ansi --prefer-stable cedx/coveralls
+          /home/runner/.composer/vendor/bin/coveralls clover.xml

@@ -28,8 +28,16 @@
             <argument/> <!-- options -->
         </service>
 
+        <service id="nav.entity_listener_locator" class="Symfony\Component\DependencyInjection\ServiceLocator">
+            <tag name="container.service_locator" />
+        </service>
+
         <service id="nav.entity_listener_resolver" class="NavBundle\EntityListener\EntityListenerResolver" public="false">
-            <argument type="tagged_iterator" tag="nav.entity_listener"/>
+            <argument type="service" id="nav.entity_listener_locator"/>
+        </service>
+
+        <service id="nav.hydrator_locator" class="Symfony\Component\DependencyInjection\ServiceLocator">
+            <tag name="container.service_locator" />
         </service>
 
         <service id="nav.entity_manager.abstract" class="NavBundle\EntityManager\EntityManager" abstract="true">
@@ -37,7 +45,7 @@
             <argument type="service" id="nav.event_manager"/>
             <argument type="service" id="serializer"/>
             <argument type="service" id="property_accessor"/>
-            <argument type="tagged_locator" tag="nav.hydrator"/>
+            <argument type="service" id="nav.hydrator_locator"/>
             <argument/> <!-- connection resolver -->
             <argument/> <!-- mappingDriver -->
             <argument/> <!-- nameConverter -->
@@ -47,13 +55,16 @@
             </call>
         </service>
 
+        <service id="nav.entity_repository_locator" class="Symfony\Component\DependencyInjection\ServiceLocator">
+            <tag name="container.service_locator" />
+        </service>
+
         <service id="nav.entity_repository_factory" class="NavBundle\EntityRepository\EntityRepositoryFactory" public="false">
-            <argument type="tagged_iterator" tag="nav.entity_repository"/>
+            <argument type="service" id="nav.entity_repository_locator"/>
         </service>
 
         <service id="nav.event_manager" class="NavBundle\Event\EventManager" public="false">
             <argument type="service" id="nav.entity_listener_resolver"/>
-            <argument type="tagged_iterator" tag="nav.event_subscriber"/>
         </service>
 
         <service id="NavBundle\Hydrator\ObjectHydrator" class="NavBundle\Hydrator\ObjectHydrator" public="false">
@@ -107,8 +118,8 @@
             <argument type="service" id="nav.proxy_manager.lazy_loading_value_holder_factory"/>
             <argument type="service" id="serializer.mapping.class_metadata_factory"/>
             <argument type="service" id="nav.serializer.name_converter.camel_case_to_nav"/>
-            <argument type="service" id="property_info"/>
-            <argument type="service" id="serializer.mapping.class_discriminator_resolver"/>
+            <argument type="service" id="property_info" on-invalid="ignore"/>
+            <argument type="service" id="serializer.mapping.class_discriminator_resolver" on-invalid="ignore"/>
             <tag name="serializer.normalizer" priority="-1"/>
         </service>
     </services>

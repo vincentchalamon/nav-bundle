@@ -18,13 +18,11 @@ use NavBundle\Exception\AssociationNotFoundException;
 use NavBundle\Exception\FieldNotFoundException;
 use NavBundle\RegistryInterface;
 use NavBundle\Util\ClassUtils;
-use Symfony\Component\Serializer\NameConverter\AdvancedNameConverterInterface;
-use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-final class CamelCaseToNavNameConverter extends CamelCaseToSnakeCaseNameConverter implements AdvancedNameConverterInterface
+final class CamelCaseToNavNameConverter extends PolyfillNameConverter
 {
     private $registry;
 
@@ -38,7 +36,7 @@ final class CamelCaseToNavNameConverter extends CamelCaseToSnakeCaseNameConverte
     /**
      * {@inheritdoc}
      */
-    public function normalize($propertyName, string $class = null, string $format = null, array $context = []): string
+    public function normalize($propertyName, ?string $class = null, ?string $format = null, array $context = []): string
     {
         if ($class) {
             $class = ClassUtils::getRealClass($class);

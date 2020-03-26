@@ -21,12 +21,13 @@ use NavBundle\Exception\UnknownEntityNamespaceException;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use ProxyManager\Proxy\LazyLoadingInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
 use Symfony\Component\HttpKernel\CacheWarmer\WarmableInterface;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-final class Registry extends AbstractManagerRegistry implements RegistryInterface, WarmableInterface
+final class Registry extends AbstractManagerRegistry implements RegistryInterface, CacheWarmerInterface
 {
     private $container;
 

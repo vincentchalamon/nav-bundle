@@ -15,22 +15,22 @@ namespace NavBundle\EntityRepository;
 
 use Doctrine\Persistence\ObjectRepository;
 use NavBundle\EntityManager\EntityManagerInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
 final class EntityRepositoryFactory implements EntityRepositoryFactoryInterface
 {
+    private $container;
     /**
      * @var ObjectRepository[]
      */
     private $entityRepositories = [];
 
-    public function __construct(iterable $repositories)
+    public function __construct(ContainerInterface $container)
     {
-        foreach ($repositories as $repository) {
-            $this->entityRepositories[\get_class($repository)] = $repository;
-        }
+        $this->container = $container;
     }
 
     /**
@@ -45,10 +45,18 @@ final class EntityRepositoryFactory implements EntityRepositoryFactoryInterface
             return $this->entityRepositories[$entityRepositoryClass];
         }
 
+        if ($this->container->has($entityRepositoryClass)) {
+            return $this->container->get($entityRepositoryClass);
+        }
+
         $repositoryHash = $classMetadata->getName().spl_object_hash($entityManager);
 
         if (isset($this->entityRepositories[$repositoryHash])) {
             return $this->entityRepositories[$repositoryHash];
+        }
+
+        if ($this->container->has($repositoryHash)) {
+            return $this->container->get($repositoryHash);
         }
 
         return $this->entityRepositories[$repositoryHash] = $this->createRepository($entityManager, $className);

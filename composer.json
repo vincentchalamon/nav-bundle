@@ -15,14 +15,8 @@
     "support": {
         "email": "vincentchalamon+support-navision@gmail.com"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/vincentchalamon/ntlm-soap-client"
-        }
-    ],
     "require": {
-        "php": "^7.2",
+        "php": "^7.3",
         "ext-curl": "*",
         "ext-dom": "*",
         "ext-soap": "*",
@@ -30,17 +24,17 @@
         "doctrine/collections": "^1.2",
         "jamesiarmes/php-ntlm": "^1.0",
         "ocramius/proxy-manager": "^2.2",
-        "symfony/config": "^4.4 || ^5.0",
+        "symfony/config": "^3.4 || ^4.4 || ^5.0",
         "symfony/event-dispatcher-contracts": "^1.0 || ^2.0",
-        "symfony/http-kernel": "^4.4 || ^5.0",
-        "symfony/property-access": "^4.4 || ^5.0",
-        "symfony/property-info": "^4.4 || ^5.0",
-        "symfony/serializer": "^4.4 || ^5.0",
-        "symfony/stopwatch": "^4.4 || ^5.0"
+        "symfony/http-kernel": "^3.4 || ^4.4 || ^5.0",
+        "symfony/property-access": "^3.4 || ^4.4 || ^5.0",
+        "symfony/property-info": "^3.4 || ^4.4 || ^5.0",
+        "symfony/serializer": "^3.4 || ^4.4 || ^5.0",
+        "symfony/stopwatch": "^3.4 || ^4.4 || ^5.0"
     },
     "require-dev": {
-        "api-platform/core": "^2.5",
-        "easycorp/easyadmin-bundle": "^2.3",
+        "api-platform/core": "^2.2 || ^2.5",
+        "easycorp/easyadmin-bundle": "^1.17 || ^2.3",
         "friendsofphp/php-cs-fixer": "^2.16.1",
         "nyholm/symfony-bundle-test": "^1.6.1",
         "pagerfanta/pagerfanta": "^2.0",
@@ -48,11 +42,11 @@
         "phpstan/phpstan": "^0.12.9",
         "phpunit/phpunit": "^8.5.2",
         "sensio/framework-extra-bundle": "^5.0",
-        "symfony/asset": "^4.4 || ^5.0",
-        "symfony/console": "^4.4 || ^5.0",
-        "symfony/dotenv": "^4.4 || ^5.0",
-        "symfony/twig-bundle": "^4.4 || ^5.0",
-        "symfony/web-profiler-bundle": "^4.4 || ^5.0"
+        "symfony/asset": "^3.4 || ^4.4 || ^5.0",
+        "symfony/console": "^3.4 || ^4.4 || ^5.0",
+        "symfony/dotenv": "^3.4 || ^4.4 || ^5.0",
+        "symfony/twig-bundle": "^3.4 || ^4.4 || ^5.0",
+        "symfony/web-profiler-bundle": "^3.4 || ^4.4 || ^5.0"
     },
     "suggest": {
         "api-platform/core": "Add support for API Platform",

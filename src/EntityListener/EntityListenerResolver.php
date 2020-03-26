@@ -13,18 +13,19 @@ declare(strict_types=1);
 
 namespace NavBundle\EntityListener;
 
+use Psr\Container\ContainerInterface;
+
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
 final class EntityListenerResolver implements EntityListenerResolverInterface
 {
+    private $container;
     private $entityListeners = [];
 
-    public function __construct(iterable $entityListeners)
+    public function __construct(ContainerInterface $container)
     {
-        foreach ($entityListeners as $entityListener) {
-            $this->entityListeners[\get_class($entityListener)] = $entityListener;
-        }
+        $this->container = $container;
     }
 
     /**
@@ -32,8 +33,10 @@ final class EntityListenerResolver implements EntityListenerResolverInterface
      */
     public function resolve(string $className): object
     {
-        if (isset($this->entityListeners[$className = trim($className, '\\')])) {
-            return $this->entityListeners[$className];
+        $className = $className = trim($className, '\\');
+
+        if ($this->container->has($className)) {
+            return $this->container->get($className);
         }
 
         return $this->entityListeners[$className] = new $className();
