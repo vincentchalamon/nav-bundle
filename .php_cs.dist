@@ -13,8 +13,7 @@ HEADER;
 
 $finder = PhpCsFixer\Finder::create()
     ->in(__DIR__)
-    ->exclude('features')
-    ->exclude('backup');
+    ->exclude('features');
 
 return PhpCsFixer\Config::create()
     ->setRiskyAllowed(true)
