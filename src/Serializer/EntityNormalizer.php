@@ -55,8 +55,10 @@ final class EntityNormalizer extends AbstractObjectNormalizer
 
     /**
      * {@inheritdoc}
+     *
+     * @return object|LazyLoadingInterface
      */
-    public function denormalize($data, $type, $format = null, array $context = []): LazyLoadingInterface
+    public function denormalize($data, $type, $format = null, array $context = [])
     {
         if (\is_string($data) && class_exists($type) && ($manager = $this->registry->getManagerForClass($type))) {
             return $this->holderFactory->createProxy($type, function (
@@ -75,6 +77,10 @@ final class EntityNormalizer extends AbstractObjectNormalizer
 
                 $wrappedObject = $object;
             });
+        }
+
+        if ($context['object_to_populate'] ?? null) {
+            return parent::denormalize($data, $type, $format, $context);
         }
 
         return $this->holderFactory->createProxy($type, function (

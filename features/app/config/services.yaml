@@ -1,0 +1,13 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  NavBundle\App\:
+    resource: '%kernel.project_dir%/src/*'
+    exclude: '%kernel.project_dir%/src/{Entity}'
+
+  NavBundle\App\Controller\:
+    resource: '%kernel.project_dir%/src/Controller/*'
+    tags: ['controller.service_arguments']

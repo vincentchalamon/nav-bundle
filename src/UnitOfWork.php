@@ -297,7 +297,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
     private function computeChangeSets($object = null): void
     {
-        if (null !== $object) {
+        if (null !== $object && $this->isInIdentityMap($object)) {
             $this->computeSingleEntityChangeSets($object);
 
             return;

@@ -66,6 +66,9 @@ jobs:
       - name: Run php-cs-fixer tests
         run: vendor/bin/php-cs-fixer fix --dry-run --diff
 
+      - name: Run behat tests
+        run: vendor/bin/behat
+
       - name: Run phpstan tests
         if: matrix.dependency == ''
         run: vendor/bin/phpstan analyze
@@ -80,3 +83,13 @@ jobs:
         run: |
           composer require --dev --prefer-dist --no-progress --no-suggest --ansi --prefer-stable cedx/coveralls
           vendor/bin/coveralls clover.xml
+
+      - name: Bundle is bootable
+        if: matrix.php == '7.4'
+        env:
+          SKELETON_VERSION: ${{matrix.symfony}}
+        run: |
+          composer create-project "symfony/skeleton:${SKELETON_VERSION}" flex
+          cd flex
+          composer config extra.symfony.allow-contrib true
+          composer req --ignore-platform-reqs vincentchalamon/nav-bundle

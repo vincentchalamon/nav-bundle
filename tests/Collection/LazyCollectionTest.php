@@ -15,9 +15,9 @@ namespace NavBundle\Tests\Collection;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Persistence\ObjectRepository;
+use NavBundle\App\Entity\Intervention;
 use NavBundle\ClassMetadata\ClassMetadataInterface;
 use NavBundle\Collection\LazyCollection;
-use NavBundle\E2e\TestBundle\Entity\Intervention;
 use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\RegistryInterface;
 use PHPUnit\Framework\TestCase;
