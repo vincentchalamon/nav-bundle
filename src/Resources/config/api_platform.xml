@@ -31,7 +31,6 @@
         </service>
 
         <service id="nav.api_platform.extension.pagination" class="NavBundle\Bridge\ApiPlatform\DataProvider\Extension\PaginationExtension" public="false">
-            <argument type="service" id="nav.registry"/>
             <argument type="service" id="nav.api_platform.pagination"/>
             <tag name="nav.api_platform.collection_extension" priority="-1"/>
         </service>

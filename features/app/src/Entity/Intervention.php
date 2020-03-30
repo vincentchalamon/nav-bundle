@@ -122,14 +122,6 @@ class Intervention
     /**
      * @var string|null
      *
-     * @Nav\Column(type="time")
-     * @Groups({"Intervention:Read"})
-     */
-    public $appointmentTime;
-
-    /**
-     * @var string|null
-     *
      * @Nav\Column(name="Create_SO", type="date")
      * @Groups({"Intervention:Read"})
      */
