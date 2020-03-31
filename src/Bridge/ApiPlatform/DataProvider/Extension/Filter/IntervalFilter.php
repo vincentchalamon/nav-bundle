@@ -17,7 +17,7 @@ use NavBundle\Exception\InvalidArgumentException;
 use NavBundle\RequestBuilder\RequestBuilderInterface;
 
 /**
- * @author Vincent Chalamon <vincent@les-tilleuls.coop>
+ * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
 final class IntervalFilter extends AbstractFilter
 {

@@ -15,7 +15,6 @@ namespace NavBundle\Bridge\ApiPlatform\DataProvider\Extension;
 
 use NavBundle\Bridge\ApiPlatform\DataProvider\Pagination;
 use NavBundle\Bridge\ApiPlatform\DataProvider\ResultCollectionExtensionInterface;
-use NavBundle\RegistryInterface;
 use NavBundle\RequestBuilder\RequestBuilderInterface;
 
 /**
@@ -23,12 +22,10 @@ use NavBundle\RequestBuilder\RequestBuilderInterface;
  */
 final class PaginationExtension implements ResultCollectionExtensionInterface
 {
-    private $registry;
     private $pagination;
 
-    public function __construct(RegistryInterface $registry, Pagination $pagination)
+    public function __construct(Pagination $pagination)
     {
-        $this->registry = $registry;
         $this->pagination = $pagination;
     }
 

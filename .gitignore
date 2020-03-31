@@ -7,6 +7,6 @@
 /composer.phar
 /phpunit.xml
 /vendor/
-/features/var
-/features/.env*
-/features/public/bundles
+/features/app/var
+/features/app/.env*
+/features/app/public/bundles

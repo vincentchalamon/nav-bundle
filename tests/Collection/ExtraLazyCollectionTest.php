@@ -14,16 +14,16 @@ declare(strict_types=1);
 namespace NavBundle\Tests\Collection;
 
 use Doctrine\Common\Collections\Collection;
+use NavBundle\App\Entity\Intervention;
 use NavBundle\ClassMetadata\ClassMetadataInterface;
 use NavBundle\Collection\ExtraLazyCollection;
-use NavBundle\E2e\TestBundle\Entity\Intervention;
 use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\RegistryInterface;
 use NavBundle\RequestBuilder\RequestBuilderInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @author Vincent Chalamon <vincent@les-tilleuls.coop>
+ * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
 final class ExtraLazyCollectionTest extends TestCase
 {
