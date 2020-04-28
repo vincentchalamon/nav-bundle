@@ -96,8 +96,12 @@ final class TraceableConnection implements ConnectionInterface, WarmableInterfac
         }
     }
 
-    private function format(string $string): string
+    private function format(?string $string): ?string
     {
+        if (empty($string)) {
+            return $string;
+        }
+
         try {
             $doc = new \DOMDocument('1.0');
             $doc->loadXML($string);
