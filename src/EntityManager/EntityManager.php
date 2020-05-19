@@ -17,6 +17,7 @@ use Doctrine\Persistence\Mapping\ClassMetadata as DoctrineClassMetadataInterface
 use Doctrine\Persistence\Mapping\Driver\MappingDriver as MappingDriverInterface;
 use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Persistence\ObjectRepository;
+use NavBundle\ClassMetadata\ClassMetadata;
 use NavBundle\ClassMetadata\ClassMetadataFactory;
 use NavBundle\ClassMetadata\ClassMetadataInterface;
 use NavBundle\Connection\ConnectionInterface;
@@ -291,6 +292,7 @@ class EntityManager implements EntityManagerInterface
      */
     public function getConnection($className): ConnectionInterface
     {
+        /** @var ClassMetadata $classMetadata */
         $classMetadata = $this->getClassMetadata($className);
 
         return $this->connectionResolver->resolve($classMetadata->getConnectionClass(), $classMetadata->getNamespace());
