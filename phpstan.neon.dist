@@ -19,14 +19,6 @@ parameters:
           count: 1
           path: src/ClassMetadata/Driver/AnnotationDriver.php
 
-        - message: '#Method NavBundle\\EntityManager\\EntityManager::getClassMetadata\(\) should return NavBundle\\ClassMetadata\\ClassMetadataInterface but returns Doctrine\\Persistence\\Mapping\\ClassMetadata\.#'
-          count: 1
-          path: src/EntityManager/EntityManager.php
-
-        - message: '#Method NavBundle\\Bridge\\ApiPlatform\\DataPersister\\DataPersister::getManager\(\) should return NavBundle\\EntityManager\\EntityManagerInterface|null but returns Doctrine\\Persistence\\ObjectManager|null\.#'
-          count: 1
-          path: src/Bridge/ApiPlatform/DataPersister/DataPersister.php
-
         - message: '#Parameter \#1 \$bookmarkKey \(string\) of method NavBundle\\Bridge\\Pagerfanta\\Adapter\\NavAdapter::getSlice\(\) should be compatible with parameter \$offset \(int\) of method Pagerfanta\\Adapter\\AdapterInterface::getSlice\(\)#'
           count: 1
           path: src/Bridge/Pagerfanta/Adapter/NavAdapter.php

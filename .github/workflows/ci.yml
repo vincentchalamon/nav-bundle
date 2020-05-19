@@ -81,8 +81,8 @@ jobs:
           COVERALLS_REPO_TOKEN: ${{secrets.GITHUB_TOKEN}}
         if: matrix.coverage && matrix.dependency == ''
         run: |
-          composer require --dev --prefer-dist --no-progress --no-suggest --ansi --prefer-stable cedx/coveralls
-          vendor/bin/coveralls clover.xml
+          composer global require --dev --prefer-dist --no-progress --no-suggest --ansi --prefer-stable cedx/coveralls
+          $HOME/.composer/vendor/bin/coveralls clover.xml
 
       - name: Bundle is bootable
         if: matrix.php == '7.4'
