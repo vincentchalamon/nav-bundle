@@ -53,7 +53,7 @@ class NavController extends EasyAdminController
         $fields = $this->entity['list']['fields'];
         $paginator = $this->findAll(
             $this->entity['class'],
-            $this->request->query->get('page', 1),
+            $this->request->query->getInt('page', 1),
             $this->entity['list']['max_results'],
             $this->request->query->get('sortField'),
             $this->request->query->get('sortDirection'),
@@ -98,7 +98,7 @@ class NavController extends EasyAdminController
             $this->entity['class'],
             $query,
             $searchableFields,
-            $this->request->query->get('page', 1),
+            $this->request->query->getInt('page', 1),
             $this->entity['list']['max_results'],
             $this->request->query->get('sortField'),
             $this->request->query->get('sortDirection'),
@@ -161,7 +161,9 @@ class NavController extends EasyAdminController
      */
     protected function filterRequestBuilder(RequestBuilderInterface $requestBuilder): void
     {
-        if (!$requestData = $this->request->query->get('filters')) {
+        /** @var array|null $requestData */
+        $requestData = $this->request->query->get('filters');
+        if (!$requestData) {
             // Don't create the filters form if there is no filter applied
             return;
         }

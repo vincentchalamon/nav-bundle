@@ -253,7 +253,10 @@ class EntityManager implements EntityManagerInterface
      */
     public function getClassMetadata($className)
     {
-        return $this->classMetadataFactory->getMetadataFor($className);
+        /** @var ClassMetadataInterface $classMetadata */
+        $classMetadata = $this->classMetadataFactory->getMetadataFor($className);
+
+        return $classMetadata;
     }
 
     /**

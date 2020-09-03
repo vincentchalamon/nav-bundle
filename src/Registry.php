@@ -120,12 +120,14 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
     /**
      * {@inheritdoc}
      */
-    public function warmUp($cacheDir): void
+    public function warmUp($cacheDir): array
     {
+        $files = [];
+
         // Warm up connections WSDL
         foreach ($this->getConnections() as $connection) {
             if ($connection instanceof WarmableInterface) {
-                $connection->warmUp($cacheDir);
+                $files = array_merge($files, $connection->warmUp($cacheDir));
             }
         }
 
@@ -139,6 +141,8 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
                 }
             }
         }
+
+        return $files;
     }
 
     public function isOptional(): bool

@@ -89,11 +89,16 @@ final class TraceableConnection implements ConnectionInterface, WarmableInterfac
         return $this->calls;
     }
 
-    public function warmUp($cacheDir): void
+    /**
+     * {@inheritdoc}
+     */
+    public function warmUp($cacheDir): array
     {
         if ($this->decorated instanceof WarmableInterface) {
-            $this->decorated->warmUp($cacheDir);
+            return $this->decorated->warmUp($cacheDir);
         }
+
+        return [];
     }
 
     private function format(?string $string): ?string

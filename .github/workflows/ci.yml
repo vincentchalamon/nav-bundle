@@ -21,7 +21,7 @@ jobs:
           - '7.4'
         symfony:
           - '4.4.*'
-          - '5.0.*'
+          - '5.1.*'
         include:
           - php: '7.4'
             coverage: true

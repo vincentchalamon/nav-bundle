@@ -25,13 +25,13 @@
         "doctrine/collections": "^1.2",
         "jamesiarmes/php-ntlm": "^1.0",
         "ocramius/proxy-manager": "^2.2",
-        "symfony/config": "^4.4 || ^5.0",
+	"symfony/config": "^4.4 || ^5.1",
         "symfony/event-dispatcher-contracts": "^1.0 || ^2.0",
-        "symfony/http-kernel": "^4.4 || ^5.0",
-        "symfony/property-access": "^4.4 || ^5.0",
-        "symfony/property-info": "^4.4 || ^5.0",
-        "symfony/serializer": "^4.4 || ^5.0",
-        "symfony/stopwatch": "^4.4 || ^5.0"
+        "symfony/http-kernel": "^4.4 || ^5.1",
+        "symfony/property-access": "^4.4 || ^5.1",
+        "symfony/property-info": "^4.4 || ^5.1",
+        "symfony/serializer": "^4.4 || ^5.1",
+        "symfony/stopwatch": "^4.4 || ^5.1"
     },
     "require-dev": {
         "ext-simplexml": "*",
@@ -51,11 +51,11 @@
         "phpstan/phpstan": "^0.12.9",
         "phpunit/phpunit": "^8.5.2",
         "sensio/framework-extra-bundle": "^5.0",
-        "symfony/asset": "^4.4 || ^5.0",
-        "symfony/console": "^4.4 || ^5.0",
-        "symfony/dotenv": "^4.4 || ^5.0",
-        "symfony/twig-bundle": "^4.4 || ^5.0",
-        "symfony/web-profiler-bundle": "^4.4 || ^5.0",
+        "symfony/asset": "^4.4 || ^5.1",
+        "symfony/console": "^4.4 || ^5.1",
+        "symfony/dotenv": "^4.4 || ^5.1",
+        "symfony/twig-bundle": "^4.4 || ^5.1",
+        "symfony/web-profiler-bundle": "^4.4 || ^5.1",
         "zendframework/zend-code": "^3.4"
     },
     "suggest": {
@@ -83,9 +83,9 @@
     "extra": {
         "branch-alias": {
             "dev-master": "1.0.x-dev"
-        },
+	},
         "symfony": {
-            "require": "5.0.*"
+            "require": "5.1.*"
         }
     }
 }

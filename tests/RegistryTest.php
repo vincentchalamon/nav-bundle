@@ -102,7 +102,7 @@ final class RegistryTest extends TestCase
         $warmableMock = $this->prophesize(ConnectionInterface::class)->willImplement(WarmableInterface::class);
         $this->managerMock->getConnection('App\Entity\Foo')->willReturn($warmableMock->reveal())->shouldBeCalledOnce();
         $this->managerMock->getConnection('App\Entity\Bar')->willReturn($warmableMock->reveal())->shouldBeCalledOnce();
-        $warmableMock->warmUp('/tmp')->shouldBeCalledTimes(2);
+        $warmableMock->warmUp('/tmp')->willReturn([])->shouldBeCalledTimes(2);
 
         $this->containerMock->get('nav.proxy_manager.lazy_loading_value_holder_factory')->willReturn($this->holderFactoryMock)->shouldBeCalledOnce();
         $this->holderFactoryMock
