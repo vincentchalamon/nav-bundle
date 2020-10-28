@@ -74,6 +74,9 @@ final class Kernel extends BaseKernel
         $c->loadFromExtension('framework', [
             'secret' => 'NavBundle',
             'test' => true,
+            'router' => [
+                'utf8' => true,
+            ],
         ]);
 
         $c->loadFromExtension('twig', [
