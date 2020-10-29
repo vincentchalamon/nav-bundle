@@ -1,3 +1,7 @@
+framework:
+  router:
+    utf8: true
+
 nav:
   enable_profiler: false
   url: http://username:password@example.com/WS/Page/

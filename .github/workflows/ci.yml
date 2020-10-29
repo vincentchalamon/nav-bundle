@@ -2,7 +2,8 @@ name: CI
 
 on:
   schedule:
-    - cron: 0 2 * * 1-5
+    # Every sunday at 02:00
+    - cron: 0 2 * * 0
   pull_request:
   push:
     branches:
@@ -13,21 +14,27 @@ jobs:
     name: Tests PHP ${{ matrix.php }} ${{ matrix.dependency }} (Symfony ${{ matrix.symfony }})
     runs-on: ubuntu-latest
     strategy:
-      # https://github.community/t5/GitHub-Actions/GitHub-Actions-Matrix-options-dont-work-as-documented/m-p/29558
       matrix:
         php:
           - '7.2'
           - '7.3'
           - '7.4'
+          - 'rc'
         symfony:
           - '4.4.*'
           - '5.1.*'
-        include:
-          - php: '7.4'
-            coverage: true
         dependency:
           - ''
           - 'lowest'
+        include:
+          - php: '7.4'
+            dependency: ''
+            symfony: '5.1.*'
+            coverage: true
+            bootable: true
+        exclude:
+          - symfony: '4.4.*'
+            dependency: 'lowest'
       fail-fast: false
     steps:
       - name: Checkout
@@ -37,7 +44,9 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: curl, dom, iconv, intl, json, libxml, mbstring, phar, soap, tokenizer, xdebug, xml, xmlwriter
+          extensions: soap, composer:v2, flex
+          coverage: pcov
+          tools: php-cs-fixer:2.16.7
 
       - name: Get Composer Cache Directory
         id: composer-cache
@@ -51,20 +60,41 @@ jobs:
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Configure Symfony
-        run: |
-          composer global require symfony/flex
-          composer config extra.symfony.require "${{ matrix.symfony }}"
+        run: composer config extra.symfony.require "${{ matrix.symfony }}"
 
       - name: Update project dependencies
         if: matrix.dependency == ''
-        run: composer update --no-progress --no-suggest --ansi --prefer-stable
+        run: composer update --no-progress --ansi --prefer-stable
 
       - name: Update project dependencies lowest
         if: matrix.dependency == 'lowest'
-        run: composer update --no-progress --no-suggest --ansi --prefer-lowest --prefer-stable
+        run: composer update --no-progress --ansi --prefer-lowest --prefer-stable
+
+      - name: Disable deprecations notices for lowest dependencies
+        if: matrix.dependency == 'lowest'
+        run: echo "SYMFONY_DEPRECATIONS_HELPER=weak" >> $GITHUB_ENV
+
+      - name: Bundle is bootable
+        if: matrix.bootable
+        env:
+          SKELETON_VERSION: ${{matrix.symfony}}
+        run: |
+          composer create-project "symfony/skeleton:${SKELETON_VERSION}" skeleton
+          cd skeleton
+          composer config extra.symfony.allow-contrib true
+          composer req --ignore-platform-reqs vincentchalamon/nav-bundle
 
       - name: Run php-cs-fixer tests
-        run: vendor/bin/php-cs-fixer fix --dry-run --diff
+        if: matrix.php != 'rc'
+        run: php-cs-fixer fix --diff --dry-run
+
+      - name: Run PHPUnit tests with coverage
+        if: matrix.coverage
+        run: vendor/bin/simple-phpunit --colors=always --testdox --coverage-clover clover.xml
+
+      - name: Run PHPUnit tests
+        if: matrix.coverage == ''
+        run: vendor/bin/simple-phpunit --colors=always --testdox
 
       - name: Run behat tests
         run: vendor/bin/behat
@@ -73,15 +103,12 @@ jobs:
         if: matrix.dependency == ''
         run: vendor/bin/phpstan analyze
 
-      - name: Run phpunit tests
-        run: vendor/bin/phpunit --coverage-clover clover.xml
-
       - name: Upload report to Coveralls
         env:
           COVERALLS_REPO_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        if: matrix.coverage && matrix.dependency == ''
+        if: matrix.coverage
         run: |
-          composer global require --dev --prefer-dist --no-progress --no-suggest --ansi --prefer-stable cedx/coveralls
+          composer global require --dev --prefer-dist --no-progress --ansi --prefer-stable cedx/coveralls
           $HOME/.composer/vendor/bin/coveralls clover.xml
 
       - name: Bundle is bootable
