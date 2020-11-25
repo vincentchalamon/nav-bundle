@@ -16,6 +16,7 @@ namespace NavBundle\Tests\EntityPersister;
 use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\EntityPersister\EntityPersister;
 use NavBundle\RequestBuilder\RequestBuilderInterface;
+use NavBundle\Tests\ProphecyTrait;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
@@ -25,6 +26,8 @@ use Prophecy\Prophecy\ObjectProphecy;
  */
 final class EntityPersisterTest extends TestCase
 {
+    use ProphecyTrait;
+
     private $entityPersister;
     private $iterator;
 

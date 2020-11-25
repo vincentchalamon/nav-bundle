@@ -17,6 +17,7 @@ use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\EntityRepository\ServiceEntityRepository;
 use NavBundle\Exception\EntityManagerNotFoundException;
 use NavBundle\RegistryInterface;
+use NavBundle\Tests\ProphecyTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -24,6 +25,8 @@ use PHPUnit\Framework\TestCase;
  */
 final class ServiceEntityRepositoryTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testItRetrievesManagerForClassFromRegistry(): void
     {
         $registryMock = $this->prophesize(RegistryInterface::class);

@@ -18,6 +18,7 @@ use NavBundle\Bridge\FrameworkExtraBundle\Request\ParamConverter;
 use NavBundle\ClassMetadata\ClassMetadataInterface;
 use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\RegistryInterface;
+use NavBundle\Tests\ProphecyTrait;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter as Configuration;
@@ -30,6 +31,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  */
 final class ParamConverterTest extends TestCase
 {
+    use ProphecyTrait;
+
     private $paramConverter;
 
     /**

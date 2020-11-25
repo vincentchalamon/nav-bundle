@@ -16,6 +16,7 @@ namespace NavBundle\Tests\Bridge\PagerFanta\Adapter;
 use NavBundle\Bridge\Pagerfanta\Adapter\NavAdapter;
 use NavBundle\ClassMetadata\ClassMetadataInterface;
 use NavBundle\RequestBuilder\RequestBuilderInterface;
+use NavBundle\Tests\ProphecyTrait;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
 
@@ -24,6 +25,8 @@ use Prophecy\Prophecy\ObjectProphecy;
  */
 final class NavAdapterTest extends TestCase
 {
+    use ProphecyTrait;
+
     private $adapter;
 
     /**

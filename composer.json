@@ -16,7 +16,7 @@
         "email": "vincentchalamon+support-navision@gmail.com"
     },
     "require": {
-        "php": "^7.2",
+        "php": ">=7.2",
         "ext-curl": "*",
         "ext-dom": "*",
         "ext-soap": "*",
@@ -35,7 +35,7 @@
     },
     "require-dev": {
         "ext-simplexml": "*",
-        "api-platform/core": "^2.5.2",
+        "api-platform/core": "^2.5.2 || ^2.5-dev",
         "behat/behat": "^3.1",
         "behatch/contexts": "^3.3",
         "easycorp/easyadmin-bundle": "^2.3",
@@ -46,6 +46,7 @@
         "friends-of-behat/symfony-extension": "^2.1.0",
         "nyholm/symfony-bundle-test": "^1.6.1",
         "pagerfanta/pagerfanta": "^2.0",
+        "phpspec/prophecy": "^1.12",
         "phpstan/phpstan": "^0.12.9",
         "sensio/framework-extra-bundle": "^5.0",
         "symfony/asset": "^4.4 || ^5.1",
@@ -54,6 +55,7 @@
         "symfony/phpunit-bridge": "^5.1",
         "symfony/twig-bundle": "^4.4 || ^5.1",
         "symfony/web-profiler-bundle": "^4.4 || ^5.1",
+        "willdurand/negotiation": "^3.0-dev",
         "zendframework/zend-code": "^3.4"
     },
     "suggest": {

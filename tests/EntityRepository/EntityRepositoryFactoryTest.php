@@ -18,6 +18,7 @@ use NavBundle\ClassMetadata\ClassMetadataInterface;
 use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\EntityRepository\EntityRepository;
 use NavBundle\EntityRepository\EntityRepositoryFactory;
+use NavBundle\Tests\ProphecyTrait;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
 
@@ -26,6 +27,8 @@ use Prophecy\Prophecy\ObjectProphecy;
  */
 final class EntityRepositoryFactoryTest extends TestCase
 {
+    use ProphecyTrait;
+
     private $factory;
 
     /**

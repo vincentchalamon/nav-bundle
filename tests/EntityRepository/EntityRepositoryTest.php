@@ -17,6 +17,7 @@ use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\EntityPersister\EntityPersisterInterface;
 use NavBundle\EntityRepository\EntityRepository;
 use NavBundle\RequestBuilder\RequestBuilderInterface;
+use NavBundle\Tests\ProphecyTrait;
 use NavBundle\UnitOfWork;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
@@ -26,6 +27,8 @@ use Prophecy\Prophecy\ObjectProphecy;
  */
 final class EntityRepositoryTest extends TestCase
 {
+    use ProphecyTrait;
+
     private $repository;
 
     /**

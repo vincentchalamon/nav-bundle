@@ -31,6 +31,8 @@ use Symfony\Component\HttpKernel\CacheWarmer\WarmableInterface;
  */
 final class RegistryTest extends TestCase
 {
+    use ProphecyTrait;
+
     private $registry;
 
     /** @var ObjectProphecy|ContainerInterface */

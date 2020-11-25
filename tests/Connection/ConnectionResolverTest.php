@@ -15,6 +15,7 @@ namespace NavBundle\Tests\Connection;
 
 use NavBundle\Connection\ConnectionInterface;
 use NavBundle\Connection\ConnectionResolver;
+use NavBundle\Tests\ProphecyTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -22,6 +23,8 @@ use PHPUnit\Framework\TestCase;
  */
 final class ConnectionResolverTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testItResolvesConnection(): void
     {
         $connectionClass = \get_class($this->prophesize(ConnectionInterface::class)->reveal());

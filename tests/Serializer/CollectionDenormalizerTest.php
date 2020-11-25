@@ -16,6 +16,7 @@ namespace NavBundle\Tests\Serializer;
 use NavBundle\Serializer\CollectionDenormalizer;
 use NavBundle\Serializer\NavDecoder;
 use NavBundle\Serializer\ObjectDenormalizer;
+use NavBundle\Tests\ProphecyTrait;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -25,6 +26,8 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
  */
 final class CollectionDenormalizerTest extends TestCase
 {
+    use ProphecyTrait;
+
     private $denormalizer;
 
     /**
