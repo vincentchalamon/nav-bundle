@@ -9,7 +9,7 @@ This Symfony Bundle is used to map objects with a Microsoft Dynamics NAV service
 
 ## Requirements
 
-- PHP ^7.2
+- PHP ^7.3
 - PHP extensions: curl, dom, soap
 
 ## Installation
