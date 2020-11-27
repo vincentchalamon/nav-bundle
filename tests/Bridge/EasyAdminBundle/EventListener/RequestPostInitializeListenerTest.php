@@ -18,6 +18,7 @@ use EasyCorp\Bundle\EasyAdminBundle\EventListener\RequestPostInitializeListener 
 use NavBundle\Bridge\EasyAdminBundle\EventListener\RequestPostInitializeListener;
 use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\RegistryInterface;
+use NavBundle\Tests\ProphecyTrait;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
@@ -31,6 +32,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
  */
 final class RequestPostInitializeListenerTest extends TestCase
 {
+    use ProphecyTrait;
+
     private $listener;
 
     /**

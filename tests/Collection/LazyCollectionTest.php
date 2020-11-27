@@ -20,6 +20,7 @@ use NavBundle\ClassMetadata\ClassMetadataInterface;
 use NavBundle\Collection\LazyCollection;
 use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\RegistryInterface;
+use NavBundle\Tests\ProphecyTrait;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 
@@ -28,6 +29,8 @@ use Prophecy\Argument;
  */
 final class LazyCollectionTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testItInitializesTheLazyCollection(): void
     {
         $registryMock = $this->prophesize(RegistryInterface::class);

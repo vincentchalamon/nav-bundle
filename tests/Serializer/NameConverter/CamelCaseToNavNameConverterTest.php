@@ -19,6 +19,7 @@ use NavBundle\Exception\AssociationNotFoundException;
 use NavBundle\Exception\FieldNotFoundException;
 use NavBundle\RegistryInterface;
 use NavBundle\Serializer\NameConverter\CamelCaseToNavNameConverter;
+use NavBundle\Tests\ProphecyTrait;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
@@ -28,6 +29,8 @@ use Prophecy\Prophecy\ObjectProphecy;
  */
 final class CamelCaseToNavNameConverterTest extends TestCase
 {
+    use ProphecyTrait;
+
     private $nameConverter;
 
     /**

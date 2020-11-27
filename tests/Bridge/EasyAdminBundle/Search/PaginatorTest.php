@@ -19,6 +19,7 @@ use NavBundle\ClassMetadata\ClassMetadataInterface;
 use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\RegistryInterface;
 use NavBundle\RequestBuilder\RequestBuilderInterface;
+use NavBundle\Tests\ProphecyTrait;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
 
@@ -27,6 +28,8 @@ use Prophecy\Prophecy\ObjectProphecy;
  */
 final class PaginatorTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testItCreatesANavPaginator(): void
     {
         /** @var ObjectProphecy|RegistryInterface $registryMock */

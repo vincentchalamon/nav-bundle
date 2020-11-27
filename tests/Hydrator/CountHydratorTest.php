@@ -15,6 +15,7 @@ namespace NavBundle\Tests\Hydrator;
 
 use NavBundle\ClassMetadata\ClassMetadataInterface;
 use NavBundle\Hydrator\CountHydrator;
+use NavBundle\Tests\ProphecyTrait;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
 
@@ -23,6 +24,8 @@ use Prophecy\Prophecy\ObjectProphecy;
  */
 final class CountHydratorTest extends TestCase
 {
+    use ProphecyTrait;
+
     private $hydrator;
 
     /**

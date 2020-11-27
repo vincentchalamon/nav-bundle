@@ -16,6 +16,7 @@ namespace NavBundle\Tests\Bridge\ApiPlatform\DataPersister;
 use NavBundle\Bridge\ApiPlatform\DataPersister\DataPersister;
 use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\RegistryInterface;
+use NavBundle\Tests\ProphecyTrait;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
 
@@ -24,6 +25,8 @@ use Prophecy\Prophecy\ObjectProphecy;
  */
 final class DataPersisterTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @var ObjectProphecy|RegistryInterface
      */

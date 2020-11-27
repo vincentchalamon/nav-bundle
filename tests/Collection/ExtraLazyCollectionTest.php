@@ -20,6 +20,7 @@ use NavBundle\Collection\ExtraLazyCollection;
 use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\RegistryInterface;
 use NavBundle\RequestBuilder\RequestBuilderInterface;
+use NavBundle\Tests\ProphecyTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -27,6 +28,8 @@ use PHPUnit\Framework\TestCase;
  */
 final class ExtraLazyCollectionTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testItCountsElementsInTheExtraLazyCollection(): void
     {
         $registryMock = $this->prophesize(RegistryInterface::class);

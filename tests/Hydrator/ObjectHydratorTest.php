@@ -18,6 +18,7 @@ use NavBundle\Hydrator\ObjectHydrator;
 use NavBundle\Serializer\EntityNormalizer;
 use NavBundle\Serializer\NavDecoder;
 use NavBundle\Serializer\ObjectDenormalizer;
+use NavBundle\Tests\ProphecyTrait;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -27,6 +28,8 @@ use Symfony\Component\Serializer\SerializerInterface;
  */
 final class ObjectHydratorTest extends TestCase
 {
+    use ProphecyTrait;
+
     private $hydrator;
 
     /**
