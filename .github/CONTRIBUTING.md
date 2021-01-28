@@ -24,7 +24,7 @@ Then, if it appears that it's a real bug, you may report it using GitHub by foll
 
 First of all, you must decide on what branch your changes will be based depending of the nature of the change.
 If this is a bug, you should target the branch where the bug appeared.
-If this is a new feature, you should target master.
+If this is a new feature, you should target main.
 
 ### Matching Coding Standards
 
