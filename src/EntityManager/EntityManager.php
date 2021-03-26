@@ -180,7 +180,7 @@ class EntityManager implements EntityManagerInterface
      */
     public function merge($object)
     {
-        @trigger_error('Merge operation is deprecated and will be removed in doctrine/persistence 2.0.', E_USER_DEPRECATED);
+        @trigger_error('Merge operation is deprecated and will be removed in doctrine/persistence 2.0.', \E_USER_DEPRECATED);
         throw new DeprecatedException('Merge operation is deprecated and will be removed in doctrine/persistence 2.0.');
     }
 
@@ -206,7 +206,7 @@ class EntityManager implements EntityManagerInterface
      */
     public function detach($object): void
     {
-        @trigger_error('Detach operation is deprecated and will be removed in doctrine/persistence 2.0.', E_USER_DEPRECATED);
+        @trigger_error('Detach operation is deprecated and will be removed in doctrine/persistence 2.0.', \E_USER_DEPRECATED);
         throw new DeprecatedException('Detach operation is deprecated and will be removed in doctrine/persistence 2.0.');
     }
 

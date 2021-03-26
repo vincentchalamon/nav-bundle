@@ -46,7 +46,7 @@ class Connection extends SoapClient implements ConnectionInterface, WarmableInte
             'warn_on_bad_chars' => true,
             'cache_dir' => sys_get_temp_dir(),
             'wsdl_cache_enabled' => ini_get('soap.wsdl_cache_enabled'),
-            'soap_version' => SOAP_1_1,
+            'soap_version' => \SOAP_1_1,
         ];
         $this->wsdl = $wsdl;
 
@@ -106,7 +106,7 @@ class Connection extends SoapClient implements ConnectionInterface, WarmableInte
                 mkdir($this->options['cache_dir'], 0777, true);
             }
 
-            if (!file_exists($tempFile) || WSDL_CACHE_NONE === $this->options['wsdl_cache_enabled'] || true === $force) {
+            if (!file_exists($tempFile) || \WSDL_CACHE_NONE === $this->options['wsdl_cache_enabled'] || true === $force) {
                 $wsdlContents = parent::__doRequest('', $wsdl, '', $this->options['soap_version']);
                 // Ensure the WSDL is only stored after validating it roughly.
                 if (curl_errno($this->ch) || false === strpos($wsdlContents, '<definitions ')) {

@@ -32,7 +32,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-/*final */class UnitOfWork
+/*final */ class UnitOfWork
 {
     private $em;
     private $normalizer;

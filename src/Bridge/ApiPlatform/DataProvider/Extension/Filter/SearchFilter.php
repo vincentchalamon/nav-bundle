@@ -186,7 +186,7 @@ final class SearchFilter extends AbstractFilter
     private function hasValidValues(array $values, $type = null): bool
     {
         foreach ($values as $key => $value) {
-            if (\in_array($type, [Types::INTEGER, Types::INT], true) && null !== $value && false === filter_var($value, FILTER_VALIDATE_INT)) {
+            if (\in_array($type, [Types::INTEGER, Types::INT], true) && null !== $value && false === filter_var($value, \FILTER_VALIDATE_INT)) {
                 return false;
             }
         }
