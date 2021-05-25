@@ -15,12 +15,14 @@ parameters:
           count: 1
           path: src/EntityRepository/EntityRepository.php
 
-        - message: '#Property NavBundle\\ClassMetadata\\Driver\\AnnotationDriver::\$entityAnnotationClasses .* does not accept default value of type .*\.#'
-          count: 1
-          path: src/ClassMetadata/Driver/AnnotationDriver.php
-
         - message: '#Parameter \#1 \$bookmarkKey \(string\) of method NavBundle\\Bridge\\Pagerfanta\\Adapter\\NavAdapter::getSlice\(\) should be compatible with parameter \$offset \(int\) of method Pagerfanta\\Adapter\\AdapterInterface::getSlice\(\)#'
           count: 1
           path: src/Bridge/Pagerfanta/Adapter/NavAdapter.php
 
-        - '#Return type \(string\|null\) of method NavBundle\\ClassMetadata\\ClassMetadata(?:Interface)?::getIdentifier\(\) should be compatible with return type \(array\) of method Doctrine\\Persistence\\Mapping\\ClassMetadata::getIdentifier\(\)#'
+        - '#Return type \(string\|null\) of method NavBundle\\ClassMetadata\\ClassMetadata::getIdentifier\(\) should be compatible with return type \(array\) of method Doctrine\\Persistence\\Mapping\\ClassMetadata<object>::getIdentifier\(\)#'
+
+        - '#Return type \(string\|null\) of method NavBundle\\ClassMetadata\\ClassMetadataInterface::getIdentifier\(\) should be compatible with return type \(array\) of method Doctrine\\Persistence\\Mapping\\ClassMetadata<object>::getIdentifier\(\)#'
+
+        - '#Return type \(NavBundle\\ClassMetadata\\ClassMetadataFactory\) of method NavBundle\\EntityManager\\EntityManager::getMetadataFactory\(\) should be compatible with return type \(Doctrine\\Persistence\\Mapping\\ClassMetadataFactory<Doctrine\\Persistence\\Mapping\\ClassMetadata<object>>\) of method Doctrine\\Persistence\\ObjectManager::getMetadataFactory\(\)#'
+
+        - '#Method NavBundle\\EntityManager\\EntityManager::find\(\) should return T of object\|null but returns object\|null\.#'
