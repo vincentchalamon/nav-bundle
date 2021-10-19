@@ -1,11 +1,17 @@
 name: CI
 
 on:
+  push:
+    branches:
+      - main
+      - '[0-9].[0-9]'
+    tags:
+      - '*'
+  pull_request: ~
   schedule:
-    # Every sunday at 02:00
+    # Every Sunday at 02:00
     - cron: 0 2 * * 0
-  pull_request:
-  push: ~
+  workflow_dispatch: ~
 
 jobs:
   tests:
@@ -13,39 +19,47 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php:
-          - '7.3'
-          - '7.4'
-          - '8.0'
-        symfony:
-          - '4.4.*'
-          - '5.3.*'
-        include:
-          - php: '7.4'
-            symfony: '5.3.*'
-            bootable: true
-            deprecations: true
-          - php: '8.0'
-            symfony: '5.3.*'
-            coverage: true
-            bootable: true
-            deprecations: true
-          - php: '8.0'
-            phpstan: phpstan.php8.neon.dist
+        php: ['7.3', '7.4', '8.0', '8.1']
+        symfony: ['4.4.*', '5.3.*', '5.4.*', '6.0.*']
         exclude:
           - php: '8.0'
             symfony: '4.4.*'
+          - php: '8.1'
+            symfony: '4.4.*'
+          - php: '7.3'
+            symfony: '6.0.*'
+          - php: '7.4'
+            symfony: '6.0.*'
+        include:
+          - symfony: '4.4.*'
+            downgrade-laminas: true
+          - php: '8.1'
+            upgrade-laminas: true
+            phpstan: phpstan.php8.neon.dist
+          - php: '8.0'
+            phpstan: phpstan.php8.neon.dist
+          - php: '8.0'
+            symfony: '5.4.*'
+            quality: true
+            bootable: true
+            coverage: true
+          - php: '7.4'
+            phpunit-options: '--exclude-group php8'
+          - symfony: '5.4.*'
+            minimum-stability: beta
+          - symfony: '6.0.*'
+            minimum-stability: beta
       fail-fast: false
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
           extensions: soap
-          coverage: pcov
-          tools: composer:v2, flex, php-cs-fixer
+          coverage: xdebug
+          tools: composer:v2, flex, phpstan, php-cs-fixer, phpunit
       - name: Get Composer Cache Directory
         id: composer-cache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
@@ -57,14 +71,17 @@ jobs:
           restore-keys: ${{ runner.os }}-composer-
       - name: Configure Symfony
         run: composer config extra.symfony.require "${{ matrix.symfony }}"
-      - name: Fix dependencies
-        if: matrix.symfony == '4.4.*'
+      - name: Configure Composer minimum-stability
+        if: matrix.minimum-stability
+        run: composer config minimum-stability ${{ matrix.minimum-stability }}
+      - name: Downgrade laminas/laminas-code
+        if: matrix.downgrade-laminas
         run: composer require laminas/laminas-code:^3.4 --no-install --no-update
+      - name: Upgrade laminas/laminas-code
+        if: matrix.upgrade-laminas
+        run: composer require laminas/laminas-code:^4.5-dev --no-install --no-update
       - name: Update project dependencies
         run: composer update --no-progress --ansi --prefer-stable
-      - name: Disable deprecations notices for lowest dependencies
-        if: matrix.deprecations == ''
-        run: echo "SYMFONY_DEPRECATIONS_HELPER=weak" >> $GITHUB_ENV
       - name: Bundle is bootable
         if: ${{ matrix.bootable && github.event_name == 'push' }}
         env:
@@ -75,25 +92,31 @@ jobs:
           composer config extra.symfony.allow-contrib true
           composer req vincentchalamon/nav-bundle:dev-${GITHUB_REF#refs/heads/}
       - name: Run php-cs-fixer tests
-        run: php-cs-fixer fix --diff --dry-run
+        if: matrix.quality
+        run: php-cs-fixer fix --diff --dry-run --ansi --verbose
       - name: Run PHPUnit tests with coverage
         if: matrix.coverage
-        run: vendor/bin/simple-phpunit --colors=always --testdox --coverage-clover build/logs/clover.xml
-      - name: Run PHPUnit tests
+        run: phpunit --colors=always --testdox --coverage-clover build/logs/phpunit/clover.xml ${{ matrix.phpunit-options }}
+      - name: Run PHPUnit tests ${{ matrix.phpunit-options }}
         if: matrix.coverage == ''
-        run: vendor/bin/simple-phpunit --colors=always --testdox
-      - name: Run behat tests
-        run: vendor/bin/behat
-      - name: Run phpstan tests
-        if: matrix.phpstan == ''
-        run: vendor/bin/phpstan analyze
-      - name: Run phpstan tests
-        if: matrix.phpstan
-        run: vendor/bin/phpstan analyze -c ${{ matrix.phpstan }}
+        run: phpunit --colors=always --testdox
+      - name: Cache PHPStan
+        if: matrix.quality
+        uses: actions/cache@v2
+        with:
+          path: .phpstan/
+          key: phpstan-${{ github.sha }}
+          restore-keys: phpstan-
+      - name: Run PHPStan tests
+        if: matrix.quality && matrix.phpstan == ''
+        run: phpstan analyze
+      - name: Run PHPStan tests
+        if: matrix.quality && matrix.phpstan
+        run: phpstan analyze -c ${{ matrix.phpstan }}
       - name: Upload report to Coveralls
         env:
-          COVERALLS_REPO_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: matrix.coverage
         run: |
           composer global require --prefer-dist --no-progress --ansi php-coveralls/php-coveralls
-          $HOME/.composer/vendor/bin/php-coveralls --coverage_clover=build/logs/clover.xml -v
+          $HOME/.composer/vendor/bin/php-coveralls --coverage_clover=build/logs/phpunit/clover.xml -v

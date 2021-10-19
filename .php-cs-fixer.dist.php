@@ -13,7 +13,7 @@ HEADER;
 
 $finder = (new PhpCsFixer\Finder())
     ->in(__DIR__)
-    ->exclude(['features', 'skeleton']);
+    ->exclude(['skeleton']);
 
 return (new PhpCsFixer\Config())
     ->setRiskyAllowed(true)

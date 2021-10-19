@@ -11,7 +11,15 @@
 
 declare(strict_types=1);
 
+namespace NavBundle\App;
+
+use ApiPlatform\Core\Bridge\Symfony\Bundle\ApiPlatformBundle;
+use NavBundle\NavBundle;
+use Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle;
+use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
+use Symfony\Bundle\TwigBundle\TwigBundle;
+use Symfony\Bundle\WebProfilerBundle\WebProfilerBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
@@ -27,16 +35,15 @@ final class Kernel extends BaseKernel
     public function registerBundles()
     {
         $bundles = [
-            new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
-            new Symfony\Bundle\TwigBundle\TwigBundle(),
-            new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
-            new ApiPlatform\Core\Bridge\Symfony\Bundle\ApiPlatformBundle(),
-            new FriendsOfBehat\SymfonyExtension\Bundle\FriendsOfBehatSymfonyExtensionBundle(),
-            new NavBundle\NavBundle(),
+            new FrameworkBundle(),
+            new TwigBundle(),
+            new SensioFrameworkExtraBundle(),
+            new ApiPlatformBundle(),
+            new NavBundle(),
         ];
 
         if ($this->isDebug()) {
-            $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
+            $bundles[] = new WebProfilerBundle();
         }
 
         return $bundles;
@@ -44,7 +51,7 @@ final class Kernel extends BaseKernel
 
     public function getProjectDir()
     {
-        return __DIR__;
+        return __DIR__.'/..';
     }
 
     public function getCacheDir()
@@ -59,7 +66,7 @@ final class Kernel extends BaseKernel
 
     protected function configureRoutes(RouteCollectionBuilder $routes): void
     {
-        $routes->import(__DIR__.'/src/Controller/', '', 'annotation');
+        $routes->import(__DIR__.'/Controller/', '', 'annotation');
         $routes->import('.', '', 'api_platform');
         if ($this->isDebug()) {
             $routes->import('@WebProfilerBundle/Resources/config/routing/wdt.xml', '/_wdt');
@@ -69,7 +76,7 @@ final class Kernel extends BaseKernel
 
     protected function configureContainer(ContainerBuilder $c, LoaderInterface $loader): void
     {
-        $loader->load(__DIR__.'/config/services.yaml');
+        $loader->load(__DIR__.'/../config/services.yaml');
 
         $c->loadFromExtension('framework', [
             'secret' => 'NavBundle',

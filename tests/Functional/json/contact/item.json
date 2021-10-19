@@ -1,0 +1,10 @@
+{
+  "@context": "/contexts/Contact",
+  "@id": "/contacts/CC009894",
+  "@type": "Contact",
+  "name": "Pascale Lacarelle",
+  "email": "n.grigorova@groupe-hli.com",
+  "phone": null,
+  "type": "Person",
+  "company": "DEKRA INSPECTION"
+}
