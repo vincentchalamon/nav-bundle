@@ -35,10 +35,8 @@ class NavAdapter implements AdapterInterface
 
     /**
      * {@inheritdoc}
-     *
-     * @return int
      */
-    public function getNbResults()
+    public function getNbResults(): int
     {
         return $this->requestBuilder->count();
     }

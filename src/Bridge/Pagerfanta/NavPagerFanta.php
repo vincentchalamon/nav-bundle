@@ -22,6 +22,7 @@ use Pagerfanta\Pagerfanta;
  */
 final class NavPagerFanta extends Pagerfanta
 {
+    private $adapter;
     private $bookmarkKey;
 
     public function __construct(AdapterInterface $adapter)
@@ -29,6 +30,8 @@ final class NavPagerFanta extends Pagerfanta
         if (!$adapter instanceof NavAdapter) {
             throw new \InvalidArgumentException(__CLASS__.' only accepts '.NavAdapter::class.' argument');
         }
+        // Duplicate private property from parent to prevent deprecation
+        $this->adapter = $adapter;
 
         parent::__construct($adapter);
     }
@@ -38,7 +41,7 @@ final class NavPagerFanta extends Pagerfanta
      */
     public function getCurrentPageResults(): \Traversable
     {
-        return $this->getAdapter()->getSlice($this->bookmarkKey, $this->getMaxPerPage());
+        return $this->adapter->getSlice($this->bookmarkKey, $this->getMaxPerPage());
     }
 
     /**
@@ -47,7 +50,7 @@ final class NavPagerFanta extends Pagerfanta
     public function hasNextPage(): bool
     {
         /** @var NavAdapter $adapter */
-        $adapter = $this->getAdapter();
+        $adapter = $this->adapter;
 
         return null !== $adapter->getBookmarkKey();
     }

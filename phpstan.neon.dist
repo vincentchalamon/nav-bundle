@@ -15,7 +15,7 @@ parameters:
           count: 1
           path: src/EntityRepository/EntityRepository.php
 
-        - message: '#Parameter \#1 \$bookmarkKey \(string\) of method NavBundle\\Bridge\\Pagerfanta\\Adapter\\NavAdapter::getSlice\(\) should be compatible with parameter \$offset \(int\) of method Pagerfanta\\Adapter\\AdapterInterface::getSlice\(\)#'
+        - message: '#Parameter \#1 \$bookmarkKey \(string\) of method NavBundle\\Bridge\\Pagerfanta\\Adapter\\NavAdapter::getSlice\(\) should be compatible with parameter \$offset \(int<0, max>\) of method Pagerfanta\\Adapter\\AdapterInterface::getSlice\(\)#'
           count: 1
           path: src/Bridge/Pagerfanta/Adapter/NavAdapter.php
 

@@ -44,9 +44,6 @@ jobs:
             downgrade-laminas: true
           - php: '8.1'
             upgrade-laminas: true
-            phpstan: phpstan.php8.neon.dist
-          - php: '8.0'
-            phpstan: phpstan.php8.neon.dist
           - php: '8.1'
             symfony: '6.0.*'
             quality: true
@@ -103,11 +100,8 @@ jobs:
           key: phpstan-${{ github.sha }}
           restore-keys: phpstan-
       - name: Run PHPStan tests
-        if: matrix.quality && matrix.phpstan == ''
+        if: matrix.quality
         run: phpstan analyze
-      - name: Run PHPStan tests
-        if: matrix.quality && matrix.phpstan
-        run: phpstan analyze -c ${{ matrix.phpstan }}
       - name: Run PHPUnit tests
         run: vendor/bin/simple-phpunit ${{ matrix.phpunit-options }}
       - name: Run PHPUnit bootable tests
