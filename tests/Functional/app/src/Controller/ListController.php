@@ -15,18 +15,17 @@ namespace NavBundle\App\Controller;
 
 use NavBundle\App\Entity\Contact;
 use NavBundle\RegistryInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-final class ListController
+final class ListController extends AbstractController
 {
     /**
      * @Route("/people", name="contact_list", methods={"GET"})
-     * @Template("list.html.twig")
      */
     public function __invoke(RegistryInterface $registry, Request $request)
     {
@@ -35,11 +34,11 @@ final class ListController
             $criteria['no'] = $request->query->get('no');
         }
 
-        return [
+        return $this->render('list.html.twig', [
             'contacts' => $registry
                 ->getManagerForClass(Contact::class)
                 ->getRepository(Contact::class)
                 ->findBy($criteria, null, 10),
-        ];
+        ]);
     }
 }

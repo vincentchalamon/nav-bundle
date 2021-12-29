@@ -24,7 +24,6 @@ use NavBundle\Event\EventSubscriberInterface;
 use NavBundle\Exception\DriverNotFoundException;
 use NavBundle\Hydrator\HydratorInterface;
 use NavBundle\PropertyInfo\NavExtractor;
-use Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ChildDefinition;
@@ -71,10 +70,6 @@ final class NavExtension extends Extension
             $container
                 ->registerForAutoconfiguration(CollectionExtensionInterface::class)
                 ->addTag('nav.api_platform.collection_extension');
-        }
-
-        if (\in_array(SensioFrameworkExtraBundle::class, $bundles, true)) {
-            $loader->load('sensio_framework_extra.xml');
         }
 
         $managers = [];

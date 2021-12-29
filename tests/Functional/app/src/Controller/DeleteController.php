@@ -15,7 +15,7 @@ namespace NavBundle\App\Controller;
 
 use NavBundle\App\Entity\Contact;
 use NavBundle\RegistryInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
@@ -23,15 +23,18 @@ use Symfony\Component\Routing\RouterInterface;
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-final class DeleteController
+final class DeleteController extends AbstractController
 {
     /**
      * @Route("/people/{no}", name="contact_delete", methods={"DELETE"}, requirements={"no"=".*"})
-     * @ParamConverter("contact", class=Contact::class)
      */
-    public function __invoke(RegistryInterface $registry, RouterInterface $router, Contact $contact)
+    public function __invoke($no, RegistryInterface $registry, RouterInterface $router)
     {
         $em = $registry->getManagerForClass(Contact::class);
+        if (!$contact = $em->getRepository(Contact::class)->find($no)) {
+            throw $this->createNotFoundException();
+        }
+
         $em->remove($contact);
         $em->flush($contact);
 

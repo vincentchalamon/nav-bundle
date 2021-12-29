@@ -15,7 +15,6 @@ namespace NavBundle\App;
 
 use ApiPlatform\Core\Bridge\Symfony\Bundle\ApiPlatformBundle;
 use NavBundle\NavBundle;
-use Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Bundle\TwigBundle\TwigBundle;
@@ -38,7 +37,6 @@ final class Kernel extends BaseKernel
         $bundles = [
             new FrameworkBundle(),
             new TwigBundle(),
-            new SensioFrameworkExtraBundle(),
             new ApiPlatformBundle(),
             new NavBundle(),
         ];
@@ -92,10 +90,6 @@ final class Kernel extends BaseKernel
 
         $c->loadFromExtension('twig', [
             'paths' => ['%kernel.project_dir%/templates'],
-        ]);
-
-        $c->loadFromExtension('sensio_framework_extra', [
-            'request' => ['converters' => true, 'auto_convert' => true],
         ]);
 
         $c->loadFromExtension('api_platform', [

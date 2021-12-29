@@ -15,7 +15,7 @@ namespace NavBundle\App\Controller;
 
 use NavBundle\App\Entity\Contact;
 use NavBundle\RegistryInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -24,11 +24,10 @@ use Symfony\Component\Routing\RouterInterface;
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-final class CreateController
+final class CreateController extends AbstractController
 {
     /**
      * @Route("/people/create", name="contact_create", methods={"GET", "POST"})
-     * @Template("create.html.twig")
      */
     public function __invoke(RegistryInterface $registry, RouterInterface $router, Request $request)
     {
@@ -45,6 +44,6 @@ final class CreateController
             return new RedirectResponse($router->generate('contact_edit', ['no' => $contact->no]));
         }
 
-        return [];
+        return $this->render('create.html.twig');
     }
 }
