@@ -29,6 +29,12 @@ jobs:
           - '5.4.*'
           - '6.0.*'
         exclude:
+          # Symfony 4.4 incompatible with PHP 8.* because of laminas/laminas-code
+          - symfony: '4.4.*'
+            php: '8.0'
+          - symfony: '4.4.*'
+            php: '8.1'
+          # Symfony 6.0 incompatible with PHP <8.0
           - symfony: '6.0.*'
             php: '7.3'
           - symfony: '6.0.*'
@@ -47,8 +53,6 @@ jobs:
             bootable: true
             coverage: true
             phpunit-options: '--coverage-clover build/logs/phpunit/clover.xml'
-          - php: '7.4'
-            phpunit-options: '--exclude-group php8'
       fail-fast: false
     steps:
       - name: Checkout
@@ -106,6 +110,10 @@ jobs:
         run: phpstan analyze -c ${{ matrix.phpstan }}
       - name: Run PHPUnit tests
         run: vendor/bin/simple-phpunit ${{ matrix.phpunit-options }}
+      - name: Run PHPUnit bootable tests
+        run: |
+          composer require --dev nyholm/symfony-bundle-test:dev-master
+          vendor/bin/simple-phpunit --group bootable ${{ matrix.phpunit-options }}
       - name: Upload coverage artifacts
         if: matrix.coverage != ''
         uses: actions/upload-artifact@v1

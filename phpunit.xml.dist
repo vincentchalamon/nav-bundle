@@ -29,4 +29,10 @@
             <directory suffix="Event.php">src/Event</directory>
         </exclude>
     </coverage>
+
+    <groups>
+        <exclude>
+            <group>bootable</group>
+        </exclude>
+    </groups>
 </phpunit>

@@ -60,6 +60,7 @@ class Connection extends SoapClient implements ConnectionInterface, WarmableInte
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function __call($functionName, $arguments)
     {
         // Useless try/catch, but prevents a segfault
