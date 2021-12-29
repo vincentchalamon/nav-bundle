@@ -36,7 +36,6 @@
     "require-dev": {
         "ext-simplexml": "*",
         "api-platform/core": "^2.5",
-        "easycorp/easyadmin-bundle": "^2.3",
         "fig/link-util": "^1.1",
         "nyholm/symfony-bundle-test": "^1.6.1",
         "pagerfanta/pagerfanta": "^2.0",
@@ -54,7 +53,6 @@
     },
     "suggest": {
         "api-platform/core": "Add support for API Platform",
-        "easycorp/easyadmin-bundle": "Add support for EasyAdmin",
         "pagerfanta/pagerfanta": "Add support for Pagerfanta",
         "sensio/framework-extra-bundle": "Add support for ParamConverter",
         "symfony/web-profiler-bundle": "Add support for the Web profiler"
@@ -71,6 +69,9 @@
         }
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true
+        }
     }
 }

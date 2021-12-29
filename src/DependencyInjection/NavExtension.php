@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace NavBundle\DependencyInjection;
 
 use ApiPlatform\Core\Bridge\Symfony\Bundle\ApiPlatformBundle;
-use EasyCorp\Bundle\EasyAdminBundle\EasyAdminBundle;
 use NavBundle\Bridge\ApiPlatform\DataProvider\CollectionExtensionInterface;
 use NavBundle\Bridge\ApiPlatform\DataProvider\ItemExtensionInterface;
 use NavBundle\Debug\Connection\TraceableConnectionResolver;
@@ -76,10 +75,6 @@ final class NavExtension extends Extension
 
         if (\in_array(SensioFrameworkExtraBundle::class, $bundles, true)) {
             $loader->load('sensio_framework_extra.xml');
-        }
-
-        if (\in_array(EasyAdminBundle::class, $bundles, true)) {
-            $loader->load('easy_admin.xml');
         }
 
         $managers = [];

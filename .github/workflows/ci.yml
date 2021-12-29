@@ -118,5 +118,6 @@ jobs:
           COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: matrix.coverage
         run: |
-          composer global require --prefer-dist --no-progress --ansi php-coveralls/php-coveralls
-          $HOME/.composer/vendor/bin/php-coveralls --coverage_clover=build/logs/phpunit/clover.xml -v
+          composer global require --prefer-dist --no-interaction --no-progress --ansi php-coveralls/php-coveralls
+          export PATH="$PATH:$HOME/.composer/vendor/bin"
+          php-coveralls --coverage_clover=build/logs/phpunit/clover.xml
