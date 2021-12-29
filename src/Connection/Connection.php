@@ -57,6 +57,8 @@ class Connection extends SoapClient implements ConnectionInterface, WarmableInte
      * {@inheritdoc}
      *
      * @throws \SoapFault
+     *
+     * @return mixed
      */
     public function __call($functionName, $arguments)
     {

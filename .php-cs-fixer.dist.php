@@ -13,7 +13,7 @@ HEADER;
 
 $finder = PhpCsFixer\Finder::create()
     ->in(__DIR__)
-    ->exclude(['skeleton'])
+    ->exclude(['flex', 'tests/Functional/app'])
 ;
 
 return (new PhpCsFixer\Config())
@@ -70,7 +70,7 @@ return (new PhpCsFixer\Config())
         ],
         'no_superfluous_elseif' => true,
         'no_superfluous_phpdoc_tags' => [
-            'allow_mixed' => false,
+            'allow_mixed' => true,
         ],
         'no_unset_cast' => true,
         'no_unset_on_property' => true,

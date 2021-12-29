@@ -77,7 +77,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @param object|array|null $object the entity or an array of entities to flush
      */
-    public function flush($object = null);
+    public function flush($object = null): void;
 
     /**
      * Gets the connection used by the EntityManager.

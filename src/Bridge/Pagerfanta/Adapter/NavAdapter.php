@@ -35,6 +35,8 @@ class NavAdapter implements AdapterInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @return int
      */
     public function getNbResults()
     {
