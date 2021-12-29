@@ -60,7 +60,7 @@ final class DataPersister implements DataPersisterInterface
 
     private function getManager($data): ?EntityManagerInterface
     {
-        /** @var EntityManagerInterface|null $manager */
+        /* @var EntityManagerInterface|null $manager */
         return $this->registry->getManagerForClass(ClassUtils::getRealClass($data));
     }
 }

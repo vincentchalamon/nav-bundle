@@ -19,10 +19,6 @@ parameters:
           count: 1
           path: src/Bridge/Pagerfanta/Adapter/NavAdapter.php
 
-        - message: '#Parameter \#1 \$handle of function curl_errno expects CurlHandle, resource given\.#'
-          count: 1
-          path: src/Connection/Connection.php
-
         - '#Return type \(string\|null\) of method NavBundle\\ClassMetadata\\ClassMetadata::getIdentifier\(\) should be compatible with return type \(array\) of method Doctrine\\Persistence\\Mapping\\ClassMetadata<object>::getIdentifier\(\)#'
 
         - '#Return type \(string\|null\) of method NavBundle\\ClassMetadata\\ClassMetadataInterface::getIdentifier\(\) should be compatible with return type \(array\) of method Doctrine\\Persistence\\Mapping\\ClassMetadata<object>::getIdentifier\(\)#'
@@ -30,3 +26,7 @@ parameters:
         - '#Method NavBundle\\EntityManager\\EntityManager::find\(\) should return T of object\|null but returns object\|null\.#'
 
         - '#Return type \(NavBundle\\ClassMetadata\\ClassMetadataFactory\) of method NavBundle\\EntityManager\\EntityManager::getMetadataFactory\(\) should be compatible with return type \(Doctrine\\Persistence\\Mapping\\ClassMetadataFactory<Doctrine\\Persistence\\Mapping\\ClassMetadata<object>>\) of method Doctrine\\Persistence\\ObjectManager::getMetadataFactory\(\)#'
+
+        - message: '#Parameter \#1 \$handle of function curl_errno expects CurlHandle, resource given\.#'
+          count: 1
+          path: src/Connection/Connection.php
