@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace NavBundle;
 
 use Doctrine\Persistence\AbstractManagerRegistry;
+use Doctrine\Persistence\ObjectManager;
 use NavBundle\Connection\ConnectionInterface;
 use NavBundle\EntityManager\EntityManagerInterface;
 use NavBundle\Exception\InvalidMethodCallException;
@@ -152,6 +153,8 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
 
     /**
      * {@inheritdoc}
+     *
+     * @return object|ObjectManager
      */
     protected function getService($name)
     {

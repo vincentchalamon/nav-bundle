@@ -28,6 +28,8 @@ final class ObjectDenormalizer implements ContextAwareDenormalizerInterface, Den
 
     /**
      * {@inheritdoc}
+     *
+     * @return mixed
      */
     public function denormalize($data, $type, $format = null, array $context = [])
     {

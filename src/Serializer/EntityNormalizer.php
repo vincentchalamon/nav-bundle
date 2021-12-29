@@ -166,14 +166,14 @@ final class EntityNormalizer extends AbstractObjectNormalizer
 
     /**
      * {@inheritdoc}
+     *
+     * @return mixed
      */
     protected function getAttributeValue($object, $attribute, $format = null, array $context = [])
     {
         $className = ClassUtils::getRealClass($object);
         /** @var EntityManagerInterface $manager */
         $manager = $this->registry->getManagerForClass($className);
-        /** @var ClassMetadata $classMetadata */
-        $classMetadata = $manager->getClassMetadata($className);
 
         /* @see https://github.com/Ocramius/ProxyManager/pull/299 */
         return $manager->getPropertyAccessor()->getValue($object, $attribute);
@@ -187,8 +187,6 @@ final class EntityNormalizer extends AbstractObjectNormalizer
         $className = ClassUtils::getRealClass($object);
         /** @var EntityManagerInterface $manager */
         $manager = $this->registry->getManagerForClass($className);
-        /** @var ClassMetadata $classMetadata */
-        $classMetadata = $manager->getClassMetadata($className);
 
         /* @see https://github.com/Ocramius/ProxyManager/pull/299 */
         $manager->getPropertyAccessor()->setValue($object, $attribute, $value);

@@ -27,11 +27,11 @@ final class CountHydrator implements HydratorInterface
     {
         $namespace = $classMetadata->getNamespace();
 
-        if (!isset($response->ReadMultiple_Result->$namespace)) {
+        if (!isset($response->ReadMultiple_Result->{$namespace})) {
             return 0;
         }
 
-        $data = $response->ReadMultiple_Result->$namespace;
+        $data = $response->ReadMultiple_Result->{$namespace};
 
         return is_countable($data) ? \count($data) : 1;
     }

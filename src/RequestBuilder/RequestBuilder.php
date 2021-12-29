@@ -128,6 +128,7 @@ final class RequestBuilder implements RequestBuilderInterface
             throw $fault;
         }
 
+        /* @phpstan-ignore-next-line */
         if (empty($response)) {
             return null;
         }
@@ -183,6 +184,7 @@ final class RequestBuilder implements RequestBuilderInterface
             throw $fault;
         }
 
+        /* @phpstan-ignore-next-line */
         if (empty($response)) {
             return new \ArrayIterator();
         }

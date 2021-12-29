@@ -14,25 +14,38 @@ declare(strict_types=1);
 namespace NavBundle\Tests;
 
 use NavBundle\NavBundle;
-use Nyholm\BundleTest\BaseBundleTestCase;
+use Nyholm\BundleTest\TestKernel;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
+ *
+ * @group bootable
  */
-final class BundleInitializationTest extends BaseBundleTestCase
+final class BundleInitializationTest extends KernelTestCase
 {
-    protected function getBundleClass(): string
+    protected static function getKernelClass(): string
     {
-        return NavBundle::class;
+        return TestKernel::class;
+    }
+
+    protected static function createKernel(array $options = []): KernelInterface
+    {
+        /** @var TestKernel $kernel */
+        $kernel = parent::createKernel($options);
+        $kernel->addTestBundle(NavBundle::class);
+        $kernel->handleOptions($options);
+
+        return $kernel;
     }
 
     public function testTheBundleIsBootable(): void
     {
-        $kernel = $this->createKernel();
-        $kernel->addConfigFile(__DIR__.'/config/config.yml');
-        $this->bootKernel();
-
-        $container = $this->getContainer();
+        $kernel = self::bootKernel(['config' => static function (TestKernel $kernel): void {
+            $kernel->addTestConfig(__DIR__.'/config/config.yml');
+        }]);
+        $container = $kernel->getContainer();
 
         $this->assertTrue($container->has('nav.registry'));
         $this->assertTrue($container->has('nav.entity_manager.default'));

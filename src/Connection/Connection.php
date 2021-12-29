@@ -57,7 +57,10 @@ class Connection extends SoapClient implements ConnectionInterface, WarmableInte
      * {@inheritdoc}
      *
      * @throws \SoapFault
+     *
+     * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function __call($functionName, $arguments)
     {
         // Useless try/catch, but prevents a segfault
@@ -109,6 +112,7 @@ class Connection extends SoapClient implements ConnectionInterface, WarmableInte
             if (!file_exists($tempFile) || \WSDL_CACHE_NONE === $this->options['wsdl_cache_enabled'] || true === $force) {
                 $wsdlContents = parent::__doRequest('', $wsdl, '', $this->options['soap_version']);
                 // Ensure the WSDL is only stored after validating it roughly.
+                /* @phpstan-ignore-next-line */
                 if (curl_errno($this->ch) || false === strpos($wsdlContents, '<definitions ')) {
                     throw new \SoapFault('Server', sprintf('Unable to fetch a valid WSDL definition from: %s', $wsdl));
                 }

@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace NavBundle\DependencyInjection;
 
 use ApiPlatform\Core\Bridge\Symfony\Bundle\ApiPlatformBundle;
-use EasyCorp\Bundle\EasyAdminBundle\EasyAdminBundle;
 use NavBundle\Bridge\ApiPlatform\DataProvider\CollectionExtensionInterface;
 use NavBundle\Bridge\ApiPlatform\DataProvider\ItemExtensionInterface;
 use NavBundle\Debug\Connection\TraceableConnectionResolver;
@@ -25,7 +24,6 @@ use NavBundle\Event\EventSubscriberInterface;
 use NavBundle\Exception\DriverNotFoundException;
 use NavBundle\Hydrator\HydratorInterface;
 use NavBundle\PropertyInfo\NavExtractor;
-use Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ChildDefinition;
@@ -72,14 +70,6 @@ final class NavExtension extends Extension
             $container
                 ->registerForAutoconfiguration(CollectionExtensionInterface::class)
                 ->addTag('nav.api_platform.collection_extension');
-        }
-
-        if (\in_array(SensioFrameworkExtraBundle::class, $bundles, true)) {
-            $loader->load('sensio_framework_extra.xml');
-        }
-
-        if (\in_array(EasyAdminBundle::class, $bundles, true)) {
-            $loader->load('easy_admin.xml');
         }
 
         $managers = [];
