@@ -45,7 +45,7 @@ class Connection extends SoapClient implements ConnectionInterface, WarmableInte
             'strip_bad_chars' => true,
             'warn_on_bad_chars' => true,
             'cache_dir' => sys_get_temp_dir(),
-            'wsdl_cache_enabled' => ini_get('soap.wsdl_cache_enabled'),
+            'wsdl_cache_enabled' => \ini_get('soap.wsdl_cache_enabled'),
             'soap_version' => \SOAP_1_1,
         ];
         $this->wsdl = $wsdl;

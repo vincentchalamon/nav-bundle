@@ -18,7 +18,7 @@ use Doctrine\Persistence\Event\LifecycleEventArgs;
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-/*final */ class PostPersistEvent extends LifecycleEventArgs implements EventInterface
+/* final */ class PostPersistEvent extends LifecycleEventArgs implements EventInterface
 {
     /**
      * {@inheritdoc}
