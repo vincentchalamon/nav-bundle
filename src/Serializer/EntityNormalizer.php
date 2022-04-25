@@ -61,7 +61,7 @@ final class EntityNormalizer extends AbstractObjectNormalizer
     public function denormalize($data, $type, $format = null, array $context = [])
     {
         if (\is_string($data) && class_exists($type) && ($manager = $this->registry->getManagerForClass($type))) {
-            return $this->holderFactory->createProxy($type, function (
+            return $this->holderFactory->createProxy($type, function (/* @phpstan-ignore-line */
                 &$wrappedObject,
                 LazyLoadingInterface $proxy,
                 $method,

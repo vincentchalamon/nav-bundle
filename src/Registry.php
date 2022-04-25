@@ -138,7 +138,7 @@ final class Registry extends AbstractManagerRegistry implements RegistryInterfac
         if (null !== $holderFactory) {
             foreach ($this->getManagers() as $manager) {
                 foreach ($manager->getMetadataFactory()->getAllMetadata() as $classMetadata) {
-                    $holderFactory->createProxy($classMetadata->getName(), static function (): void {});
+                    $holderFactory->createProxy($classMetadata->getName(), static function (): void {}); /* @phpstan-ignore-line */
                 }
             }
         }
