@@ -1,5 +1,7 @@
 # NavBundle
 
+**This bundle is not supported anymore!**
+
 [![GitHub CI](https://github.com/vincentchalamon/nav-bundle/workflows/CI/badge.svg)](https://github.com/vincentchalamon/nav-bundle/actions?query=workflow%3ACI)
 [![Packagist Version](https://img.shields.io/packagist/v/vincentchalamon/nav-bundle.svg?style=flat-square)](https://packagist.org/packages/vincentchalamon/nav-bundle)
 [![Software license](https://img.shields.io/github/license/vincentchalamon/nav-bundle.svg?style=flat-square)](https://github.com/vincentchalamon/nav-bundle/blob/main/LICENSE)
